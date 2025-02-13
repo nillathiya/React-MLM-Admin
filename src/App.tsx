@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react';
-import {
-  Route,
-  Routes,
-  useLocation,
-  Navigate,
-  useSearchParams,
-} from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
-import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
 import Dashboard from './pages/Dashboard/Dashboard';
 import FormElements from './pages/Form/FormElements';
@@ -21,72 +14,47 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
-// import AllUsers from './pages/Users/AllUsers';
-// import AllMachineList from './pages/Machine/AllMachineList';
-// import Transaction from './pages/Transaction/Transaction';
-// import AddDistributor from './pages/Distributor/AddDistributor';
-// import DistributorList from './pages/Distributor/DistributorList';
-// import AddMachineMaster from './pages/MachineMaster/AddMachineMaster';
-// import Registration from './pages/MachineRegistration/Registration';
-// import OccupiedMachineList from './pages/MachineRegistration/OccupiedMachineList';
-// import FreeMachineList from './pages/MachineRegistration/FreeMachineList';
-// import AddFranchise from './pages/Franchise/AddFranchise';
-// import FranchiseDetails from './pages/Franchise/FranchiseDetails';
-// import FranchisePurchase from './pages/Franchise/FranchisePurchase';
-// import PaidPayout from './pages/Franchise/PaidPayout';
-// import PendingPayout from './pages/Franchise/PendingPayout';
-// import PendingStock from './pages/Franchise/PendingStock';
-// import RepurchaseOrder from './pages/Franchise/RepurchaseOrder';
-// import SaleProduct from './pages/Franchise/SaleProduct';
-// import WithdrawalApproved from './pages/Franchise/WithdrawalApproved';
-// import WithdrawalPending from './pages/Franchise/WithdrawalPending';
-// import AddCoin from './pages/Coin/AddCoin';
-// import CoinList from './pages/Coin/CoinList';
-// import AdjustRewards from './pages/AdjustRewards/AdjustReward';
-// import ResetEarning from './pages/Earning/ResetEarning';
-// import Rewards from './pages/Reward/Rewards';
-// import Approved from './pages/Support/Approved';
-// import Support from './pages/Support/Support';
-// import GeneralSetting from './pages/Settings/GeneralSetting';
-// import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
-// import MachineList from './pages/MachineMaster/MachineList';
-// import EditUser from './pages/Users/EditUser';
-// import EditMachine from './pages/Machine/EditMachine';
+import AllUsers from './pages/Users/AllUsers';
+import Approved from './pages/Support/Approved';
+import Support from './pages/Support/pending';
+import GeneralSetting from './pages/Settings/GeneralSetting';
+import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
+import EditUser from './pages/Users/EditUser';
 import Login from './pages/Login/Login';
 import ChangePassword from './pages/Password/ChangePassword';
-// import EditCoin from './pages/Coin/EditCoin';
-// import EditFreeMachine from './pages/MachineRegistration/EditFreeMachine';
-// import EditOccupiedMachine from './pages/MachineRegistration/EditOccupiedMachine';
-// import EditFranchise from './pages/Franchise/EditFranchise';
-// import FranchiseOrderView from './pages/Franchise/FranchiseOrderView';
-// import FranchisePendingView from './pages/Franchise/FranchisePendingView';
-// import FranchiserepurchaseView from './pages/Franchise/FranchiserepurchaseView';
-// import SupportView from './pages/Support/SupportView';
-// import RegistrationSetting from './pages/Settings/RegistrationSetting';
-// import InvestmentSetting from './pages/Settings/InvestmentSetting';
-// import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
-// import FundSetting from './pages/Settings/FundSetting';
-// import ProfileSetting from './pages/Settings/ProfileSetting';
-// import DynamicpagesSetting from './pages/Settings/DynamicpagesSetting';
-// import ReInvestmentSetting from './pages/Settings/ReInvestmentSetting';
-// import AccountSetting from './pages/Settings/AccountSetting';
-// import RegisterWithOTPSetting from './pages/Settings/RegisterWithOTPSetting';
-// import BtcAddressOTPSetting from './pages/Settings/BtcAddressOTPSetting';
-// import BtcAddressWithOTPSetting from './pages/Settings/BtcAddressWithOTPSetting';
-// import LoginWithOTPSetting from './pages/Settings/LoginWithOTPSetting';
-// import PaymentMethodSetting from './pages/Settings/PaymentMethodSetting';
-// import PaymentMethodAcceptSetting from './pages/Settings/PaymentMethodAcceptSetting';
-// import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
-// import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
-// import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
-// import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
+import SupportView from './pages/Support/SupportView';
+import RegistrationSetting from './pages/Settings/RegistrationSetting';
+import InvestmentSetting from './pages/Settings/InvestmentSetting';
+import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
+import FundSetting from './pages/Settings/FundSetting';
+import ProfileSetting from './pages/Settings/ProfileSetting';
+import DynamicpagesSetting from './pages/Settings/DynamicpagesSetting';
+import ReInvestmentSetting from './pages/Settings/ReInvestmentSetting';
+import AccountSetting from './pages/Settings/AccountSetting';
+import RegisterWithOTPSetting from './pages/Settings/RegisterWithOTPSetting';
+import BtcAddressOTPSetting from './pages/Settings/BtcAddressOTPSetting';
+import BtcAddressWithOTPSetting from './pages/Settings/BtcAddressWithOTPSetting';
+import LoginWithOTPSetting from './pages/Settings/LoginWithOTPSetting';
+import PaymentMethodSetting from './pages/Settings/PaymentMethodSetting';
+import PaymentMethodAcceptSetting from './pages/Settings/PaymentMethodAcceptSetting';
+import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
+import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
+import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
+import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
 import { useSelector } from 'react-redux';
 import { selectIsLoggedIn } from './features/auth/authSlice';
-// import UpdateMachine from './pages/MachineMaster/UpdateMachine';
-// import PreparePayout from './pages/PayoutReports/PreparePayout';
-// import SubmitPayout from './pages/PayoutReports/SubmitPayout';
-// import EditTransaction from './pages/Transaction/EditTransaction';
-// import PayOutReport from './pages/PayoutReports/PayOutReport';
+import Team from './pages/Network/Team';
+import WithdrawalApproved from './pages/Withdrawal/WithdrawalApproved';
+import WithdrawalCancle from './pages/Withdrawal/WithdrawalCancle';
+import WithdrawalPending from './pages/Withdrawal/WithdrawalPending';
+import Income from './pages/Income/Income';
+import Contact from './pages/Contact/Contact';
+import Order from './pages/Order/Order';
+import AddFund from './pages/Fund/AddFund';
+import FundTransfer from './pages/Fund/FundTransfer';
+import Member from './pages/Users/Member';
+import Reward from './pages/Users/Reward';
+
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -114,7 +82,7 @@ function App() {
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
         />
-        {/* <Route
+        <Route
           path="/users/all-users"
           element={
             <>
@@ -122,8 +90,62 @@ function App() {
               <AllUsers />
             </>
           }
-        /> */}
-        {/* <Route
+        />
+        <Route
+          path="/users/member"
+          element={
+            <>
+              <PageTitle title="Users" />
+              <Member />
+            </>
+          }
+        />
+        <Route
+          path="/users/reward"
+          element={
+            <>
+              <PageTitle title="Users" />
+              <Reward />
+            </>
+          }
+        />
+        <Route
+          path="/network/team"
+          element={
+            <>
+              <PageTitle title="Netwok" />
+              <Team />
+            </>
+          }
+        />
+        <Route
+          path="/withdrawal/pending"
+          element={
+            <>
+              <PageTitle title="Withdrawal" />
+              <WithdrawalPending />
+            </>
+          }
+        />
+        <Route
+          path="/withdrawal/approved"
+          element={
+            <>
+              <PageTitle title="Withdrawal" />
+              <WithdrawalApproved />
+            </>
+          }
+        />
+        <Route
+          path="/withdrawal/cancelled"
+          element={
+            <>
+              <PageTitle title="Withdrawal" />
+              <WithdrawalCancle />
+            </>
+          }
+        />
+        <Route
           path="/users/all-users/edituser/:id"
           element={
             <>
@@ -132,345 +154,8 @@ function App() {
             </>
           }
         />
-        <Route
-          path="machines-list/edit-machine/:id"
-          element={
-            <>
-              <PageTitle title="edit user" />
-              <EditMachine />
-            </>
-          }
-        />
-        <Route
-          path="machines-list/update-machine/:id"
-          element={
-            <>
-              <PageTitle title="edit user" />
-              <UpdateMachine />
-            </>
-          }
-        />
-        <Route
-          path="/coin/coin-list/edit-coin/:id"
-          element={
-            <>
-              <PageTitle title="edit user" />
-              <EditCoin />
-            </>
-          }
-        />
 
-        {/* machines */}
-        {/* <Route
-          path="/machines-list"
-          element={
-            <>
-              <PageTitle title="Machine" />
-              <AllMachineList />
-            </>
-          }
-        />
         <Route
-          path="/prepare-payout"
-          element={
-            <>
-              <PageTitle title="Payout Report" />
-              <PreparePayout />
-            </>
-          }
-        />
-        <Route
-          path="/payout-report"
-          element={
-            <>
-              <PageTitle title="Payout Report" />
-              <PayOutReport />
-            </>
-          }
-        />
-        <Route
-          path="/submit-payout"
-          element={
-            <>
-              <PageTitle title="submit payout" />
-              <SubmitPayout />
-            </>
-          }
-        />
-        <Route
-          path="/all-transaction"
-          element={
-            <>
-              <PageTitle title="All Transaction" />
-              <Transaction />
-            </>
-          }
-        />
-        <Route
-          path="/edit-transaction/:id"
-          element={
-            <>
-              <PageTitle title="All Transaction" />
-              <EditTransaction />
-            </>
-          }
-        />
-        <Route
-          path="/distributor/add-distributor"
-          element={
-            <>
-              <PageTitle title="Add Distributor" />
-              <AddDistributor />
-            </>
-          }
-        />
-        <Route
-          path="/distributor/distributor-list"
-          element={
-            <>
-              <PageTitle title="All Distributor" />
-              <DistributorList />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/machine-list"
-          element={
-            <>
-              <PageTitle title="Machine List" />
-              <MachineList />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/add-machine"
-          element={
-            <>
-              <PageTitle title="Add Machine" />
-              <AddMachineMaster />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/registration"
-          element={
-            <>
-              <PageTitle title="Machine Registration" />
-              <Registration />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/free-machine-list"
-          element={
-            <>
-              <PageTitle title="Free Machine List" />
-              <FreeMachineList />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/free-machine-list/edit-free-machine/:id"
-          element={
-            <>
-              <PageTitle title="EditFreeMachine List" />
-              <EditFreeMachine />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/occupied-machine-list"
-          element={
-            <>
-              <PageTitle title="Occupied Machine List" />
-              <OccupiedMachineList />
-            </>
-          }
-        />
-        <Route
-          path="/Machine/occupied-machine-list/edit-occupied-machine/:id"
-          element={
-            <>
-              <PageTitle title="EditOccupiedMachine List" />
-              <EditOccupiedMachine />
-            </>
-          }
-        />
-        {/* franchise */}
-        {/* <Route
-          path="/franchise/add-franchise"
-          element={
-            <>
-              <PageTitle title="Add Franchise" />
-              <AddFranchise />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/franchise-details"
-          element={
-            <>
-              <PageTitle title="Franchise Details" />
-              <FranchiseDetails />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/franchise-details/edit-franchise/:id"
-          element={
-            <>
-              <PageTitle title="Franchise Edit" />
-              <EditFranchise />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/franchise-purchase"
-          element={
-            <>
-              <PageTitle title="Franchise Purchase" />
-              <FranchisePurchase />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/franchise-purchase/view-franchise-purchase/:id"
-          element={
-            <>
-              <PageTitle title="Franchise Edit" />
-              <FranchiseOrderView />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/paid-payout"
-          element={
-            <>
-              <PageTitle title="Paid Payout" />
-              <PaidPayout />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/pending-payout"
-          element={
-            <>
-              <PageTitle title="Pending Payout" />
-              <PendingPayout />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/pending-stock"
-          element={
-            <>
-              <PageTitle title="Pending Stock" />
-              <PendingStock />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/pending-stock/view-franchise-pending/:id"
-          element={
-            <>
-              <PageTitle title="Franchise Edit" />
-              <FranchisePendingView />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/repurchase-order"
-          element={
-            <>
-              <PageTitle title="Repurchase Order" />
-              <RepurchaseOrder />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/repurchase-order/view-franchise-repurchase/:id"
-          element={
-            <>
-              <PageTitle title="Franchise repurchase" />
-              <FranchiserepurchaseView />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/sale-product"
-          element={
-            <>
-              <PageTitle title="Sale Product" />
-              <SaleProduct />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/withdrawal-pending"
-          element={
-            <>
-              <PageTitle title="Withdrawal Pending" />
-              <WithdrawalPending />
-            </>
-          }
-        />
-        <Route
-          path="/franchise/withdrawal-approved"
-          element={
-            <>
-              <PageTitle title="Withdrawal Approved" />
-              <WithdrawalApproved />
-            </>
-          }
-        />
-
-        {/* Coin */}
-        {/* <Route
-          path="/coin/add-coin"
-          element={
-            <>
-              <PageTitle title="Add Coin" />
-              <AddCoin />
-            </>
-          }
-        />
-        <Route
-          path="/coin/coin-list"
-          element={
-            <>
-              <PageTitle title="Coin List" />
-              <CoinList />
-            </>
-          }
-        />
-        <Route
-          path="/rewards/adjust-rewards"
-          element={
-            <>
-              <PageTitle title="Adjust Rewards" />
-              <AdjustRewards />
-            </>
-          }
-        />
-        <Route
-          path="/Earnings/Reset-earnings"
-          element={
-            <>
-              <PageTitle title="Reset Earnings" />
-              <ResetEarning />
-            </> 
-          }
-        />
-        <Route
-          path="/reward/rewards"
-          element={
-            <>
-              <PageTitle title="Reward" />
-              <Rewards />
-            </>
-          }
-        /> */}
-        {/* <Route
           path="/support/approved"
           element={
             <>
@@ -478,8 +163,8 @@ function App() {
               <Approved />
             </>
           }
-        /> */}
-        {/* <Route
+        />
+        <Route
           path="/support"
           element={
             <>
@@ -498,7 +183,7 @@ function App() {
           }
         />
         {/* setting */}
-        {/* <Route
+        <Route
           path="/setting/general-setting"
           element={
             <>
@@ -506,8 +191,8 @@ function App() {
               <GeneralSetting />
             </>
           }
-        /> */}
-        {/* <Route
+        />
+        <Route
           path="/setting/general-setting/registration/:id"
           element={
             <>
@@ -651,8 +336,8 @@ function App() {
               <PaymentMethodAcceptBankSetting />
             </>
           }
-        /> */}
-        {/* <Route
+        />
+        <Route
           path="/setting/general-setting/paymentmethodaccept/usdt/:id"
           element={
             <>
@@ -660,7 +345,7 @@ function App() {
               <PaymentMethodAcceptUsdtSetting />
             </>
           }
-        /> 
+        />
 
         <Route
           path="/setting/general-setting/companyinfo/:id"
@@ -670,9 +355,9 @@ function App() {
               <CompanyInfoSetting />
             </>
           }
-        /> */}
+        />
 
-        {/* <Route
+        <Route
           path="setting/back-up-setting"
           element={
             <>
@@ -682,18 +367,18 @@ function App() {
           }
         />
         <Route path="/logout" element={<PageTitle title="Logout" />} />
-        /> */}
-        {/* <Route
+
+        <Route
           path="/logout"
           element={
             <>
               <PageTitle title="Logout" />
             </>
           }
-        /> */}
+        />
         {/* other componant */}
 
-        <Route
+        {/* <Route
           path="/calendar"
           element={
             <>
@@ -701,7 +386,7 @@ function App() {
               <Calendar />
             </>
           }
-        />
+        /> */}
         <Route
           path="/profile"
           element={
@@ -798,6 +483,51 @@ function App() {
             <>
               <PageTitle title="Buttons" />
               <Buttons />
+            </>
+          }
+        />
+        <Route
+          path="/order"
+          element={
+            <>
+              <PageTitle title="order" />
+              <Order />
+            </>
+          }
+        />
+        <Route
+          path="/income"
+          element={
+            <>
+              <PageTitle title="Income" />
+              <Income />
+            </>
+          }
+        />
+        <Route
+          path="/Contact"
+          element={
+            <>
+              <PageTitle title="Contact" />
+              <Contact />
+            </>
+          }
+        />
+        <Route
+          path="/fund/add-fund"
+          element={
+            <>
+              <PageTitle title="Contact" />
+              <AddFund />
+            </>
+          }
+        />
+        <Route
+          path="/fund/fund-transfer"
+          element={
+            <>
+              <PageTitle title="Contact" />
+              <FundTransfer />
             </>
           }
         />

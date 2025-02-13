@@ -1,11 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { adminLogin, adminLogout, adminChangePassword,requestImpersonationToken } from './authApi';
-import { User } from '../../types';
+import {
+  adminLogin,
+  adminLogout,
+  adminChangePassword,
+  requestImpersonationToken,
+} from './authApi';
 
 // Define the AuthState interface
 interface AuthState {
   loading: boolean;
-  currentUser: User | null;
+  currentUser: object;
   errorMessage: string | null;
   isLoggedIn: boolean;
 }
@@ -17,7 +21,7 @@ export interface RootState {
 
 const initialState: AuthState = {
   loading: false,
-  currentUser: null,
+  currentUser: {},
   errorMessage: null,
   isLoggedIn: false,
 };
@@ -88,7 +92,6 @@ export const requestImpersonationTokenAsync = createAsyncThunk(
   },
 );
 
-
 // Define the slice
 const authSlice = createSlice({
   name: 'auth',
@@ -99,7 +102,7 @@ const authSlice = createSlice({
       state.isLoggedIn = true;
     },
     clearUser(state) {
-      state.currentUser = null;
+      state.currentUser = {};
       state.isLoggedIn = false;
       state.errorMessage = null;
       state.loading = false;
@@ -132,7 +135,7 @@ const authSlice = createSlice({
       .addCase(adminLogoutAsync.fulfilled, (state, action) => {
         console.log('authSlice fulfilled', action.payload);
         state.loading = false;
-        state.currentUser =null;
+        state.currentUser = {};
         state.isLoggedIn = false;
       })
       .addCase(adminLogoutAsync.rejected, (state, action) => {
@@ -163,7 +166,7 @@ const authSlice = createSlice({
       .addCase(requestImpersonationTokenAsync.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(requestImpersonationTokenAsync.rejected, (state,action) => {
+      .addCase(requestImpersonationTokenAsync.rejected, (state, action) => {
         console.log('error mesasge', action.payload);
         state.loading = false;
         state.errorMessage = action.payload as string;
