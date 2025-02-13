@@ -21,72 +21,72 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
-import AllUsers from './pages/Users/AllUsers';
-import AllMachineList from './pages/Machine/AllMachineList';
-import Transaction from './pages/Transaction/Transaction';
-import AddDistributor from './pages/Distributor/AddDistributor';
-import DistributorList from './pages/Distributor/DistributorList';
-import AddMachineMaster from './pages/MachineMaster/AddMachineMaster';
-import Registration from './pages/MachineRegistration/Registration';
-import OccupiedMachineList from './pages/MachineRegistration/OccupiedMachineList';
-import FreeMachineList from './pages/MachineRegistration/FreeMachineList';
-import AddFranchise from './pages/Franchise/AddFranchise';
-import FranchiseDetails from './pages/Franchise/FranchiseDetails';
-import FranchisePurchase from './pages/Franchise/FranchisePurchase';
-import PaidPayout from './pages/Franchise/PaidPayout';
-import PendingPayout from './pages/Franchise/PendingPayout';
-import PendingStock from './pages/Franchise/PendingStock';
-import RepurchaseOrder from './pages/Franchise/RepurchaseOrder';
-import SaleProduct from './pages/Franchise/SaleProduct';
-import WithdrawalApproved from './pages/Franchise/WithdrawalApproved';
-import WithdrawalPending from './pages/Franchise/WithdrawalPending';
-import AddCoin from './pages/Coin/AddCoin';
-import CoinList from './pages/Coin/CoinList';
-import AdjustRewards from './pages/AdjustRewards/AdjustReward';
-import ResetEarning from './pages/Earning/ResetEarning';
-import Rewards from './pages/Reward/Rewards';
-import Approved from './pages/Support/Approved';
-import Support from './pages/Support/Support';
-import GeneralSetting from './pages/Settings/GeneralSetting';
-import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
-import MachineList from './pages/MachineMaster/MachineList';
-import EditUser from './pages/Users/EditUser';
-import EditMachine from './pages/Machine/EditMachine';
+// import AllUsers from './pages/Users/AllUsers';
+// import AllMachineList from './pages/Machine/AllMachineList';
+// import Transaction from './pages/Transaction/Transaction';
+// import AddDistributor from './pages/Distributor/AddDistributor';
+// import DistributorList from './pages/Distributor/DistributorList';
+// import AddMachineMaster from './pages/MachineMaster/AddMachineMaster';
+// import Registration from './pages/MachineRegistration/Registration';
+// import OccupiedMachineList from './pages/MachineRegistration/OccupiedMachineList';
+// import FreeMachineList from './pages/MachineRegistration/FreeMachineList';
+// import AddFranchise from './pages/Franchise/AddFranchise';
+// import FranchiseDetails from './pages/Franchise/FranchiseDetails';
+// import FranchisePurchase from './pages/Franchise/FranchisePurchase';
+// import PaidPayout from './pages/Franchise/PaidPayout';
+// import PendingPayout from './pages/Franchise/PendingPayout';
+// import PendingStock from './pages/Franchise/PendingStock';
+// import RepurchaseOrder from './pages/Franchise/RepurchaseOrder';
+// import SaleProduct from './pages/Franchise/SaleProduct';
+// import WithdrawalApproved from './pages/Franchise/WithdrawalApproved';
+// import WithdrawalPending from './pages/Franchise/WithdrawalPending';
+// import AddCoin from './pages/Coin/AddCoin';
+// import CoinList from './pages/Coin/CoinList';
+// import AdjustRewards from './pages/AdjustRewards/AdjustReward';
+// import ResetEarning from './pages/Earning/ResetEarning';
+// import Rewards from './pages/Reward/Rewards';
+// import Approved from './pages/Support/Approved';
+// import Support from './pages/Support/Support';
+// import GeneralSetting from './pages/Settings/GeneralSetting';
+// import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
+// import MachineList from './pages/MachineMaster/MachineList';
+// import EditUser from './pages/Users/EditUser';
+// import EditMachine from './pages/Machine/EditMachine';
 import Login from './pages/Login/Login';
 import ChangePassword from './pages/Password/ChangePassword';
-import EditCoin from './pages/Coin/EditCoin';
-import EditFreeMachine from './pages/MachineRegistration/EditFreeMachine';
-import EditOccupiedMachine from './pages/MachineRegistration/EditOccupiedMachine';
-import EditFranchise from './pages/Franchise/EditFranchise';
-import FranchiseOrderView from './pages/Franchise/FranchiseOrderView';
-import FranchisePendingView from './pages/Franchise/FranchisePendingView';
-import FranchiserepurchaseView from './pages/Franchise/FranchiserepurchaseView';
-import SupportView from './pages/Support/SupportView';
-import RegistrationSetting from './pages/Settings/RegistrationSetting';
-import InvestmentSetting from './pages/Settings/InvestmentSetting';
-import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
-import FundSetting from './pages/Settings/FundSetting';
-import ProfileSetting from './pages/Settings/ProfileSetting';
-import DynamicpagesSetting from './pages/Settings/DynamicpagesSetting';
-import ReInvestmentSetting from './pages/Settings/ReInvestmentSetting';
-import AccountSetting from './pages/Settings/AccountSetting';
-import RegisterWithOTPSetting from './pages/Settings/RegisterWithOTPSetting';
-import BtcAddressOTPSetting from './pages/Settings/BtcAddressOTPSetting';
-import BtcAddressWithOTPSetting from './pages/Settings/BtcAddressWithOTPSetting';
-import LoginWithOTPSetting from './pages/Settings/LoginWithOTPSetting';
-import PaymentMethodSetting from './pages/Settings/PaymentMethodSetting';
-import PaymentMethodAcceptSetting from './pages/Settings/PaymentMethodAcceptSetting';
-import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
-import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
-import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
-import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
+// import EditCoin from './pages/Coin/EditCoin';
+// import EditFreeMachine from './pages/MachineRegistration/EditFreeMachine';
+// import EditOccupiedMachine from './pages/MachineRegistration/EditOccupiedMachine';
+// import EditFranchise from './pages/Franchise/EditFranchise';
+// import FranchiseOrderView from './pages/Franchise/FranchiseOrderView';
+// import FranchisePendingView from './pages/Franchise/FranchisePendingView';
+// import FranchiserepurchaseView from './pages/Franchise/FranchiserepurchaseView';
+// import SupportView from './pages/Support/SupportView';
+// import RegistrationSetting from './pages/Settings/RegistrationSetting';
+// import InvestmentSetting from './pages/Settings/InvestmentSetting';
+// import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
+// import FundSetting from './pages/Settings/FundSetting';
+// import ProfileSetting from './pages/Settings/ProfileSetting';
+// import DynamicpagesSetting from './pages/Settings/DynamicpagesSetting';
+// import ReInvestmentSetting from './pages/Settings/ReInvestmentSetting';
+// import AccountSetting from './pages/Settings/AccountSetting';
+// import RegisterWithOTPSetting from './pages/Settings/RegisterWithOTPSetting';
+// import BtcAddressOTPSetting from './pages/Settings/BtcAddressOTPSetting';
+// import BtcAddressWithOTPSetting from './pages/Settings/BtcAddressWithOTPSetting';
+// import LoginWithOTPSetting from './pages/Settings/LoginWithOTPSetting';
+// import PaymentMethodSetting from './pages/Settings/PaymentMethodSetting';
+// import PaymentMethodAcceptSetting from './pages/Settings/PaymentMethodAcceptSetting';
+// import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
+// import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
+// import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
+// import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
 import { useSelector } from 'react-redux';
 import { selectIsLoggedIn } from './features/auth/authSlice';
-import UpdateMachine from './pages/MachineMaster/UpdateMachine';
-import PreparePayout from './pages/PayoutReports/PreparePayout';
-import SubmitPayout from './pages/PayoutReports/SubmitPayout';
-import EditTransaction from './pages/Transaction/EditTransaction';
-import PayOutReport from './pages/PayoutReports/PayOutReport';
+// import UpdateMachine from './pages/MachineMaster/UpdateMachine';
+// import PreparePayout from './pages/PayoutReports/PreparePayout';
+// import SubmitPayout from './pages/PayoutReports/SubmitPayout';
+// import EditTransaction from './pages/Transaction/EditTransaction';
+// import PayOutReport from './pages/PayoutReports/PayOutReport';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -114,7 +114,7 @@ function App() {
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
         />
-        <Route
+        {/* <Route
           path="/users/all-users"
           element={
             <>
@@ -122,8 +122,8 @@ function App() {
               <AllUsers />
             </>
           }
-        />
-        <Route
+        /> */}
+        {/* <Route
           path="/users/all-users/edituser/:id"
           element={
             <>
@@ -161,7 +161,7 @@ function App() {
         />
 
         {/* machines */}
-        <Route
+        {/* <Route
           path="/machines-list"
           element={
             <>
@@ -297,7 +297,7 @@ function App() {
           }
         />
         {/* franchise */}
-        <Route
+        {/* <Route
           path="/franchise/add-franchise"
           element={
             <>
@@ -425,7 +425,7 @@ function App() {
         />
 
         {/* Coin */}
-        <Route
+        {/* <Route
           path="/coin/add-coin"
           element={
             <>
@@ -469,7 +469,7 @@ function App() {
               <Rewards />
             </>
           }
-        />
+        /> */}
         {/* <Route
           path="/support/approved"
           element={
@@ -479,7 +479,7 @@ function App() {
             </>
           }
         /> */}
-        <Route
+        {/* <Route
           path="/support"
           element={
             <>
@@ -498,7 +498,7 @@ function App() {
           }
         />
         {/* setting */}
-        <Route
+        {/* <Route
           path="/setting/general-setting"
           element={
             <>
@@ -506,8 +506,8 @@ function App() {
               <GeneralSetting />
             </>
           }
-        />
-        <Route
+        /> */}
+        {/* <Route
           path="/setting/general-setting/registration/:id"
           element={
             <>
@@ -651,8 +651,8 @@ function App() {
               <PaymentMethodAcceptBankSetting />
             </>
           }
-        />
-        <Route
+        /> */}
+        {/* <Route
           path="/setting/general-setting/paymentmethodaccept/usdt/:id"
           element={
             <>
@@ -660,7 +660,7 @@ function App() {
               <PaymentMethodAcceptUsdtSetting />
             </>
           }
-        />
+        /> 
 
         <Route
           path="/setting/general-setting/companyinfo/:id"
@@ -670,7 +670,7 @@ function App() {
               <CompanyInfoSetting />
             </>
           }
-        />
+        /> */}
 
         {/* <Route
           path="setting/back-up-setting"

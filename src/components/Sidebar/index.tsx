@@ -7,10 +7,10 @@ import Icon from '../Icons/Icon';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store/store';
 import { adminLogoutAsync } from '../../features/auth/authSlice';
-import {
-  PrepareOutAsync,
-  TatumPayoutAsync,
-} from '../../features/payout-reports/payoutReportsSlice';
+// import {
+//   PrepareOutAsync,
+//   TatumPayoutAsync,
+// } from '../../features/payout-reports/payoutReportsSlice';
 import toast from 'react-hot-toast';
 
 interface SidebarProps {
@@ -75,7 +75,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // prepare
   const fetchPrepareOut = async () => {
     try {
-      await dispatch(PrepareOutAsync());
+      // await dispatch(PrepareOutAsync());
     } catch (error: any) {
       toast.error(error);
     }
@@ -83,7 +83,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // tatum
   const fetchSubmitPayOut = async () => {
     try {
-      await dispatch(TatumPayoutAsync());
+      // await dispatch(TatumPayoutAsync());
     } catch (error: any) {
       toast.error(error);
     }
