@@ -1,0 +1,12 @@
+.rejectButton {
+  background: #f5365c;
+  padding: 5px 15px;
+  color: white;
+  border-radius: 5px;
+}
+.approveButton {
+  background: #11cdef;
+  padding: 5px 15px;
+  color: white;
+  border-radius: 5px;
+}

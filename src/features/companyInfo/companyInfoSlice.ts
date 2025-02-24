@@ -105,7 +105,7 @@ const companyInfo = createSlice({
 export default companyInfo.reducer;
 
 export const selectLoading = (state: RootState) => state.companyInfo.isLoading;
-export const selectCompanyInfo = (state: RootState) =>
-  state.companyInfo.companyInfo;
+// export const selectCompanyInfo = (state: RootState) =>
+//   state.companyInfo.companyInfo;
 export const selectCompanyInfoPaginationData = (state: RootState) =>
   state.companyInfo.pagination;

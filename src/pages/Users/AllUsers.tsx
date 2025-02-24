@@ -46,7 +46,6 @@ const AllUsers: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="All Users" />
-
       <div>
         <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
           <div
@@ -83,19 +82,19 @@ const AllUsers: React.FC = () => {
                   <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                     Join Date
                   </th>
-                  <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                     Total Machines
                   </th>
-                  <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                     Block Status
                   </th>
-                  <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                     Active Status
                   </th>
-                  <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                     Register Status
                   </th>
-                  <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                     Email verify status
                   </th>
                 </tr>

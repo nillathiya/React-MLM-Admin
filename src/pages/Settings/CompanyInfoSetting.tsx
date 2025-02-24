@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../store/store';
 import {
   getCompanyInfoAsync,
-  selectCompanyInfo,
+  // selectCompanyInfo,
   updateCompanyInfoAsync,
 } from '../../features/companyInfo/companyInfoSlice';
 import { toast } from 'react-hot-toast';
@@ -12,7 +12,7 @@ import { API_URL } from '../../constants';
 
 const CompanyInfoSetting: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const companyInfo = useSelector(selectCompanyInfo);
+  // const companyInfo = useSelector(selectCompanyInfo);
 
   const [formData, setFormData] = useState<Record<string, string | File>>({});
   const [filePreviews, setFilePreviews] = useState<Record<string, string>>({});
@@ -21,38 +21,24 @@ const CompanyInfoSetting: React.FC = () => {
     dispatch(getCompanyInfoAsync({}));
   }, [dispatch]);
 
-  useEffect(() => {
-    if (companyInfo) {
-      companyInfo?.forEach((item: any) => {
-        setFormData((prev) => ({
-          ...prev,
-          [item.label]: item.value,
-        }));
-
-        if (item.label === 'companyFavicon' || item.label === 'companyLogo') {
-          setFilePreviews((prev) => ({
-            ...prev,
-            [item.label]: item.value,
-          }));
-        }
-      });
-    }
-  }, [companyInfo]);
-
   const initialSettings = [
-    'companyTitle',
-    'baseURL',
-    'companyFavicon',
-    'companyLogo',
-    'companyAddress',
-    'companyMobile',
-    'currency',
-    'companyName',
-    'companyFacebookLink',
-    'companyLinkedinLink',
-    'companyTelegramLink',
-    'companyMediumLink',
-    'companyInstagramLink',
+    'Company Name',
+    'Base URL',
+    'Company Favicon',
+    'Company Logo',
+    'Company Title',
+    'Company Address',
+    'Company Mobile',
+    'Currency',
+    'Token Rate',
+    'Company Founder Name',
+    'Company Founder Name',
+    'Company FacebookLink',
+    'Company Twitter Link',
+    'Company LinkedinLink',
+    'Company TelegramLink',
+    'Company Pinterest Link',
+    'Company InstagramLink',
   ];
 
   const handleInputChange = (name: string, value: string | File) => {
@@ -83,31 +69,31 @@ const CompanyInfoSetting: React.FC = () => {
     const value = formData[name];
 
     // Find the actual _id for the given setting name
-    const settingItem = companyInfo?.find((item: any) => item.label === name);
-    const settingId = settingItem?._id;
+    // const settingItem = companyInfo?.find((item: any) => item.label === name);
+    // const settingId = settingItem?._id;
 
-    if (!settingId) {
-      toast.error(`No matching setting found for ${name}`);
-      return;
-    }
+    // if (!settingId) {
+    //   toast.error(`No matching setting found for ${name}`);
+    //   return;
+    // }
 
-    const formDataToSend = new FormData();
+    // const formDataToSend = new FormData();
 
-    if (name === 'companyFavicon' || name === 'companyLogo') {
-      // Match the field name with backend
-      formDataToSend.append('file', value as File);
-    } else {
-      formDataToSend.append('value', value as string);
-    }
+    // if (name === 'companyFavicon' || name === 'companyLogo') {
+    //   // Match the field name with backend
+    //   formDataToSend.append('file', value as File);
+    // } else {
+    //   formDataToSend.append('value', value as string);
+    // }
 
-    try {
-      await dispatch(
-        updateCompanyInfoAsync({ id: settingId, formData: formDataToSend }),
-      );
-      toast.success('Updated successfully.');
-    } catch (error) {
-      toast.error('Failed to update.');
-    }
+    // try {
+    //   await dispatch(
+    //     updateCompanyInfoAsync({ id: settingId, formData: formDataToSend }),
+    //   );
+    //   toast.success('Updated successfully.');
+    // } catch (error) {
+    //   toast.error('Failed to update.');
+    // }
   };
 
   return (

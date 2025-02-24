@@ -54,6 +54,7 @@ import AddFund from './pages/Fund/AddFund';
 import FundTransfer from './pages/Fund/FundTransfer';
 import Member from './pages/Users/Member';
 import Reward from './pages/Users/Reward';
+import OrderView from './pages/Order/OrderView';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -492,6 +493,15 @@ function App() {
             <>
               <PageTitle title="order" />
               <Order />
+            </>
+          }
+        />
+        <Route
+          path="/order/orderView"
+          element={
+            <>
+              <PageTitle title="OrderView" />
+              <OrderView />
             </>
           }
         />
