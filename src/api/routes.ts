@@ -149,7 +149,7 @@ interface Routes {
 // Define and export the ROUTES object
 export const ROUTES: Routes = {
   AUTH: {
-    ADMIN_LOGIN: `${API_URL}/api/auth/admin/sign-in`,
+    ADMIN_LOGIN: `${API_URL}/api/auth/admin/login`,
     REGISTER: `${API_URL}/api/user/add`,
     LOGOUT: `${API_URL}/api/auth/logout`,
     CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
