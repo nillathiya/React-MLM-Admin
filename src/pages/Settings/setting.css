@@ -1,0 +1,16 @@
+.btn-primary {
+  color: #fff;
+  background-color: #5e72e4;
+  border-color: #5e72e4;
+  padding: 5px 20px 5px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  justify-content: center;
+  display: flex;
+  width: 50%;
+
+  text-transform: uppercase;
+}
+button:hover {
+  /* background-color: #8091f3 !important; */
+}

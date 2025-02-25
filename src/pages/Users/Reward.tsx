@@ -25,7 +25,14 @@ const Reward: React.FC = () => {
                 />
               </div>
 
-              <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+              <button
+                className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+                style={{
+                  backgroundColor: 'rgb(120 136 255)',
+                  border: 'none',
+                  textTransform: 'uppercase',
+                }}
+              >
                 Register
               </button>
             </div>

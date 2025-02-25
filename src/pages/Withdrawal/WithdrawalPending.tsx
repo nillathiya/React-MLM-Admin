@@ -7,13 +7,15 @@ const WithdrawalPending: React.FC = () => {
   return (
     <div>
       <Breadcrumb pageName="Pending Withdrwals" />
-      <div
-        className="d-flex gap-2 mt-3"
-        style={{ display: 'flex', justifyContent: 'flex-end' }}
-      >
-        <button className="btn btn-sm approveButton">Approve All</button>
-        <button className="btn btn-sm rejectButton">Reject All</button>
+      <div className="d-flex gap-2 mt-3" style={{ justifyContent: 'flex-end' }}>
+        <button className="btn btn-sm approveButton responsive-btn">
+          Approve All
+        </button>
+        <button className="btn btn-sm rejectButton responsive-btn">
+          Reject All
+        </button>
       </div>
+
       <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         <div className="max-w-full overflow-x-auto custom-scrollbar">
           <table className="w-full table-auto">
@@ -22,15 +24,16 @@ const WithdrawalPending: React.FC = () => {
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   S.No
                 </th>
+                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  Action
+                </th>
                 <th className=" min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   textbox
                 </th>
                 <th className=" min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Tx user
                 </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Action
-                </th>
+
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Method
                 </th>
@@ -40,12 +43,11 @@ const WithdrawalPending: React.FC = () => {
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Amount(ARB)
                 </th>
-
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Account Details
                 </th>
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Action
+                  Status
                 </th>
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Date
@@ -97,6 +99,23 @@ const WithdrawalPending: React.FC = () => {
                         {withdrawal}
                       </h5>
                     </td>
+                    {/* <td>
+                      <span
+                        className={`badge badge-sm ${
+                          withdrawal.status === 'Pending'
+                            ? 'badge-warning'
+                            : 'badge-success'
+                        }`}
+                        style={{
+                          background:
+                            withdrawal.status === 'Pending'
+                              ? '#fb6340'
+                              : '#28a745',
+                        }}
+                      >
+                        {withdrawal.status}
+                      </span>
+                    </td> */}
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
                         {withdrawal}

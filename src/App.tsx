@@ -16,7 +16,7 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import AllUsers from './pages/Users/AllUsers';
 import Approved from './pages/Support/Approved';
-import Support from './pages/Support/pending';
+import Pending from './pages/Support/pending';
 import GeneralSetting from './pages/Settings/GeneralSetting';
 import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
 import EditUser from './pages/Users/EditUser';
@@ -166,11 +166,11 @@ function App() {
           }
         />
         <Route
-          path="/support"
+          path="/support/pending"
           element={
             <>
               <PageTitle title="Support" />
-              <Support />
+              <Pending />
             </>
           }
         />

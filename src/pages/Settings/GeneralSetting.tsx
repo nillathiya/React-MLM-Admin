@@ -2,7 +2,7 @@ import React from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { Package } from '../../types/package';
 import { useNavigate } from 'react-router-dom';
-
+import './setting.css';
 const GeneralSetting: React.FC = () => {
   const packageData: Package[] = [
     {
@@ -161,7 +161,7 @@ const GeneralSetting: React.FC = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-2 dark:border-strokedark flex gap-2">
                       <button
-                        className="btn btn-primary"
+                        className="btn-primary"
                         onClick={() =>
                           handleEditClick(packageItem.id, packageItem.name)
                         }

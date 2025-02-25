@@ -89,9 +89,9 @@
   color: #fff;
   background-color: #11cdef;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  padding: 8px 17px;
+  padding: 6px 8px;
   border-radius: 3px;
   cursor: pointer;
 }
@@ -126,7 +126,7 @@ button {
 }
 
 button:hover {
-  background-color: #218838;
+  /* background-color: #218838; */
 }
 
 .form-group {

@@ -61,20 +61,16 @@ const Order: React.FC = () => {
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       {index + 1}
                     </td>
-                    <td
-                      className="border-b border-[#eee] py-5 px-4 dark:border-strokedark"
-                      style={{
-                        display: 'flex',
-                        gap: '10px',
-                      }}
-                    >
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark flex flex-wrap items-center gap-2">
                       <button
-                        className="ViewButton"
+                        className="ViewButton px-3 py-1 text-sm md:text-base"
                         onClick={() => handleView(order._id)}
                       >
                         View
                       </button>
-                      <button className="ViewButton">Print All</button>
+                      <button className="ViewButton px-3 py-1 text-sm md:text-base">
+                        Print All
+                      </button>
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       {order.userId} ({order.userName})

@@ -113,7 +113,7 @@ export const MENU: {
       },
       {
         id: 3,
-        title: 'Fund Transfer',
+        title: 'Fund Transfer History',
         path: '/fund/fund-transfer',
         icon: 'USER',
       },
@@ -134,8 +134,8 @@ export const MENU: {
       },
       {
         id: 6,
-        title: 'Support',
-        path: '/support',
+        title: 'pending',
+        path: '/support/pending',
         icon: 'MDOUTLINESUPPORT',
       },
     ],
