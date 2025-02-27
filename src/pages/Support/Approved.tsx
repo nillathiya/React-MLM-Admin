@@ -3,15 +3,17 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import SearchInput from '../../common/Search/SearchInput';
 import Pagination from '../../common/Pagination/Pagination';
 
-const Approved: React.FC = () => {
+const Approved = () => {
+  const itemsPerPage =5;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Sample Static Data
   const staticData = [
     {
       Userid: '2121212',
       walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
+      fCode: { name: 'john' },
       status: 'pending',
       amount: '1000',
       replay: '',
@@ -19,21 +21,15 @@ const Approved: React.FC = () => {
     {
       Userid: '13132121',
       walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
+      fCode: { name: 'doe' },
+      status: 'success',
       amount: '2000',
       replay: '',
     },
     {
       Userid: '2121212',
       walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
+      fCode: { name: 'john' },
       status: 'pending',
       amount: '1000',
       replay: '',
@@ -41,250 +37,33 @@ const Approved: React.FC = () => {
     {
       Userid: '13132121',
       walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
+      fCode: { name: 'doe' },
+      status: 'success',
       amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
       replay: '',
     },
     
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
-    {
-      Userid: '2121212',
-      walletType: 'main_wallet',
-
-      fCode: {
-        name: 'john',
-      },
-      status: 'pending',
-      amount: '1000',
-      replay: '',
-    },
-    {
-      Userid: '13132121',
-      walletType: 'fund_wallet',
-
-      fCode: {
-        name: 'doe',
-      },
-      status: 'succces',
-      amount: '2000',
-      replay: '',
-    },
   ];
 
-  // filter table data
-  const [searchTerm, setSearchTerm] = useState('');
-
-  // filter data
+  // Filtered Data based on Search
   const filteredData = staticData.filter(
     (item) =>
       item.Userid.includes(searchTerm) ||
       item.fCode.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.amount.includes(searchTerm) ||
       item.status.includes(searchTerm) ||
-      item.replay.includes(searchTerm) ||
       item.walletType.includes(searchTerm),
   );
 
-  // pagoination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  // Paginate Data
+  const offset = currentPage * itemsPerPage;
+  const currentItems = filteredData.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  // Handle Page Change
+  const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected);
+  };
 
   return (
     <div>
@@ -322,10 +101,10 @@ const Approved: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.length > 0 ? (
-                paginatedData.map((item, index) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((item, index) => (
                   <tr key={index} className="table-row">
-                    <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                    <td>{offset + index + 1}</td>
                     <td>{item.Userid}</td>
                     <td>{item.fCode?.name}</td>
                     <td>{item.amount}</td>
@@ -337,7 +116,7 @@ const Approved: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center">
-                    No data available
+                    No data found...
                   </td>
                 </tr>
               )}
@@ -345,14 +124,9 @@ const Approved: React.FC = () => {
           </table>
         </div>
       </div>
-
       {/* Pagination Component */}
-      {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+      {filteredData.length > itemsPerPage && (
+        <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
       )}
     </div>
   );

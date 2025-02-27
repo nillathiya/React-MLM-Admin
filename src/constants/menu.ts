@@ -72,17 +72,18 @@ export const MENU: {
         icon: 'DASHBOARD',
       },
       {
-        id: 11,
+        id: 12,
         title: 'Approved',
         path: '/withdrawal/approved',
         icon: 'DASHBOARD',
       },
       {
-        id: 11,
+        id: 13,
         title: 'Cancelled',
         path: '/withdrawal/cancelled',
         icon: 'DASHBOARD',
       },
+
     ],
   },
   {

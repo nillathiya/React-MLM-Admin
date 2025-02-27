@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import storage from 'redux-persist/lib/storage';
 import { persistStore, persistReducer } from 'redux-persist';
+import withdrawalReducer from '../features/withdrawal/withdrawalSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -16,11 +17,8 @@ const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
+    withdrawals: withdrawalReducer,
   },
-  // middleware: (getDefaultMiddleware) =>
-  //   getDefaultMiddleware({
-  //     serializableCheck: false, // Disable serializability check for redux-persist
-  //   }),
 });
 
 export const persistor = persistStore(store);

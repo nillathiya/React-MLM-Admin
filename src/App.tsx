@@ -55,6 +55,7 @@ import FundTransfer from './pages/Fund/FundTransfer';
 import Member from './pages/Users/Member';
 import Reward from './pages/Users/Reward';
 import OrderView from './pages/Order/OrderView';
+import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -125,6 +126,15 @@ function App() {
             <>
               <PageTitle title="Withdrawal" />
               <WithdrawalPending />
+            </>
+          }
+        />
+        <Route
+          path="/view-withdrawal/:id"
+          element={
+            <>
+              <PageTitle title="Withdrawals" />
+              <ViewWithdrawal />
             </>
           }
         />

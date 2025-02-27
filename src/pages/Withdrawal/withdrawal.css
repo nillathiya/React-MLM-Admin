@@ -11,12 +11,18 @@
   border-radius: 5px;
 }
 .responsive-btn {
-  width: 9%;
+  width: 13%;
   min-width: 100px;
 }
 
 @media (max-width: 768px) {
   .responsive-btn {
     width: 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  .responsive-btn {
+    width: 100%; /* Makes buttons full width on small screens */
   }
 }
