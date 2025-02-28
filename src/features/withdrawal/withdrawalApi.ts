@@ -1,6 +1,7 @@
 import { apiClient } from '../../api/apiClient';
 import { ROUTES } from '../../api/routes';
 import { AxiosError } from 'axios';
+
 export const getAllWithdrawal = async (): Promise<any> => {
   try {
     const response = await apiClient.post(ROUTES.WITHDRAWAL.GET_ALL);

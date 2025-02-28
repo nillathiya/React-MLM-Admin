@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from '../../store/store';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import SearchInput from '../../common/Search/SearchInput';
 import Pagination from '../../common/Pagination/Pagination';
+import { DEFAULT_CURRENT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '../../constants';
 
 const WithdrawalPending: React.FC = () => {
   const [selectAll, setSelectAll] = useState(false);
@@ -38,12 +39,50 @@ const WithdrawalPending: React.FC = () => {
     navigate(`/view-withdrawal/${id}`);
   };
 
-  const itemsPerPage = 1;
-  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredData = withdrawals.filter((withdrawal) =>
-    withdrawal.amount.toString().includes(searchTerm),
-  );
+
+  const filteredData = withdrawals.filter((withdrawal: any) => {
+    const searchLower = searchTerm.toLowerCase().trim();
+  
+    // Convert status to text representation
+    const statusText =
+      withdrawal.status === 0
+        ? "pending"
+        : withdrawal.status === 1
+        ? "approved"
+        : "cancelled";
+  
+    // Calculate formatted total amount
+    const totalAmount = (
+      (withdrawal.amount ?? 0) +
+      (withdrawal.txCharge ?? 0) +
+      (withdrawal.wPool ?? 0)
+    ).toFixed(2);
+  
+    // Convert numeric fields to string before using `.includes()`
+    const amountStr = withdrawal.amount?.toFixed(2) || "";
+    const txChargeStr = withdrawal.txCharge?.toFixed(2) || "";
+  
+    // Format date for searching
+    const createdAtStr = new Date(withdrawal.createdAt).toLocaleDateString();
+  
+    return (
+      totalAmount.includes(searchTerm) ||  // Search in displayed total
+      amountStr.includes(searchTerm) ||  // Search in amount
+      txChargeStr.includes(searchTerm) ||  // Search in txCharge
+      statusText.includes(searchLower) || // Search in status text
+      withdrawal.status.toString() === searchTerm || // Exact number match on status
+      withdrawal.uCode?.username?.toLowerCase().includes(searchLower) ||
+      withdrawal.uCode?.name?.toLowerCase().includes(searchLower) ||
+      withdrawal.walletType.toLowerCase().includes(searchLower) ||
+      withdrawal.txType.toLowerCase().includes(searchLower) ||
+      withdrawal.remark.toLowerCase().includes(searchLower) ||
+      createdAtStr.includes(searchTerm) // Search in formatted date
+    );
+  });
+
 
   // Paginate Data
   const offset = currentPage * itemsPerPage;
@@ -54,6 +93,8 @@ const WithdrawalPending: React.FC = () => {
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected);
   };
+
+  console.log("withdrawals",withdrawals)
   return (
     <div>
       <Breadcrumb pageName="Pending Withdrwals" />
@@ -105,14 +146,14 @@ const WithdrawalPending: React.FC = () => {
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Tx Charge
                 </th>
+                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  Withdrawal pool
+                </th>
                 <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Payable Amount
                 </th>
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Usd
-                </th>
-                <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Account Details
+                  TDS
                 </th>
                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Status
@@ -166,12 +207,17 @@ const WithdrawalPending: React.FC = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.txCharge}
+                        ${withdrawal.txCharge}
                       </h5>
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.amount}
+                        {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
+                      </h5>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <h5 className="font-medium text-black dark:text-white">
+                        ${withdrawal.amount}
                       </h5>
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
@@ -179,12 +225,6 @@ const WithdrawalPending: React.FC = () => {
                         {withdrawal.tds || '0'}
                       </h5>
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.accountDetails || 'N/A'}
-                      </h5>
-                    </td>
-
                     <td
                       className={`
                       rounded-md font-semibold text-start border-b border-[#eee] py-5 px-4 dark:border-strokedark

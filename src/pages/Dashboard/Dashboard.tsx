@@ -90,6 +90,9 @@ const Dashboard: React.FC = () => {
   //   totalFreeMachines,
   //   totalOccupiedMachines,
   // ]);
+
+  console.log("cookie",document.cookie);
+  
   return (
     <>
       {/* {isLoading ? (

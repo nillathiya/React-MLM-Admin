@@ -1,453 +1,77 @@
-import React, { useState } from 'react';
-import { ICONS } from '../../constants';
-import Icon from '../../components/Icons/Icon';
-import Loader from '../../common/Loader';
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import SearchInput from '../../common/Search/SearchInput';
-import Pagination from '../../common/Pagination/Pagination';
+import React, { useEffect, useRef, useState } from "react";
+import DataTable from "datatables.net-react";
+import DT from "datatables.net-dt";
+import "datatables.net-select-dt";
+import "datatables.net-responsive-dt";
 
-interface ToggleStatusLoadingData {
-  id: string | null;
-  name: string | null;
-}
+// Tell the React wrapper to use the DataTables instance
+DataTable.use(DT);
+// import "datatables.net-dt/css/jquery.dataTables.css";
+// import "datatables.net-select-dt/css/select.dataTables.css";
+// import "datatables.net-responsive-dt/css/responsive.dataTables.css";
 
-interface ToggleStatusFormData {
-  accountStatus?: { blockStatus?: boolean; isActive?: boolean };
-  adminRegisterStatus?: boolean;
-  emailVerification?: { isVerified: boolean };
-}
+function AllUsers() {
+  const [tableData, setTableData] = useState<string[][]>([
+    ["Tiger Nixon", "System Architect", "Edinburgh", "61", "2011/04/25", "$320,800"],
+    ["Garrett Winters", "Accountant", "Tokyo", "63", "2011/07/25", "$170,750"],
+    ["Ashton Cox", "Junior Technical Author", "San Francisco", "66", "2009/01/12", "$86,000"],
+    ["Cedric Kelly", "Senior Javascript Developer", "Edinburgh", "22", "2012/03/29", "$433,060"],
+  ]);
 
-const AllUsers: React.FC = () => {
-  const [toggleData, setToggleData] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [toggleStatusLoadingData, setToggleStatusLoadingData] =
-    useState<ToggleStatusLoadingData>({
-      id: null,
-      name: null,
-    });
-  const handleToggleChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    userId: string,
-    currentStatus: boolean,
-  ) => {};
+  const tableRef = useRef<any>(null);
 
-  function handleEditClick(_id: any): void {
-    throw new Error('Function not implemented.');
-  }
+  useEffect(() => {
+    if (tableRef.current) {
+      const dt = tableRef.current.dt();
+      console.log("Page info:", dt.page.info());
+    }
+  }, []);
 
-  function handleRequestImpersonationToken(_id: any) {
-    throw new Error('Function not implemented.');
-  }
-
-  function handleMachineClick(_id: any) {
-    throw new Error('Function not implemented.');
-  }
-
-  // filter table data
-  const [searchTerm, setSearchTerm] = useState('');
-
-  // filter data
-  const filteredData = users.filter(
-    (item) =>
-      item.Userid.includes(searchTerm) ||
-      item.fCode.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.amount.includes(searchTerm) ||
-      item.status.includes(searchTerm) ||
-      item.replay.includes(searchTerm) ||
-      item.walletType.includes(searchTerm),
-  );
-
-  // pagoination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  const options = {
+    paging: true,
+    ordering: true,
+    info: true,
+    responsive: true,
+    select: true,
+    searching: true,
+    dom: "lfrtip",
+  };
 
   return (
-    <>
-      <Breadcrumb pageName="All Users" />
-      <SearchInput
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <div>
-        <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-          <div
-            className="machine-total"
-            style={{ justifyContent: 'end', marginBottom: '5px' }}
-          >
-            | All Users: ({users.length})
-          </div>
-          <div className="max-w-full overflow-x-auto custom-scrollbar">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  <th className="py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    ID
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Action
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Name
-                  </th>
-                  <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    USER NAME
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Country
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Mobile
-                  </th>
-                  <th className="py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Email
-                  </th>
-                  <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Join Date
-                  </th>
-                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Total Machines
-                  </th>
-                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Block Status
-                  </th>
-                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Active Status
-                  </th>
-                  <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Register Status
-                  </th>
-                  <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                    Email verify status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedData.length > 0 ? (
-                  paginatedData.map((user: any, index: number) => (
-                    <tr key={user._id}>
-                      <td>{index + 1}</td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <div className="flex items-center space-x-3.5">
-                          <button
-                            className="hover:text-white hover:bg-[#0ba4d8] bg-[#11cdef] px-2 py-1 rounded-md text-black"
-                            onClick={() => handleEditClick(user._id)}
-                          >
-                            <Icon Icon={ICONS.EDITPAN} className="w-5 h-5" />
-                          </button>
-                          <button className="hover:text-white hover:bg-[#0ba4d8] bg-[#11cdef] px-2 py-1 rounded-md text-black">
-                            <Icon Icon={ICONS.DOWNLOAD} className="w-5 h-5" />
-                          </button>
-                          <button
-                            className="hover:text-white hover:bg-[#0ba4d8] bg-[#11cdef] px-3 py-1 rounded-md text-black"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleRequestImpersonationToken(user._id);
-                            }}
-                          >
-                            LOGIN
-                          </button>
-
-                          <button
-                            className="hover:text-white hover:bg-[#0ba4d8] bg-[#11cdef] px-3 py-1 rounded-md text-black"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleMachineClick(user._id);
-                            }}
-                          >
-                            MACHINE
-                          </button>
-                        </div>
-                      </td>
-
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <h5 className="font-medium text-black dark:text-white">
-                          {user.name}
-                        </h5>
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`w-3 h-3 rounded-full ${
-                              toggleData[index]?.accountStatus?.isActive
-                                ? 'bg-green-500'
-                                : 'bg-red-500'
-                            }`}
-                          ></span>
-                          <h5 className="font-medium text-black dark:text-white">
-                            {user.username}
-                          </h5>
-                        </div>
-                      </td>
-
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <h5 className="font-medium text-black dark:text-white">
-                          {user?.address?.country}
-                        </h5>
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <h5 className="font-medium text-black dark:text-white">
-                          {user.mobile}
-                        </h5>
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <h5 className="font-medium text-black dark:text-white">
-                          {user.email}
-                        </h5>
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <p className="text-black dark:text-white">
-                          {
-                            new Date(user?.createdAt)
-                              .toISOString()
-                              .split('T')[0]
-                          }
-                        </p>
-                      </td>
-                      <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        <p className="text-black dark:text-white">
-                          {user.userTotalMachine
-                            ? user.userTotalMachine?.activeMachines +
-                              user.userTotalMachine?.inactiveMachines
-                            : 0}
-                        </p>
-                      </td>
-                      {/* Block status */}
-                      <td className="border-b border-[#eee] py-5 px-2 dark:border-strokedark">
-                        <label className="flex cursor-pointer items-center">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              name="blockStatus"
-                              checked={
-                                toggleData[index]?.accountStatus
-                                  ?.blockStatus === true
-                              }
-                              onChange={(e) =>
-                                handleToggleChange(
-                                  e,
-                                  user._id,
-                                  toggleData[index]?.accountStatus?.blockStatus,
-                                )
-                              }
-                              className="sr-only"
-                            />
-                            {toggleStatusLoadingData.id === user._id &&
-                            toggleStatusLoadingData.name === 'blockStatus' ? (
-                              <div className="flex w-10 mx-auto">
-                                <Loader
-                                  loader="ClipLoader"
-                                  size={20}
-                                  color="blue"
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <div
-                                  className={`block w-14 h-8 rounded-full ${
-                                    toggleData[index]?.accountStatus
-                                      ?.blockStatus === true
-                                      ? 'bg-green-500'
-                                      : 'bg-gray-500'
-                                  }`}
-                                ></div>
-                                <div
-                                  className={`absolute left-1 top-1 w-6 h-6 rounded-full bg-white transition ${
-                                    toggleData[index]?.accountStatus
-                                      ?.blockStatus === true
-                                      ? 'translate-x-full bg-primary'
-                                      : ''
-                                  }`}
-                                ></div>
-                              </>
-                            )}
-                          </div>
-                        </label>
-                      </td>
-                      {/* Active Status */}
-                      <td className="border-b border-[#eee] py-5 px-2 dark:border-strokedark">
-                        <label className="flex cursor-pointer items-center">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              name="isActive"
-                              checked={
-                                toggleData[index]?.accountStatus?.isActive ===
-                                true
-                              } // Status 1 = On, 0 = Off
-                              onChange={(e) =>
-                                handleToggleChange(
-                                  e,
-                                  user._id,
-                                  toggleData[index]?.accountStatus?.isActive,
-                                )
-                              }
-                              className="sr-only"
-                            />
-                            {toggleStatusLoadingData.id === user._id &&
-                            toggleStatusLoadingData.name === 'isActive' ? (
-                              <div className="flex w-10 mx-auto">
-                                <Loader
-                                  loader="ClipLoader"
-                                  size={20}
-                                  color="blue"
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <div
-                                  className={`block w-14 h-8 rounded-full ${
-                                    toggleData[index]?.accountStatus
-                                      ?.isActive === true
-                                      ? 'bg-green-500'
-                                      : 'bg-gray-500'
-                                  }`}
-                                ></div>
-                                <div
-                                  className={`absolute left-1 top-1 w-6 h-6 rounded-full bg-white transition ${
-                                    toggleData[index]?.accountStatus
-                                      ?.isActive === true
-                                      ? 'translate-x-full bg-primary'
-                                      : ''
-                                  }`}
-                                ></div>
-                              </>
-                            )}
-                          </div>
-                        </label>
-                      </td>
-                      {/* Register status */}
-                      <td className="border-b border-[#eee] py-5 px-2 dark:border-strokedark">
-                        <label className="flex cursor-pointer items-center">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              name="adminRegisterStatus"
-                              checked={
-                                toggleData[index]?.adminRegisterStatus === true
-                              }
-                              onChange={(e) =>
-                                handleToggleChange(
-                                  e,
-                                  user._id,
-                                  toggleData[index]?.adminRegisterStatus,
-                                )
-                              }
-                              className="sr-only"
-                            />
-                            {toggleStatusLoadingData.id === user._id &&
-                            toggleStatusLoadingData.name ===
-                              'adminRegisterStatus' ? (
-                              <div className="flex w-10 mx-auto">
-                                <Loader
-                                  loader="ClipLoader"
-                                  size={20}
-                                  color="blue"
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <div
-                                  className={`block w-14 h-8 rounded-full ${
-                                    toggleData[index]?.adminRegisterStatus ===
-                                    true
-                                      ? 'bg-green-500'
-                                      : 'bg-gray-500'
-                                  }`}
-                                ></div>
-                                <div
-                                  className={`absolute left-1 top-1 w-6 h-6 rounded-full bg-white transition ${
-                                    toggleData[index]?.adminRegisterStatus ===
-                                    true
-                                      ? 'translate-x-full bg-primary'
-                                      : ''
-                                  }`}
-                                ></div>
-                              </>
-                            )}
-                          </div>
-                        </label>
-                      </td>
-                      {/* Email verify status */}
-                      <td className="border-b border-[#eee] py-5 px-2 dark:border-strokedark">
-                        <label className="flex cursor-pointer items-center">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              name="isVerified"
-                              checked={
-                                toggleData[index]?.emailVerification
-                                  .isVerified === true
-                              }
-                              onChange={(e) =>
-                                handleToggleChange(
-                                  e,
-                                  user._id,
-                                  toggleData[index]?.emailVerification
-                                    .isVerified,
-                                )
-                              }
-                              className="sr-only"
-                            />
-                            {toggleStatusLoadingData.id === user._id &&
-                            toggleStatusLoadingData.name === 'isVerified' ? (
-                              <div className="flex w-10 mx-auto">
-                                <Loader
-                                  loader="ClipLoader"
-                                  size={20}
-                                  color="blue"
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <div
-                                  className={`block w-14 h-8 rounded-full ${
-                                    toggleData[index]?.emailVerification
-                                      .isVerified === true
-                                      ? 'bg-green-500'
-                                      : 'bg-gray-500'
-                                  }`}
-                                ></div>
-                                <div
-                                  className={`absolute left-1 top-1 w-6 h-6 rounded-full bg-white transition ${
-                                    toggleData[index]?.emailVerification
-                                      .isVerified === true
-                                      ? 'translate-x-full bg-primary'
-                                      : ''
-                                  }`}
-                                ></div>
-                              </>
-                            )}
-                          </div>
-                        </label>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={8}>No data available</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        )}
+    <div className="p-6 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">All Users</h1>
+      <div className="card-body overflow-x-auto">
+        <DataTable
+          data={tableData}
+          ref={tableRef}
+          options={options}
+          className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg"
+        >
+          <thead>
+            <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+              <th className="py-3 px-4 text-left">Name</th>
+              <th className="py-3 px-4 text-left">Job Title</th>
+              <th className="py-3 px-4 text-left">Office</th>
+              <th className="py-3 px-4 text-left">Age</th>
+              <th className="py-3 px-4 text-left">Start Date</th>
+              <th className="py-3 px-4 text-left">Salary</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-300 dark:divide-gray-700">
+            {tableData.map((row, index) => (
+              <tr key={index} className="hover:bg-gray-100 dark:hover:bg-gray-800">
+                {row.map((cell, cellIndex) => (
+                  <td key={cellIndex} className="py-3 px-4 text-gray-800 dark:text-gray-300">
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
       </div>
-    </>
+    </div>
   );
-};
+}
 
 export default AllUsers;
