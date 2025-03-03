@@ -4,7 +4,7 @@ import authReducer from '../features/auth/authSlice';
 import storage from 'redux-persist/lib/storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import withdrawalReducer from '../features/withdrawal/withdrawalSlice';
-
+import userReducer from "../features/user/userSlice";
 const authPersistConfig = {
   key: 'auth',
   storage,
@@ -18,6 +18,7 @@ export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     withdrawals: withdrawalReducer,
+    user:userReducer,
   },
 });
 

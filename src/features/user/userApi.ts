@@ -16,38 +16,15 @@ export const addUser = async (formData: any): Promise<any> => {
   }
 };
 
-export const getAllUser = async ({
-  searchterm,
-  isActive,
-  blockStatus,
-  limit,
-  page,
-  includeTotalMachine,
-}: {
-  searchterm?: string;
-  isActive?: number;
-  blockStatus?: number;
-  limit?: number;
-  page?: number;
-  includeTotalMachine?: string;
-}): Promise<any> => {
+export const getAllUser = async (): Promise<any> => {
   try {
-    const response = await apiClient.post(
-      ROUTES.USER.GET_ALL(
-        searchterm,
-        isActive,
-        blockStatus,
-        limit,
-        page,
-        includeTotalMachine,
-      ),
-    );
+    const response = await apiClient.post(ROUTES.USER.GET_ALL);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       throw new Error(error.response?.data?.message || 'An error occurred.');
     }
-    throw new Error('User Add failed. Please try again later.');
+    throw new Error('Get All users failed. Please try again later.');
   }
 };
 

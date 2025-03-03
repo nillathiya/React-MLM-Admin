@@ -41,6 +41,9 @@ interface Routes {
   WITHDRAWAL: {
     GET_ALL: string;
   };
+  USER:{
+    GET_ALL:string;
+  }
 }
 
 // Define and export the ROUTES object
@@ -123,4 +126,7 @@ export const ROUTES: Routes = {
   WITHDRAWAL: {
     GET_ALL: `${API_URL}/api/withdrawal/get-all-transactions`,
   },
+  USER:{
+    GET_ALL:`${API_URL}/api/user/get-all`
+  }
 };

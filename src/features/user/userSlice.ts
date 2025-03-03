@@ -22,7 +22,7 @@ const initialState: UserState = {
 
 // Async Thunks
 export const addUserAsync = createAsyncThunk(
-  'users/addUserAsync',
+  'user/addUserAsync',
   async (formData: FranchiseData, { rejectWithValue }) => {
     try {
       const data = await addUser(formData);
@@ -36,20 +36,10 @@ export const addUserAsync = createAsyncThunk(
 );
 
 export const getAllUserAsync = createAsyncThunk(
-  'users/getAllUser',
-  async (
-    params: {
-      searchterm?: string;
-      isActive?: number;
-      blockStatus?: number;
-      limit?: number;
-      page?: number;
-      includeTotalMachine?: string;
-    },
-    { rejectWithValue },
-  ) => {
+  'user/getAllUser',
+  async (_, { rejectWithValue }) => {
     try {
-      const data = await getAllUser(params);
+      const data = await getAllUser();
       return data;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -61,7 +51,7 @@ export const getAllUserAsync = createAsyncThunk(
 );
 
 export const getByIdAsync = createAsyncThunk(
-  'users/getById',
+  'user/getById',
   async (id: string, { rejectWithValue }) => {
     try {
       const data = await getById(id);
@@ -76,7 +66,7 @@ export const getByIdAsync = createAsyncThunk(
   },
 );
 export const updateUserAsync = createAsyncThunk(
-  'users/updateuser',
+  'user/updateuser',
   async (params: { id: string; formData: any }, { rejectWithValue }) => {
     const { id, formData } = params;
     try {
@@ -93,7 +83,7 @@ export const updateUserAsync = createAsyncThunk(
 );
 
 const userSlice = createSlice({
-  name: 'users',
+  name: 'user',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -116,7 +106,6 @@ const userSlice = createSlice({
       .addCase(getAllUserAsync.fulfilled, (state, action) => {
         state.isLoading = false;
         state.users = action.payload.data;
-        state.pagination = action.payload.pagination || null;
       })
       .addCase(getAllUserAsync.rejected, (state) => {
         state.isLoading = false;
