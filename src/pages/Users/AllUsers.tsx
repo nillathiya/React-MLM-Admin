@@ -3,7 +3,6 @@ import $ from 'jquery';
 import 'datatables.net';
 import 'datatables.net-dt';
 import 'datatables.net-select-dt';
-// import 'datatables.net-responsive-dt';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import Skeleton from '../../components/ui/Skeleton/Skeleton';
 import toast from 'react-hot-toast';
@@ -12,6 +11,7 @@ import { AppDispatch, RootState } from '../../store/store';
 import { getAllUserAsync } from '../../features/user/userSlice';
 import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
 import { formatDate } from '../../utils/dateUtils';
+import { useNavigate } from 'react-router-dom';
 
 function AllUsers() {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
@@ -46,6 +46,11 @@ function AllUsers() {
       };
     }
   }, [users]);
+  const navigate = useNavigate();
+
+  const handleEdit = (id: number) => {
+    navigate(`/users/edituser/${id}`); // Pass ID as a URL param
+  };
   return (
     <>
       <Breadcrumb pageName="All Users" />
@@ -101,7 +106,10 @@ function AllUsers() {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td className="flex gap-2">
-                      <button className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                      <button
+                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                        onClick={() => handleEdit(123)}
+                      >
                         Edit
                       </button>
                       <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
