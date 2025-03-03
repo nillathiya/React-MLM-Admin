@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { getAllUserAsync } from '../../features/user/userSlice';
 import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import { formatDate } from '../../utils/dateUtils';
 
 function AllUsers() {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
@@ -99,18 +100,38 @@ function AllUsers() {
                 users.map((user, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>Edit</td>
+                    <td className="flex gap-2">
+                      <button className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                        Edit
+                      </button>
+                      <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                        Login
+                      </button>
+                    </td>
+
                     <td>{user.name || 'N/A'}</td>
                     <td>{user.username || 'N/A'}</td>
                     <td>{user.email || 'N/A'}</td>
                     <td>{user.mobile || 'N/A'}</td>
                     <td>{user.package || 'N/A'}</td>
                     <td>{user.rank || 'N/A'}</td>
-                    <td>{user.address || 'N/A'}</td>
-                    <td>{user.joinDate || 'N/A'}</td>
-                    <td>{user.isActive ? 'Active' : 'Inactive'}</td>
+                    <td>{`${user.address?.line1 || ''} ${
+                      user.address?.line2 || ''
+                    }`}</td>
+                    <td>{formatDate(user.createdAt)}</td>
+                    <td>
+                      {user.accountStatus.activeStatus == 1
+                        ? 'Active'
+                        : 'Inactive'}
+                    </td>
                     <td>{user.isBlocked ? 'Blocked' : 'Unblocked'}</td>
-                    <td>{user.sponsor || 'N/A'}</td>
+                    <td>
+                      {user.uSponsor?.username
+                        ? user.uSponsor.name
+                          ? `${user.uSponsor.username} (${user.uSponsor.name})`
+                          : user.uSponsor.username
+                        : 'N/A'}
+                    </td>
                   </tr>
                 ))
               )}
