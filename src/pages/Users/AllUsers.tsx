@@ -36,7 +36,7 @@ function AllUsers() {
       'email',
       'mobile',
       'my pakage',
-      'my rank', 
+      'my rank',
       'user address',
       'join Date',
       'Active status',
@@ -67,7 +67,7 @@ function AllUsers() {
   return (
     <>
       <Breadcrumb pageName="All Users" />
-      <div className="p-6 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-md">
+      <div className="table-bg">
         <div className="card-body">
           <DataTable
             data={tableData}

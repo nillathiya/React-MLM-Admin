@@ -9,7 +9,9 @@
 }
 
 @layer components {
-  
+  .table-bg {
+    @apply dark:bg-boxdark p-6 bg-white rounded-lg shadow-md;
+  }
 }
 
 @layer utilities {
