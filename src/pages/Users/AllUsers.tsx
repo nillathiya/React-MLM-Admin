@@ -14,29 +14,34 @@ DataTable.use(DT);
 function AllUsers() {
   const [tableData, setTableData] = useState<string[][]>([
     [
-      'Tiger Nixon',
-      'System Architect',
-      'Edinburgh',
-      '61',
-      '2011/04/25',
-      '$320,800',
-    ],
-    ['Garrett Winters', 'Accountant', 'Tokyo', '63', '2011/07/25', '$170,750'],
-    [
-      'Ashton Cox',
-      'Junior Technical Author',
-      'San Francisco',
-      '66',
-      '2009/01/12',
-      '$86,000',
+      '1',
+      'Action',
+      'Name',
+      'username',
+      'email',
+      'mobile',
+      'my pakage',
+      'my rank',
+      'user address',
+      'join Date',
+      'Active status',
+      'block status',
+      'sponser',
     ],
     [
-      'Cedric Kelly',
-      'Senior Javascript Developer',
-      'Edinburgh',
-      '22',
-      '2012/03/29',
-      '$433,060',
+      '1',
+      'Action',
+      'Name',
+      'username',
+      'email',
+      'mobile',
+      'my pakage',
+      'my rank', 
+      'user address',
+      'join Date',
+      'Active status',
+      'block status',
+      'sponser',
     ],
   ]);
 
@@ -63,7 +68,7 @@ function AllUsers() {
     <>
       <Breadcrumb pageName="All Users" />
       <div className="p-6 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-md">
-        <div className="card-body overflow-x-auto">
+        <div className="card-body">
           <DataTable
             data={tableData}
             ref={tableRef}
@@ -72,12 +77,19 @@ function AllUsers() {
           >
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <th className="py-3 px-4 text-left">ID</th>
+                <th className="py-3 px-4 text-left">Action</th>
                 <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Job Title</th>
-                <th className="py-3 px-4 text-left">Office</th>
-                <th className="py-3 px-4 text-left">Age</th>
-                <th className="py-3 px-4 text-left">Start Date</th>
-                <th className="py-3 px-4 text-left">Salary</th>
+                <th className="py-3 px-4 text-left">Username</th>
+                <th className="py-3 px-4 text-left">Email</th>
+                <th className="py-3 px-4 text-left">Mobile</th>
+                <th className="py-3 px-4 text-left">My Package</th>
+                <th className="py-3 px-4 text-left">My Rank</th>
+                <th className="py-3 px-4 text-left">User Address</th>
+                <th className="py-3 px-4 text-left">Join Date</th>
+                <th className="py-3 px-4 text-left">Active Status</th>
+                <th className="py-3 px-4 text-left">Block Status</th>
+                <th className="py-3 px-4 text-left">Sponsor</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300 dark:divide-gray-700">

@@ -2057,6 +2057,9 @@ label {
     width: 100%;
     max-width: 44%;
   }
+  td {
+    font-size: 16px !important;
+  }
 }
 .dt-info {
   display: flex !important;

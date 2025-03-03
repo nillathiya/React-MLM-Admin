@@ -13,30 +13,7 @@ interface ToggleStatusLoadingData {
 }
 
 const Member: React.FC = () => {
-  const [toggleData, setToggleData] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
-
-  const [toggleStatusLoadingData, setToggleStatusLoadingData] =
-    useState<ToggleStatusLoadingData>({
-      id: null,
-      name: null,
-    });
-  const handleToggleChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    userId: string,
-    currentStatus: boolean,
-  ) => {};
-  function handleEditClick(_id: any): void {
-    throw new Error('Function not implemented.');
-  }
-
-  function handleRequestImpersonationToken(_id: any) {
-    throw new Error('Function not implemented.');
-  }
-
-  function handleMachineClick(_id: any) {
-    throw new Error('Function not implemented.');
-  }
 
   // filter table data
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,14 +95,6 @@ const Member: React.FC = () => {
             </tbody>
           </table>
         </div>
-        {/* Pagination Component */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        )}
       </div>
     </>
   );
