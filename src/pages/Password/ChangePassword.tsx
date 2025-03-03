@@ -71,7 +71,7 @@ const ChangePassword: React.FC = () => {
                 value={formData.oldPassword}
                 onChange={handleChange}
                 placeholder="Enter Old Password"
-                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent mt-2 py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 disabled={isSubmitting}
               />
             </div>
@@ -87,7 +87,7 @@ const ChangePassword: React.FC = () => {
                 value={formData.newPassword}
                 onChange={handleChange}
                 placeholder="Enter New Password"
-                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent mt-2  py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 disabled={isSubmitting}
               />
             </div>
@@ -103,7 +103,7 @@ const ChangePassword: React.FC = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Enter Confirm Password"
-                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent mt-2 py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 disabled={isSubmitting}
               />
             </div>
@@ -111,7 +111,7 @@ const ChangePassword: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className={`flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90 ${
+              className={`flex w-full justify-center rounded bg-primary mt-2 p-3 font-medium text-gray hover:bg-opacity-90 ${
                 isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={isSubmitting}

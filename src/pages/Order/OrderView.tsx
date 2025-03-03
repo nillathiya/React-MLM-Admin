@@ -17,9 +17,9 @@ const OrderView = () => {
       <div className="container">
         <div className="order-layout">
           <div className="order-main">
-            <div className="card">
-              <h2 style={{ fontSize: '20px' }}>Order Detail</h2>
-              <table className="table table-striped">
+            <div className="card rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+              <h2 style={{ fontSize: '20px',fontWeight:'700' }}>Order Detail</h2>
+              <table className="table ">
                 <tbody>
                   <tr>
                     <th>User</th>
@@ -68,7 +68,7 @@ const OrderView = () => {
             </div>
 
             <div className="card rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-              <h2 style={{ fontSize: '20px' }}>Order Products</h2>
+              <h2 style={{ fontSize: '20px',fontWeight:'700' }}>Order Products</h2>
               <div className="table-responsive">
                 <table className="table">
                   <thead>
@@ -98,7 +98,7 @@ const OrderView = () => {
 
           <div className="order-update">
             <div className="card rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-              <h2 style={{ fontSize: '20px', marginBottom: '10px' }}>
+              <h2 style={{ fontSize: '20px', marginBottom: '10px',fontWeight:'700' }}>
                 Update Order
               </h2>
               <form onSubmit={handleSave}>
