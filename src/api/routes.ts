@@ -43,6 +43,9 @@ interface Routes {
   };
   USER:{
     GET_ALL:string;
+  },
+  ORDER:{
+    GET_ALL:string,
   }
 }
 
@@ -128,5 +131,8 @@ export const ROUTES: Routes = {
   },
   USER:{
     GET_ALL:`${API_URL}/api/user/get-all`
+  },
+  ORDER:{
+    GET_ALL:`${API_URL}/api/orders/get-all`
   }
 };

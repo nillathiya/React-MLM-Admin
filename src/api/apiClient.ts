@@ -5,9 +5,10 @@ export const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL as string,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FjMzAzMDBjMjQ4MDZjZmVkZGQyY2MiLCJlbWFpbCI6ImtyaXNoQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoia3Jpc2giLCJyb2xlIjoxLCJzdGF0dXMiOjEsImlhdCI6MTc0MDcxNzU2NCwiZXhwIjoxNzQwODAzOTY0fQ.SsKHE8m40eoRawefEM2M4jxVJfqqyxq3kMI2n9ssTlE'
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FjMzAzMDBjMjQ4MDZjZmVkZGQyY2MiLCJlbWFpbCI6ImtyaXNoQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoia3Jpc2giLCJyb2xlIjoxLCJzdGF0dXMiOjEsImlhdCI6MTc0MTAwMzk2NSwiZXhwIjoxNzQxMDkwMzY1fQ.cGcpym_dgW9IZsI_ObIp-7dWnc2fIfPMFQh5b38dW9o',
   },
-  withCredentials: true,
+  // withCredentials: true,
 });
 
 // Add response interceptor to the apiClient instance
@@ -19,7 +20,7 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     // Handle 401 Unauthorized errors (e.g., session expiration)
     if (error.response && error.response.status === 401) {
-      console.log("unauthorized access")
+      console.log('unauthorized access');
       // alert('Your session has expired. Please log in again.');
 
       try {
@@ -28,10 +29,8 @@ apiClient.interceptors.response.use(
         // const { adminLogoutAsync, clearUser } = await import(
         //   '../features/auth/authSlice'
         // );
-
         // await store.dispatch(adminLogoutAsync());
         // await store.dispatch(clearUser());
-
         // window.location.href = '/';
       } catch (err) {
         console.error('Error during 401 handling:', err);

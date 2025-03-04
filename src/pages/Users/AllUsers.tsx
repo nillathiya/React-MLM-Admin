@@ -114,10 +114,8 @@ function AllUsers() {
                     <td>{user.email || 'N/A'}</td>
                     <td>{user.mobile || 'N/A'}</td>
                     <td>{user.package || 'N/A'}</td>
-                    <td>{user.rank || 'N/A'}</td>
-                    <td>{`${user.address?.line1 || ''} ${
-                      user.address?.line2 || ''
-                    }`}</td>
+                    <td>{user.myRank || 'N/A'}</td>
+                    <td>{user.walletAddress || 'N/A'}</td>
                     <td>{formatDate(user.createdAt)}</td>
                     <td>
                       {user.accountStatus.activeStatus == 1
