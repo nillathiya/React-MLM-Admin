@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { FranchiseData, Pagination } from '../../types';
+import { Pagination } from '../../types';
 import { addUser, getAllUser, getById, updateUser } from './userApi';
 
 interface UserState {
@@ -23,7 +23,7 @@ const initialState: UserState = {
 // Async Thunks
 export const addUserAsync = createAsyncThunk(
   'user/addUserAsync',
-  async (formData: FranchiseData, { rejectWithValue }) => {
+  async (formData: any, { rejectWithValue }) => {
     try {
       const data = await addUser(formData);
       return data;

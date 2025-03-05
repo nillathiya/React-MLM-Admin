@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import $ from 'jquery';
 import 'datatables.net';
 import 'datatables.net-dt';
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 function AllUsers() {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
+  const { orders } = useSelector((state: RootState) => state.orders);
   const dispatch = useDispatch<AppDispatch>();
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -30,26 +31,41 @@ function AllUsers() {
 
   useEffect(() => {
     if (tableRef.current && !isLoading && users.length > 0) {
-      const table = $(tableRef.current).DataTable({
+      const existingTable = ($.fn as any).DataTable.isDataTable(
+        tableRef.current,
+      ); // Cast $.fn to 'any'
+
+      if (existingTable) {
+        $(tableRef.current).DataTable().destroy(); // Destroy existing DataTable
+      }
+
+      $(tableRef.current).DataTable({
         paging: true,
         ordering: true,
         info: true,
         responsive: true,
         searching: true,
         pageLength: DEFAULT_PER_PAGE_ITEMS,
-        // select: true as any,
-        // destroy: true, // Ensure it gets destroyed before reinitialization
       });
-
-      return () => {
-        table.destroy(); // Cleanup DataTable when unmounting
-      };
     }
   }, [users]);
+
+  const updatedUsers = useMemo(() => {
+    return users.map((user) => {
+      const userId = user._id;
+      const userOrders = orders.filter((or) => or.customerId._id === userId);
+      const totalInvestment = userOrders.reduce((acc, or) => acc + or.bv, 0);
+      return {
+        ...user,
+        package: totalInvestment,
+      };
+    });
+  }, [users, orders]);
+
   const navigate = useNavigate();
 
   const handleEdit = (id: number) => {
-    navigate(`/users/edituser/${id}`); // Pass ID as a URL param
+    navigate(`/users/edituser/${id}`);
   };
   return (
     <>
@@ -64,6 +80,7 @@ function AllUsers() {
               <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                 <th>ID</th>
                 <th>Action</th>
+                <th>Sponsor</th>
                 <th>Name</th>
                 <th>Username</th>
                 <th>Email</th>
@@ -74,7 +91,6 @@ function AllUsers() {
                 <th>Join Date</th>
                 <th>Active Status</th>
                 <th>Block Status</th>
-                <th>Sponsor</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +108,7 @@ function AllUsers() {
                         ))}
                     </tr>
                   ))
-              ) : users.length === 0 ? (
+              ) : updatedUsers.length === 0 ? (
                 <tr>
                   <td
                     colSpan={13}
@@ -102,41 +118,72 @@ function AllUsers() {
                   </td>
                 </tr>
               ) : (
-                users.map((user, index) => (
+                updatedUsers.map((user, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td className="flex gap-2">
-                      <button
-                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                        onClick={() => handleEdit(123)}
-                      >
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {index + 1}
+                    </td>
+                    <td className="flex gap-2 ">
+                      <button className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                         Edit
                       </button>
                       <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
                         Login
                       </button>
                     </td>
-
-                    <td>{user.name || 'N/A'}</td>
-                    <td>{user.username || 'N/A'}</td>
-                    <td>{user.email || 'N/A'}</td>
-                    <td>{user.mobile || 'N/A'}</td>
-                    <td>{user.package || 'N/A'}</td>
-                    <td>{user.myRank || 'N/A'}</td>
-                    <td>{user.walletAddress || 'N/A'}</td>
-                    <td>{formatDate(user.createdAt)}</td>
-                    <td>
-                      {user.accountStatus.activeStatus == 1
-                        ? 'Active'
-                        : 'Inactive'}
-                    </td>
-                    <td>{user.isBlocked ? 'Blocked' : 'Unblocked'}</td>
-                    <td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
                       {user.uSponsor?.username
                         ? user.uSponsor.name
                           ? `${user.uSponsor.username} (${user.uSponsor.name})`
                           : user.uSponsor.username
                         : 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.name || 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.username || 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.email || 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.mobile || 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.package || 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.myRank || 'N/A'}
+                    </td>
+
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {user.walletAddress || 'N/A'}
+                    </td>
+                    <td className="!text-gray-800 dark:!text-gray-300">
+                      {formatDate(user.createdAt)}
+                    </td>
+                    <td
+                      className={`!font-semibold 
+                      ${
+                        user.accountStatus.activeStatus == 1
+                          ? '!text-green-600 dark:!text-green-400'
+                          : '!text-red-600 dark:!text-red-400'
+                      }`}
+                    >
+                      {user.accountStatus.activeStatus == 1
+                        ? 'Active'
+                        : 'Inactive'}
+                    </td>
+                    <td
+                      className={`!font-semibold 
+      ${
+        user.isBlocked
+          ? '!text-red-500 !dark:text-red-400'
+          : '!text-green-600 !dark:text-green-400'
+      }`}
+                    >
+                      {user.isBlocked ? 'Blocked' : 'Unblocked'}
                     </td>
                   </tr>
                 ))

@@ -140,12 +140,12 @@ const Order: React.FC = () => {
                     <td>${order.amount || 'N/A'}</td>
                     <td
                       className={`px-4 py-2 font-medium ${
-                        order.payOutStatus === 0
+                        order.status === 0
                           ? 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300'
                           : 'text-green-500 bg-green-100 dark:bg-green-900 dark:text-green-300'
                       } rounded-md`}
                     >
-                      {order.payOutStatus === 0 ? 'Pending' : 'Confirmed'}
+                      {order.status === 0 ? 'Pending' : 'Confirmed'}
                     </td>
 
                     <td>{formatDate(order.createdAt)}</td>

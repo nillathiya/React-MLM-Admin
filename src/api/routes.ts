@@ -41,12 +41,13 @@ interface Routes {
   WITHDRAWAL: {
     GET_ALL: string;
   };
-  USER:{
-    GET_ALL:string;
-  },
-  ORDER:{
-    GET_ALL:string,
-  }
+  USER: {
+    GET_ALL: string;
+  };
+  ORDER: {
+    GET_ALL: string;
+    GET_BY_ID: (orderId: string) => string;
+  };
 }
 
 // Define and export the ROUTES object
@@ -129,10 +130,11 @@ export const ROUTES: Routes = {
   WITHDRAWAL: {
     GET_ALL: `${API_URL}/api/withdrawal/get-all-transactions`,
   },
-  USER:{
-    GET_ALL:`${API_URL}/api/user/get-all`
+  USER: {
+    GET_ALL: `${API_URL}/api/user/get-all`,
   },
-  ORDER:{
-    GET_ALL:`${API_URL}/api/orders/get-all`
-  }
+  ORDER: {
+    GET_ALL: `${API_URL}/api/orders/get-all`,
+    GET_BY_ID: (orderId: string) => `${API_URL}/api/orders/get/${orderId}`,
+  },
 };
