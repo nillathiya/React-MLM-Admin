@@ -5,11 +5,12 @@ import {
   adminChangePassword,
   requestImpersonationToken,
 } from './authApi';
+import { AdminUser } from '../../types';
 
 // Define the AuthState interface
 interface AuthState {
   loading: boolean;
-  currentUser: object;
+  currentUser: AdminUser | null;
   errorMessage: string | null;
   isLoggedIn: boolean;
 }
@@ -21,7 +22,7 @@ export interface RootState {
 
 const initialState: AuthState = {
   loading: false,
-  currentUser: {},
+  currentUser: null,
   errorMessage: null,
   isLoggedIn: false,
 };
@@ -102,7 +103,7 @@ const authSlice = createSlice({
       state.isLoggedIn = true;
     },
     clearUser(state) {
-      state.currentUser = {};
+      state.currentUser = null;
       state.isLoggedIn = false;
       state.errorMessage = null;
       state.loading = false;
@@ -118,7 +119,7 @@ const authSlice = createSlice({
       .addCase(adminLoginAsync.fulfilled, (state, action) => {
         console.log('authSlice fulfilled', action.payload);
         state.loading = false;
-        state.currentUser = action.payload;
+        state.currentUser = action.payload.admin;
         state.isLoggedIn = true;
       })
       .addCase(adminLoginAsync.rejected, (state, action) => {
@@ -135,7 +136,7 @@ const authSlice = createSlice({
       .addCase(adminLogoutAsync.fulfilled, (state, action) => {
         console.log('authSlice fulfilled', action.payload);
         state.loading = false;
-        state.currentUser = {};
+        state.currentUser = null;
         state.isLoggedIn = false;
       })
       .addCase(adminLogoutAsync.rejected, (state, action) => {

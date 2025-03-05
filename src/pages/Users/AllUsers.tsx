@@ -12,6 +12,7 @@ import { getAllUserAsync } from '../../features/user/userSlice';
 import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
 import { formatDate } from '../../utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
+import { getAllOrdersAsync } from '../../features/order/orderSlice';
 
 function AllUsers() {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
@@ -23,6 +24,7 @@ function AllUsers() {
     (async () => {
       try {
         await dispatch(getAllUserAsync()).unwrap();
+        await dispatch(getAllOrdersAsync()).unwrap();
       } catch (error: any) {
         toast.error(error?.message || 'Server error');
       }
@@ -51,20 +53,24 @@ function AllUsers() {
   }, [users]);
 
   const updatedUsers = useMemo(() => {
-    return users.map((user) => {
-      const userId = user._id;
-      const userOrders = orders.filter((or) => or.customerId._id === userId);
-      const totalInvestment = userOrders.reduce((acc, or) => acc + or.bv, 0);
-      return {
-        ...user,
-        package: totalInvestment,
-      };
-    });
+    if (orders.length > 0 && users.length > 0) {
+      return users.map((user) => {
+        const userId = user._id;
+        const userOrders = orders.filter((or) => or.customerId?._id === userId);
+        const totalInvestment = userOrders.reduce((acc, or) => acc + or.bv, 0);
+        return {
+          ...user,
+          package: totalInvestment,
+        };
+      });
+    }
+    return [];
   }, [users, orders]);
 
+  console.log('updatedUsers', updatedUsers);
   const navigate = useNavigate();
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     navigate(`/users/edituser/${id}`);
   };
   return (
@@ -124,7 +130,10 @@ function AllUsers() {
                       {index + 1}
                     </td>
                     <td className="flex gap-2 ">
-                      <button className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                      <button
+                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                        onClick={() => handleEdit(user._id)}
+                      >
                         Edit
                       </button>
                       <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
