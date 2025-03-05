@@ -1,100 +1,156 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import '../../../src/pages/Order/order.css';
 import { useNavigate } from 'react-router-dom';
+import $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-dt';
+import 'datatables.net-select-dt';
+// import 'datatables.net-responsive-dt';
+import Skeleton from '../../components/ui/Skeleton/Skeleton';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import { formatDate } from '../../utils/dateUtils';
+import { getAllOrdersAsync } from '../../features/order/orderSlice';
 
 const Order: React.FC = () => {
-  const [orders, setOrders] = useState<any[]>([]);
+  const { orders, isLoading } = useSelector((state: RootState) => state.orders);
+  const dispatch = useDispatch<AppDispatch>();
+  const tableRef = useRef<HTMLTableElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setOrders([
-      {
-        _id: '1',
-        userId: 'U001',
-        userName: 'John Doe',
-        orderId: '1',
-        amount: 150.0,
-        paymentStatus: 'Success',
-        date: '2024-02-19',
-      },
-    ]);
-  }, []);
+    (async () => {
+      try {
+        if (orders.length === 0) {
+          await dispatch(getAllOrdersAsync()).unwrap();
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    })();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (tableRef.current && !isLoading && orders.length > 0) {
+      const table = $(tableRef.current).DataTable({
+        paging: true,
+        ordering: true,
+        info: true,
+        responsive: true,
+        searching: true,
+        pageLength: DEFAULT_PER_PAGE_ITEMS,
+        // select: true as any,
+        // destroy: true, // Ensure it gets destroyed before reinitialization
+      });
+
+      return () => {
+        table.destroy(); // Cleanup DataTable when unmounting
+      };
+    }
+  }, [orders]);
+
+  const groupOrdersByCustomer = (orders: any) => {
+    const groupedOrders = orders.reduce((acc: any, order: any) => {
+      const username = order.customerId?.username || 'Guest'; // Handle null customerId
+      if (!acc[username]) {
+        acc[username] = { ...order, amount: order.amount };
+      } else {
+        acc[username].amount += order.amount;
+      }
+      return acc;
+    }, {});
+
+    return Object.values(groupedOrders);
+  };
+
+  const groupedOrders = groupOrdersByCustomer(orders);
+
   const handleView = (id: string) => {
     navigate(`/order/OrderView?id=${id}`);
   };
   return (
     <div>
-      <Breadcrumb pageName="Orders" />
-      <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-        <div className="max-w-full overflow-x-auto custom-scrollbar">
-          <table className="w-full table-auto">
+      <Breadcrumb pageName="All Orders" />
+      <div className="table-bg">
+        <div className="card-body overflow-x-auto">
+          <table
+            ref={tableRef}
+            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
+          >
             <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  S No.
-                </th>
-                <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  Action
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  USERID (NAME)
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  Order Id
-                </th>
-                <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  Order Amount ($)
-                </th>
-                <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  Payment Status
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase">
-                  Date
-                </th>
+              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <th>S No.</th>
+                <th>Action</th>
+                <th>USER</th>
+                <th>Order Amount ($)</th>
+                <th>Payment Status</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
-              {orders.length > 0 ? (
-                orders.map((order, index) => (
-                  <tr key={order._id}>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {index + 1}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark flex flex-wrap items-center gap-2">
+              {isLoading ? (
+                Array(5)
+                  .fill(null)
+                  .map((_, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Array(13)
+                        .fill(null)
+                        .map((_, cellIndex) => (
+                          <td key={cellIndex}>
+                            <Skeleton width="100%" height="20px" />
+                          </td>
+                        ))}
+                    </tr>
+                  ))
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={13}
+                    className="text-center py-4 text-gray-600 dark:text-gray-300"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+              ) : (
+                groupedOrders.map((order: any, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td className="flex gap-2">
                       <button
-                        className="ViewButton px-3 py-1 text-sm md:text-base"
+                        className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                         onClick={() => handleView(order._id)}
                       >
                         View
                       </button>
-                      <button className="ViewButton px-3 py-1 text-sm md:text-base">
+                      <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
                         Print All
                       </button>
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {order.userId} ({order.userName})
+
+                    <td>
+                      {order.customerId?.username
+                        ? order.customerId.name
+                          ? `${order.customerId.username} (${order.customerId.name})`
+                          : order.customerId.username
+                        : 'N/A'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {order.orderId}
+                    <td>${order.amount || 'N/A'}</td>
+                    <td
+                      className={`px-4 py-2 font-medium ${
+                        order.payOutStatus === 0
+                          ? 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300'
+                          : 'text-green-500 bg-green-100 dark:bg-green-900 dark:text-green-300'
+                      } rounded-md`}
+                    >
+                      {order.payOutStatus === 0 ? 'Pending' : 'Confirmed'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      ${order.amount.toFixed(2)}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {order.paymentStatus}
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      {order.date}
-                    </td>
+
+                    <td>{formatDate(order.createdAt)}</td>
                   </tr>
                 ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="text-center py-4">
-                    No data available
-                  </td>
-                </tr>
               )}
             </tbody>
           </table>
