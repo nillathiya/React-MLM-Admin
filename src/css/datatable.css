@@ -2025,11 +2025,11 @@ div.dt-container .dt-paging .dt-paging-button.current:hover {
   gap: 10px;
 }
 .dt-length {
-  width: 34% !important;
+  width: 56% !important;
 }
 .dt-input {
   width: 100%;
-  max-width: 150px;
+  max-width: 51px;
 }
 
 label {

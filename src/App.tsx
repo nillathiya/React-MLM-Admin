@@ -157,7 +157,7 @@ function App() {
           }
         />
         <Route
-          path="/users/all-users/edituser/:id"
+          path="/users/edituser/:id"
           element={
             <>
               <PageTitle title="Edit User" />
