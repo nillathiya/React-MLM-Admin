@@ -56,7 +56,8 @@ import Member from './pages/Users/Member';
 import Reward from './pages/Users/Reward';
 import OrderView from './pages/Order/OrderView';
 import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
-
+import CustomerList from './pages/Dashboard/CustomerList';
+import Cards from './pages/Dashboard/Cards';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -83,6 +84,24 @@ function App() {
         <Route
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/dashboard/customerList"
+          element={
+            <>
+              <PageTitle title="" />
+              <CustomerList />
+            </>
+          }
+        />
+        <Route
+          path="/dashboard/cards"
+          element={
+            <>
+              <PageTitle title="" />
+              <Cards />
+            </>
+          }
         />
         <Route
           path="/users/all-users"
