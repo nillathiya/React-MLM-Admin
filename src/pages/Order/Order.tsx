@@ -14,12 +14,22 @@ import { AppDispatch, RootState } from '../../store/store';
 import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
 import { formatDate } from '../../utils/dateUtils';
 import { getAllOrdersAsync } from '../../features/order/orderSlice';
+import ExportModal from '../../common/ExportModal';
+
+interface Column {
+  label: string;
+  key: string;
+  format?: (value: any, index?: number) => string; 
+}
+
 
 const Order: React.FC = () => {
   const { orders, isLoading } = useSelector((state: RootState) => state.orders);
   const dispatch = useDispatch<AppDispatch>();
   const tableRef = useRef<HTMLTableElement>(null);
   const navigate = useNavigate();
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportData,setExportData]=useState<any[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -54,7 +64,7 @@ const Order: React.FC = () => {
 
   const groupOrdersByCustomer = (orders: any) => {
     const groupedOrders = orders.reduce((acc: any, order: any) => {
-      const username = order.customerId?.username || 'Guest'; // Handle null customerId
+      const username = order.customerId?.username || 'Guest';
       if (!acc[username]) {
         acc[username] = { ...order, amount: order.amount };
       } else {
@@ -71,6 +81,59 @@ const Order: React.FC = () => {
   const handleView = (id: string) => {
     navigate(`/order/OrderView?id=${id}`);
   };
+
+  const handlePrintOrder = (orderUsername: string) => {
+    if (!orderUsername) {
+      toast.error("User not found");
+      return;
+    }
+    const userOrders = orders
+    .filter(order => order.customerId?.username === orderUsername)
+    .map(order => ({
+      ...order,
+      username: order.customerId?.username || "N/A", 
+    }));
+
+  
+    setExportData(userOrders); 
+    setIsExportModalOpen(true);
+  };
+  
+  console.log("export data",exportData);
+  const exportColumns: Column[] = [
+    {
+      label: "S No.",
+      key: "index",
+      format: (_, index?: number) => (index !== undefined ? (index + 1).toString() : ""),
+    },
+    { 
+      label: "User", 
+      key: "username", 
+    },
+  
+    {
+      label: "Order Amount ($)",
+      key: "amount",
+      format: (value: number) => `$${value}`,
+    },
+    {
+      label: "Tx Type",
+      key: "txType",
+      format: (value: string) => `${value}`,
+    },
+    { label: "BV($)", key: "bv", format: (value: number) => `$${value}` },
+    {
+      label: "Status",
+      key: "status",
+      format: (value: number) => (value === 0 ? "Pending" : "Confirmed"),
+    },
+    {
+      label: "Date",
+      key: "createdAt",
+      format: (value: string) => new Date(value).toLocaleDateString(),
+    },
+  ];
+  
   return (
     <div>
       <Breadcrumb pageName="All Orders" />
@@ -125,7 +188,10 @@ const Order: React.FC = () => {
                       >
                         View
                       </button>
-                      <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                      <button
+                        className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                        onClick={()=>handlePrintOrder(order.customerId?.username)}
+                      >
                         Print All
                       </button>
                     </td>
@@ -141,8 +207,8 @@ const Order: React.FC = () => {
                     <td
                       className={`px-4 py-2 font-medium ${
                         order.status === 0
-                          ? 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300'
-                          : 'text-green-500 bg-green-100 dark:bg-green-900 dark:text-green-300'
+                          ? 'text-yellow-500   dark:text-yellow-300'
+                          : 'text-green-500  dark:text-green-300'
                       } rounded-md`}
                     >
                       {order.status === 0 ? 'Pending' : 'Confirmed'}
@@ -156,6 +222,15 @@ const Order: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        data={exportData}
+        filename="Orders_Report"
+        columns={exportColumns}
+      />
     </div>
   );
 };
