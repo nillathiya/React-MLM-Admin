@@ -7,7 +7,7 @@ import withdrawalReducer from '../features/withdrawal/withdrawalSlice';
 import userReducer from '../features/user/userSlice';
 import ordersReducer from '../features/order/orderSlice';
 import transactionReducer from '../features/transaction/transactionSlice';
-
+import supportReducer from "../features/support/supportSlice";
 const authPersistConfig = {
   key: 'auth',
   storage,
@@ -24,6 +24,7 @@ export const store = configureStore({
     user: userReducer,
     orders: ordersReducer,
     transaction: transactionReducer,
+    support:supportReducer,
   },
 });
 

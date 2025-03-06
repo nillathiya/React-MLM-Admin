@@ -15,14 +15,12 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import AllUsers from './pages/Users/AllUsers';
-import Approved from './pages/Support/Approved';
-import Pending from './pages/Support/pending';
+import Support from './pages/Support/Support';
 import GeneralSetting from './pages/Settings/GeneralSetting';
 import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
 import EditUser from './pages/Users/EditUser';
 import Login from './pages/Login/Login';
 import ChangePassword from './pages/Password/ChangePassword';
-import SupportView from './pages/Support/SupportView';
 import RegistrationSetting from './pages/Settings/RegistrationSetting';
 import InvestmentSetting from './pages/Settings/InvestmentSetting';
 import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
@@ -186,29 +184,11 @@ function App() {
         />
 
         <Route
-          path="/support/approved"
-          element={
-            <>
-              <PageTitle title="Approved" />
-              <Approved />
-            </>
-          }
-        />
-        <Route
-          path="/support/pending"
+          path="/support"
           element={
             <>
               <PageTitle title="Support" />
-              <Pending />
-            </>
-          }
-        />
-        <Route
-          path="/support/support-view/:id"
-          element={
-            <>
-              <PageTitle title="SupportView" />
-              <SupportView />
+              <Support />
             </>
           }
         />
