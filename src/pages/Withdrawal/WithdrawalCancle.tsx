@@ -1,89 +1,167 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef } from 'react';
+import $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-dt';
+import 'datatables.net-select-dt';
+import { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { fetchWithdrawals } from '../../features/withdrawal/withdrawalSlice';
-import { AppDispatch, RootState } from '../../store/store';
+import '../../../src/pages/Withdrawal/withdrawal.css';
 import { useDispatch, useSelector } from 'react-redux';
-import SearchInput from '../../common/Search/SearchInput';
-import Pagination from '../../common/Pagination/Pagination';
+import {
+  fetchWithdrawals,
+  selectCancelledWithdrawals,
+} from '../../features/withdrawal/withdrawalSlice';
+import { AppDispatch, RootState } from '../../store/store';
+import { useNavigate } from 'react-router-dom';
+import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import Skeleton from '../../components/ui/Skeleton/Skeleton';
+import toast from 'react-hot-toast';
+import { formatDate } from '../../utils/dateUtils';
+import { ICONS } from '../../constants';
+import Icon from '../../components/Icons/Icon';
 
 const WithdrawalCancle: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-
-  const withdrawals = useSelector((state: RootState) => state.withdrawals.data);
-
-  useEffect(() => {
-    dispatch(fetchWithdrawals());
-  }, []);
-
-  const itemsPerPage = 1;
-  const [currentPage, setCurrentPage] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const filteredData = withdrawals.filter((withdrawal) =>
-    withdrawal.amount.toString().includes(searchTerm),
+  const cancelledWithdrawals = useSelector(selectCancelledWithdrawals);
+  const navigate = useNavigate();
+  const { withdrawals, isLoading } = useSelector(
+    (state: RootState) => state.withdrawal,
   );
 
-  // Paginate Data
-  const offset = currentPage * itemsPerPage;
-  const currentItems = filteredData.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
+  useEffect(() => {
+    (async () => {
+      try {
+        if (withdrawals.length === 0) {
+          await dispatch(fetchWithdrawals()).unwrap();
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    })();
+  }, [dispatch, withdrawals]);
 
-  // Handle Page Change
-  const handlePageClick = (event: { selected: number }) => {
-    setCurrentPage(event.selected);
+  const handleClick = (id: string) => {
+    navigate(`/view-withdrawal/${id}`);
+  };
+
+  const tableRef = useRef<HTMLTableElement>(null);
+  useEffect(() => {
+    if (!tableRef.current || isLoading || cancelledWithdrawals.length === 0)
+      return;
+
+    setTimeout(() => {
+      const $table = $(tableRef.current as HTMLTableElement);
+
+      // Ensure DataTable is initialized only once
+      if (!($table as any).DataTable.isDataTable(tableRef.current)) {
+        ($table as any).DataTable({
+          paging: true,
+          ordering: true,
+          info: true,
+          responsive: true,
+          searching: true,
+          pageLength: DEFAULT_PER_PAGE_ITEMS,
+        });
+
+        // Mark DataTable initialization
+        if (tableRef.current) tableRef.current.dataset.dtInstance = 'true';
+      }
+    }, 300);
+  }, [cancelledWithdrawals, isLoading]);
+
+  const handleRefresh = async () => {
+    try {
+      await dispatch(fetchWithdrawals()).unwrap();
+    } catch (error: any) {
+      toast.error(error || 'Server error');
+    }
   };
   return (
-    <>
-      <Breadcrumb pageName="Cancelled Withdrwals" />
-      <SearchInput
-        value={searchTerm}
-        onChange={(e: any) => setSearchTerm(e.target.value)}
-      />
-      <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-        <div className="max-w-full overflow-x-auto custom-scrollbar">
-          <table className="w-full table-auto">
+    <div>
+      <Breadcrumb pageName="Pending Withdrwals" />
+      <div className="table-bg">
+        <div className="card-body overflow-x-auto">
+          {/* Refresh button */}
+          <div className="flex justify-end mb-2">
+            <div className="w-15">
+              <button
+                onClick={handleRefresh}
+                className="flex items-center justify-center gap-2 px-1 py-1 sm:px-3 sm:py-2 
+      bg-blue-600 text-white rounded-md 
+      hover:bg-blue-700 transition active:scale-95
+      dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200"
+              >
+                <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
+              </button>
+            </div>
+          </div>
+          <table
+            ref={tableRef}
+            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
+          >
             <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                 <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  S No.
+                  S.No
                 </th>
-                <th className=" min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                <th className=" min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Tx user
                 </th>
-                <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Total Amount
+                <th className="min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  Action
+                </th>
+                <th className="min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  Amount
                 </th>
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Tx Charge
                 </th>
-                <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Tds
+                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  Withdrawal pool
                 </th>
-                <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Payable Amount
                 </th>
-                <th className="min-w-[180px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Account Details
-                </th>
                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                  TDS
+                </th>
+                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Status
                 </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Reason
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
+                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   Date
                 </th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.length > 0 ? (
-                currentItems.map((withdrawal: any, index: number) => (
+              {isLoading ? (
+                Array(5)
+                  .fill(null)
+                  .map((_, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Array(13)
+                        .fill(null)
+                        .map((_, cellIndex) => (
+                          <td key={cellIndex}>
+                            <Skeleton width="100%" height="20px" />
+                          </td>
+                        ))}
+                    </tr>
+                  ))
+              ) : withdrawals.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={13}
+                    className="text-center py-4 text-gray-600 dark:text-gray-300"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+              ) : (
+                cancelledWithdrawals.map((withdrawal: any, index: number) => (
                   <tr key={withdrawal._id}>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {index + 1}
-                      </h5>
-                    </td>
+                    <td>{index + 1}</td>
+
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
                         {withdrawal.uCode?.username || 'N/A'}
@@ -91,7 +169,17 @@ const WithdrawalCancle: React.FC = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
-                        {' '}
+                        <button
+                          onClick={() => handleClick(withdrawal._id)}
+                          className="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+                        >
+                          View
+                        </button>
+                      </h5>
+                    </td>
+
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <h5 className="font-medium text-black dark:text-white">
                         $
                         {(
                           (withdrawal.amount ?? 0) +
@@ -102,22 +190,22 @@ const WithdrawalCancle: React.FC = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.txCharge}
+                        ${withdrawal.txCharge}
+                      </h5>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <h5 className="font-medium text-black dark:text-white">
+                        {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
+                      </h5>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <h5 className="font-medium text-black dark:text-white">
+                        ${withdrawal.amount}
                       </h5>
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <h5 className="font-medium text-black dark:text-white">
                         {withdrawal.tds || '0'}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.amount}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.accountDetails || 'N/A'}
                       </h5>
                     </td>
                     <td
@@ -131,7 +219,6 @@ const WithdrawalCancle: React.FC = () => {
                             : ' !text-red-700'
                         }
                       `}
-                      style={{ borderBottom: '1px solid #eeeeee' }}
                     >
                       {withdrawal.status === 0
                         ? 'Pending'
@@ -139,32 +226,15 @@ const WithdrawalCancle: React.FC = () => {
                         ? 'Approved'
                         : 'Cancelled'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.reasone || 'N/A'}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {new Date(withdrawal.createdAt).toLocaleDateString()}
-                      </h5>
-                    </td>
+                    <td>{formatDate(withdrawal.createdAt)}</td>
                   </tr>
                 ))
-              ) : (
-                <tr>
-                  <td colSpan={8}>No data available</td>
-                </tr>
               )}
             </tbody>
           </table>
         </div>
-        {/* Pagination Component */}
-        {filteredData.length > itemsPerPage && (
-          <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
-        )}
       </div>
-    </>
+    </div>
   );
 };
 

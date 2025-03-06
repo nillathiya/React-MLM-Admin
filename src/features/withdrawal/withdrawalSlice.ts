@@ -1,24 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getAllWithdrawal } from './withdrawalApi';
-
-interface Withdrawal {
-  id: string;
-  amount: number;
-  status: string;
-  createdAt: string;
-}
+import { getAllWithdrawal, updateWithdrawalRequest } from './withdrawalApi';
 
 interface WithdrawalState {
   isLoading: boolean;
-  data: Withdrawal[];
+  withdrawals: any[];
   totalWithdrawals: number | null;
   withdrawal: any;
 }
 
+export interface RootState {
+  withdrawal: WithdrawalState;
+}
+
 const initialState: WithdrawalState = {
-  data: [],
   isLoading: false,
   withdrawal: null,
+  withdrawals: [],
   totalWithdrawals: null,
 };
 
@@ -27,6 +24,20 @@ export const fetchWithdrawals = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const data = await getAllWithdrawal();
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      );
+    }
+  },
+);
+
+export const updateWithdrawalRequestAsync = createAsyncThunk(
+  'withdrawals/updateWithdrawalRequest',
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const data = await updateWithdrawalRequest(formData);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -47,13 +58,37 @@ const withdrawalSlice = createSlice({
       })
       .addCase(fetchWithdrawals.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.data = action.payload.data;
+        state.withdrawals = action.payload.data;
         state.totalWithdrawals = action.payload.total;
       })
       .addCase(fetchWithdrawals.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // updateWithdrawalRequestAsync
+      .addCase(updateWithdrawalRequestAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateWithdrawalRequestAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const updatedWithdrawal = action.payload.data;
+        
+        state.withdrawals = state.withdrawals.map((withdrawal) =>
+          withdrawal._id === updatedWithdrawal._id ? updatedWithdrawal : withdrawal
+        );
+      })
+      .addCase(updateWithdrawalRequestAsync.rejected, (state) => {
         state.isLoading = false;
       });
   },
 });
 
 export default withdrawalSlice.reducer;
+
+export const selectPendingWithdrawals = (state: RootState) =>
+  state.withdrawal.withdrawals.filter(
+    (withdrawal: any) => withdrawal.status === 0,
+  );
+export const selectApprovedWithdrawals = (state: RootState) =>
+  state.withdrawal.withdrawals.filter((withdrawal) => withdrawal.status === 1);
+export const selectCancelledWithdrawals = (state: RootState) =>
+  state.withdrawal.withdrawals.filter((withdrawal) => withdrawal.status === 2);

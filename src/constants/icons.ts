@@ -5,10 +5,6 @@ import { BiBarChart } from 'react-icons/bi';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { MdOutlineContactPage } from 'react-icons/md';
 import { CiLogout } from 'react-icons/ci';
-import { GrVirtualMachine } from 'react-icons/gr';
-import { GrTransaction } from 'react-icons/gr';
-import { RiMastercardLine } from 'react-icons/ri';
-import { MdAppRegistration } from 'react-icons/md';
 import { MdOutlineAreaChart } from 'react-icons/md';
 import { MdOutlinePassword } from 'react-icons/md';
 import { IoSettings } from 'react-icons/io5';
@@ -25,23 +21,18 @@ import { LuDownload } from 'react-icons/lu';
 import { MdOutlineModeEditOutline } from 'react-icons/md';
 import { IoMdEyeOff, IoMdEye } from 'react-icons/io';
 import { MdPayments } from 'react-icons/md';
-import { MdPayment } from 'react-icons/md';
+import { IoMdRefresh } from "react-icons/io";
 
 export const ICONS = {
   HOME: FaHome,
   PAYMENT: MdPayments,
   USER: FaUser,
-  PREPAREPAY: MdPayment,
   SEARCH: AiOutlineSearch,
   DASHBOARD: RxDashboard,
   LOGO: BiBarChart,
   SETTING: IoSettingsOutline,
   CONTACT: MdOutlineContactPage,
   LOGOUT: CiLogout,
-  MACHINE: GrVirtualMachine,
-  TRANSACTION: GrTransaction,
-  RIMASTERCARDLINE: RiMastercardLine,
-  MDAPPREGISTRASION: MdAppRegistration,
   MDOUTLINEAREACHART: MdOutlineAreaChart,
   CILOGOUT: CiLogout,
   MDOUTLINEPASSWORD: MdOutlinePassword,
@@ -59,4 +50,5 @@ export const ICONS = {
   EDITPAN: MdOutlineModeEditOutline,
   EYEOFF: IoMdEyeOff,
   EYE: IoMdEye,
+  REFRESH:IoMdRefresh,
 } as const;

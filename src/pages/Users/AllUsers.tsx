@@ -35,10 +35,10 @@ function AllUsers() {
     if (tableRef.current && !isLoading && users.length > 0) {
       const existingTable = ($.fn as any).DataTable.isDataTable(
         tableRef.current,
-      ); // Cast $.fn to 'any'
+      );
 
       if (existingTable) {
-        $(tableRef.current).DataTable().destroy(); // Destroy existing DataTable
+        $(tableRef.current).DataTable().destroy();
       }
 
       $(tableRef.current).DataTable({

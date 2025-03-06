@@ -40,6 +40,7 @@ interface Routes {
   };
   WITHDRAWAL: {
     GET_ALL: string;
+    UPDATE_REQUEST:string;
   };
   USER: {
     GET_BY_ID: string;
@@ -138,6 +139,7 @@ export const ROUTES: Routes = {
   },
   WITHDRAWAL: {
     GET_ALL: `${API_URL}/api/withdrawal/get-all-transactions`,
+    UPDATE_REQUEST:`${API_URL}/api/withdrawal/update-request`,
   },
   USER: {
     GET_BY_ID: `${API_URL}/api/user/info/get`,
