@@ -28,28 +28,27 @@ export const getAllUser = async (): Promise<any> => {
   }
 };
 
-export const getById = async (id: string): Promise<any> => {
+export const getUserById = async (userId: string): Promise<any> => {
   try {
-    const response = await apiClient.post(ROUTES.USER.GET_BY_ID(id));
-    const data = response.data;
-    return data;
+    const response = await apiClient.post(ROUTES.USER.GET_BY_ID, { userId });
+    return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       throw new Error(error.response?.data?.message || 'An error occurred.');
     }
-    throw new Error('Get Machine failed. Please try again later.');
+    throw new Error('Get User info failed. Please try again later.');
   }
 };
-export const updateUser = async (id: string, formData: any): Promise<any> => {
-  try {
-    const response = await apiClient.post(ROUTES.USER.UPDATE(id), formData);
 
-    const data = response.data;
-    return data;
+export const updateUserProfile = async (formData: any): Promise<any> => {
+  try {
+    const response = await apiClient.post(ROUTES.USER.UPDATE_PROFILE, formData);
+
+    return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       throw new Error(error.response?.data?.message || 'An error occurred.');
     }
-    throw new Error('Machine updation failed. Please try again later.');
+    throw new Error('Update User Profile failed. Please try again later.');
   }
 };

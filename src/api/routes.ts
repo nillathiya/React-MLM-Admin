@@ -42,11 +42,20 @@ interface Routes {
     GET_ALL: string;
   };
   USER: {
+    GET_BY_ID: string;
     GET_ALL: string;
+    UPDATE_PROFILE:string;
   };
   ORDER: {
     GET_ALL: string;
     GET_BY_ID: (orderId: string) => string;
+  };
+  TRANSACTION: {
+    GET_ALL: string;
+    FUND: {};
+    INCOME: {
+      GET_ALL: string;
+    };
   };
 }
 
@@ -131,10 +140,19 @@ export const ROUTES: Routes = {
     GET_ALL: `${API_URL}/api/withdrawal/get-all-transactions`,
   },
   USER: {
+    GET_BY_ID: `${API_URL}/api/user/info/get`,
     GET_ALL: `${API_URL}/api/user/get-all`,
+    UPDATE_PROFILE:`${API_URL}/api/user/update/profile`,
   },
   ORDER: {
     GET_ALL: `${API_URL}/api/orders/get-all`,
     GET_BY_ID: (orderId: string) => `${API_URL}/api/orders/get/${orderId}`,
+  },
+  TRANSACTION: {
+    GET_ALL: `${API_URL}/api/transaction/get-all`,
+    FUND: {},
+    INCOME: {
+      GET_ALL: `${API_URL}/api/transaction/income/all`,
+    },
   },
 };

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { Pagination } from '../../types';
-import { addUser, getAllUser, getById, updateUser } from './userApi';
+import { addUser, getAllUser, getUserById, updateUserProfile } from './userApi';
 
 interface UserState {
   user: any;
@@ -50,12 +50,12 @@ export const getAllUserAsync = createAsyncThunk(
   },
 );
 
-export const getByIdAsync = createAsyncThunk(
-  'user/getById',
-  async (id: string, { rejectWithValue }) => {
+export const getUserByIdAsync = createAsyncThunk(
+  'user/getUserById',
+  async (userId: string, { rejectWithValue }) => {
     try {
-      const data = await getById(id);
-      return data.data;
+      const data = await getUserById(userId);
+      return data;
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -65,12 +65,11 @@ export const getByIdAsync = createAsyncThunk(
     }
   },
 );
-export const updateUserAsync = createAsyncThunk(
-  'user/updateuser',
-  async (params: { id: string; formData: any }, { rejectWithValue }) => {
-    const { id, formData } = params;
+export const updateUserProfileAsync = createAsyncThunk(
+  'user/updateUserProfile',
+  async (formData:any, { rejectWithValue }) => {
     try {
-      const data = await updateUser(id, formData);
+      const data = await updateUserProfile(formData);
       return data.data;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -110,18 +109,28 @@ const userSlice = createSlice({
       .addCase(getAllUserAsync.rejected, (state) => {
         state.isLoading = false;
       })
-      // getByIdAsync
-      .addCase(getByIdAsync.pending, (state) => {
+      // getUserByIdAsync
+      .addCase(getUserByIdAsync.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getByIdAsync.fulfilled, (state, action) => {
+      .addCase(getUserByIdAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.user = action.payload.data;
       })
-      .addCase(getByIdAsync.rejected, (state) => {
+      .addCase(getUserByIdAsync.rejected, (state) => {
         state.isLoading = false;
-        state.user = null;
-      });
+      })
+      // updateUserProfileAsync
+      .addCase(updateUserProfileAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUserProfileAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(updateUserProfileAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
   },
 });
 

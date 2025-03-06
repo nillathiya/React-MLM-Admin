@@ -6,6 +6,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import withdrawalReducer from '../features/withdrawal/withdrawalSlice';
 import userReducer from '../features/user/userSlice';
 import ordersReducer from '../features/order/orderSlice';
+import transactionReducer from '../features/transaction/transactionSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -22,6 +23,7 @@ export const store = configureStore({
     withdrawals: withdrawalReducer,
     user: userReducer,
     orders: ordersReducer,
+    transaction: transactionReducer,
   },
 });
 

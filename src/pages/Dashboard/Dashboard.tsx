@@ -4,14 +4,87 @@ import DashboardCards from '../../components/Tables/DashboardCards';
 import CustomerList from './CustomerList';
 import Cards from './Cards';
 import './DashboardCard.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { getAllOrdersAsync } from '../../features/order/orderSlice';
+import toast from 'react-hot-toast';
+import { getAllUserAsync } from '../../features/user/userSlice';
+import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
+import Skeleton from '../../components/ui/Skeleton/Skeleton';
 
 const Dashboard: React.FC = () => {
-  console.log('cookie', document.cookie);
+  const dispatch = useDispatch<AppDispatch>();
+  const { orders } = useSelector((state: RootState) => state.orders);
+  const { users } = useSelector((state: RootState) => state.user);
+  const { incomeTransactions } = useSelector(
+    (state: RootState) => state.transaction,
+  );
+  const { currentUser: loggedInUser } = useSelector(
+    (state: RootState) => state.auth,
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        if (isMounted) {
+          if (orders.length === 0) await dispatch(getAllOrdersAsync()).unwrap();
+          if (users.length === 0) await dispatch(getAllUserAsync()).unwrap();
+          if (incomeTransactions.length === 0) {
+            const formData = {
+              txType: 'all',
+            };
+            await dispatch(getAllIncomeTransactionAsync(formData)).unwrap();
+          }
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Service error');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    if (loggedInUser?._id) {
+      fetchData();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [loggedInUser, orders.length, users.length, dispatch]);
+
+  const activeUserCount = users.reduce(
+    (acc, user) => (user.accountStatus?.activeStatus === 1 ? acc + 1 : acc),
+    0,
+  );
+
+  const totalIncome = incomeTransactions.reduce(
+    (acc, transaction) =>
+      transaction.txType === 'income' ? acc + transaction.amount : acc,
+    0,
+  );
+
+  const totalIncomeTransactionCharge = incomeTransactions.reduce(
+    (acc, transaction) =>
+      transaction.txType === 'income' ? acc + transaction.txCharge : acc,
+    0,
+  );
+
+  const totalInvestment = orders.reduce(
+    (acc, order) => (order.status === 1 ? acc + order.bv : acc),
+    0,
+  );
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total Users" total={0}>
+        <CardDataStats
+          title="Total Users"
+          total={users.length || 0}
+          isLoading={isLoading}
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -34,66 +107,82 @@ const Dashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Active" total={0}>
-        <svg
-    className="fill-primary dark:fill-white"
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 3V15M12 3L16 7M12 3L8 7"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M4 15C4 17.2091 5.79086 19 8 19H16C18.2091 19 20 17.2091 20 15"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
+        <CardDataStats
+          title="Active"
+          total={activeUserCount || 0}
+          isLoading={isLoading}
+        >
+          <svg
+            className="fill-primary dark:fill-white"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 3V15M12 3L16 7M12 3L8 7"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M4 15C4 17.2091 5.79086 19 8 19H16C18.2091 19 20 17.2091 20 15"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </CardDataStats>
-        <CardDataStats title="Investment" total={0}>
-  <svg
-    className="fill-primary dark:fill-white"
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 3V21M12 3L8 7M12 3L16 7M5 13L8 10M8 10L11 13M8 10V21M11 13L14 16M14 16L17 13M14 16V21M17 13L20 10M20 10V21"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-</CardDataStats>
+        <CardDataStats
+          title="Investment"
+          total={totalInvestment || 0}
+          isLoading={isLoading}
+        >
+          <svg
+            className="fill-primary dark:fill-white"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 3V21M12 3L8 7M12 3L16 7M5 13L8 10M8 10L11 13M8 10V21M11 13L14 16M14 16L17 13M14 16V21M17 13L20 10M20 10V21"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </CardDataStats>
 
-        <CardDataStats title="Total Income" total={0}>
-        <svg
-    className="fill-primary dark:fill-white"
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-      fill="currentColor"
-    />
-  </svg>
+        <CardDataStats
+          title="Total Income"
+          total={totalIncome || 0}
+          isLoading={isLoading}
+        >
+          <svg
+            className="fill-primary dark:fill-white"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+              fill="currentColor"
+            />
+          </svg>
         </CardDataStats>
-        <CardDataStats title="Income Charge" total={0}>
+        <CardDataStats
+          title="Income Charge"
+          total={totalIncomeTransactionCharge || 0}
+          isLoading={isLoading}
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
