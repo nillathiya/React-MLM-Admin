@@ -13,6 +13,8 @@ import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
 import { formatDate } from '../../utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
 import { getAllOrdersAsync } from '../../features/order/orderSlice';
+import { ICONS } from '../../constants';
+import Icon from '../../components/Icons/Icon';
 
 function AllUsers() {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
@@ -23,8 +25,12 @@ function AllUsers() {
   useEffect(() => {
     (async () => {
       try {
-        await dispatch(getAllUserAsync()).unwrap();
-        await dispatch(getAllOrdersAsync()).unwrap();
+        if (orders.length == 0) {
+          await dispatch(getAllUserAsync()).unwrap();
+        }
+        if (users.length == 0) {
+          await dispatch(getAllOrdersAsync()).unwrap();
+        }
       } catch (error: any) {
         toast.error(error?.message || 'Server error');
       }
@@ -32,25 +38,36 @@ function AllUsers() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (tableRef.current && !isLoading && users.length > 0) {
-      const existingTable = ($.fn as any).DataTable.isDataTable(
-        tableRef.current,
-      );
+    if (!tableRef.current || isLoading || users.length === 0) return;
 
-      if (existingTable) {
-        $(tableRef.current).DataTable().destroy();
+    setTimeout(() => {
+      const $table = $(tableRef.current as HTMLTableElement);
+
+      // Ensure DataTable is initialized only once
+      if (!($table as any).DataTable.isDataTable(tableRef.current)) {
+        ($table as any).DataTable({
+          paging: true,
+          ordering: true,
+          info: true,
+          responsive: true,
+          searching: true,
+          pageLength: DEFAULT_PER_PAGE_ITEMS,
+        });
+
+        // Mark DataTable initialization
+        if (tableRef.current) tableRef.current.dataset.dtInstance = 'true';
       }
+    }, 300);
+  }, [users, isLoading]);
 
-      $(tableRef.current).DataTable({
-        paging: true,
-        ordering: true,
-        info: true,
-        responsive: true,
-        searching: true,
-        pageLength: DEFAULT_PER_PAGE_ITEMS,
-      });
+  const handleRefresh = async () => {
+    try {
+      await dispatch(getAllUserAsync()).unwrap();
+      await dispatch(getAllOrdersAsync()).unwrap();
+    } catch (error: any) {
+      toast.error(error || 'Server error');
     }
-  }, [users]);
+  };
 
   const updatedUsers = useMemo(() => {
     if (orders.length > 0 && users.length > 0) {
@@ -78,6 +95,17 @@ function AllUsers() {
       <Breadcrumb pageName="All Users" />
       <div className="table-bg">
         <div className="card-body overflow-x-auto">
+          {/* Refresh button */}
+          <div className="flex justify-end mb-2">
+            <div className="w-15">
+              <button
+                onClick={handleRefresh}
+                className="btn-refresh"
+              >
+                <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
+              </button>
+            </div>
+          </div>
           <table
             ref={tableRef}
             className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"

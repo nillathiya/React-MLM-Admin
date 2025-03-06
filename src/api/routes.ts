@@ -40,12 +40,13 @@ interface Routes {
   };
   WITHDRAWAL: {
     GET_ALL: string;
-    UPDATE_REQUEST:string;
+    UPDATE_REQUEST: string;
   };
   USER: {
     GET_BY_ID: string;
     GET_ALL: string;
-    UPDATE_PROFILE:string;
+    UPDATE_PROFILE: string;
+    CHECK_NAME: string;
   };
   ORDER: {
     GET_ALL: string;
@@ -53,7 +54,10 @@ interface Routes {
   };
   TRANSACTION: {
     GET_ALL: string;
-    FUND: {};
+    FUND: {
+      GET_ALL:string;
+      DIRECT_TRANSFER: string;
+    };
     INCOME: {
       GET_ALL: string;
     };
@@ -139,12 +143,13 @@ export const ROUTES: Routes = {
   },
   WITHDRAWAL: {
     GET_ALL: `${API_URL}/api/withdrawal/get-all-transactions`,
-    UPDATE_REQUEST:`${API_URL}/api/withdrawal/update-request`,
+    UPDATE_REQUEST: `${API_URL}/api/withdrawal/update-request`,
   },
   USER: {
     GET_BY_ID: `${API_URL}/api/user/info/get`,
     GET_ALL: `${API_URL}/api/user/get-all`,
-    UPDATE_PROFILE:`${API_URL}/api/user/update/profile`,
+    UPDATE_PROFILE: `${API_URL}/api/user/update/profile`,
+    CHECK_NAME: `${API_URL}/api/user/check-name`,
   },
   ORDER: {
     GET_ALL: `${API_URL}/api/orders/get-all`,
@@ -152,7 +157,10 @@ export const ROUTES: Routes = {
   },
   TRANSACTION: {
     GET_ALL: `${API_URL}/api/transaction/get-all`,
-    FUND: {},
+    FUND: {
+      GET_ALL: `${API_URL}/api/transaction/fund/all`,
+      DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
+    },
     INCOME: {
       GET_ALL: `${API_URL}/api/transaction/income/all`,
     },

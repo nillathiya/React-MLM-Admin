@@ -46,13 +46,13 @@ const WithdrawalPending: React.FC = () => {
 
   const tableRef = useRef<HTMLTableElement>(null);
 
-  
   useEffect(() => {
-    if (!tableRef.current || isLoading || pendingWithdrawals.length === 0) return;
-  
+    if (!tableRef.current || isLoading || pendingWithdrawals.length === 0)
+      return;
+
     setTimeout(() => {
       const $table = $(tableRef.current as HTMLTableElement);
-  
+
       // Ensure DataTable is initialized only once
       if (!($table as any).DataTable.isDataTable(tableRef.current)) {
         ($table as any).DataTable({
@@ -63,16 +63,12 @@ const WithdrawalPending: React.FC = () => {
           searching: true,
           pageLength: DEFAULT_PER_PAGE_ITEMS,
         });
-  
+
         // Mark DataTable initialization
-        if(tableRef.current)
-        tableRef.current.dataset.dtInstance = 'true';
+        if (tableRef.current) tableRef.current.dataset.dtInstance = 'true';
       }
     }, 300);
-  
   }, [pendingWithdrawals, isLoading]);
-  
-  
 
   const handleRefresh = async () => {
     try {
@@ -90,13 +86,7 @@ const WithdrawalPending: React.FC = () => {
           {/* Refresh button */}
           <div className="flex justify-end mb-2">
             <div className="w-15">
-              <button
-                onClick={handleRefresh}
-                className="flex items-center justify-center gap-2 px-1 py-1 sm:px-3 sm:py-2 
-      bg-blue-600 text-white rounded-md 
-      hover:bg-blue-700 transition active:scale-95
-      dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200"
-              >
+              <button onClick={handleRefresh} className="btn-refresh">
                 <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
               </button>
             </div>

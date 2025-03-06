@@ -88,10 +88,7 @@ const WithdrawalApproved: React.FC = () => {
             <div className="w-15">
               <button
                 onClick={handleRefresh}
-                className="flex items-center justify-center gap-2 px-1 py-1 sm:px-3 sm:py-2 
-      bg-blue-600 text-white rounded-md 
-      hover:bg-blue-700 transition active:scale-95
-      dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200"
+                className="btn-refresh"
               >
                 <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
               </button>

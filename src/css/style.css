@@ -12,6 +12,13 @@
   .table-bg {
     @apply dark:bg-boxdark p-6 bg-white rounded-lg shadow-md;
   }
+
+  .btn-refresh {
+    @apply flex items-center justify-center gap-2 px-1 py-1 sm:px-3 sm:py-2 
+    bg-blue-600 text-white rounded-md 
+    hover:bg-blue-700 transition active:scale-95
+    dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200;
+  }
 }
 
 @layer utilities {

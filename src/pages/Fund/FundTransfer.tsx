@@ -1,142 +1,125 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-dt';
+import 'datatables.net-select-dt';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import { formatDate } from '../../utils/dateUtils';
+import Skeleton from '../../components/ui/Skeleton/Skeleton';
+import toast from 'react-hot-toast';
+import { getAdminFundTransactionAsync } from '../../features/transaction/transactionSlice';
 
 const FundTransfer: React.FC = () => {
-  const [fund, setFund] = useState({});
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('submited...');
-  };
+  const dispatch = useDispatch<AppDispatch>();
+  const { adminFundTransactions, isLoading } = useSelector(
+    (state: RootState) => state.transaction,
+  );
+  const tableRef = useRef<HTMLTableElement>(null);
 
-  const [filter, setFilter] = useState({
-    mName: '',
-    productKey: '',
-  });
-  const staticData = [
-    {
-      Userid: '123',
-      walletType: '100',
-      date: '',
-      fCode: {
-        name: 'john',
-      },
-      amount: '5454',
-    },
-  ];
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFilter((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const formData = { txType: 'direct_fund_transfer' };
+        await dispatch(getAdminFundTransactionAsync(formData));
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    };
+
+    fetchTransactions();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!tableRef.current || isLoading || adminFundTransactions.length === 0)
+      return;
+
+    setTimeout(() => {
+      const $table = $(tableRef.current as HTMLTableElement);
+
+      // Ensure DataTable is initialized only once
+      if (!($table as any).DataTable.isDataTable(tableRef.current)) {
+        ($table as any).DataTable({
+          paging: true,
+          ordering: true,
+          info: true,
+          responsive: true,
+          searching: true,
+          pageLength: DEFAULT_PER_PAGE_ITEMS,
+        });
+
+        // Mark DataTable initialization
+        if (tableRef.current) tableRef.current.dataset.dtInstance = 'true';
+      }
+    }, 300);
+  }, [adminFundTransactions, isLoading]);
 
   return (
     <div>
       <Breadcrumb pageName="Fund Transfer" />
-      <div className="card card-body shadow-default dark:border-strokedark dark:bg-boxdark">
-        <form className="flex" onSubmit={handleSubmit}>
-          <div className="flex flex-wrap gap-2">
-            <div className="form-group col-md-6 col-sm-12">
-              <input
-                type="text"
-                placeholder="Enter Machine Name"
-                name="mName"
-                value={filter.mName}
-                onChange={handleFilterChange}
-                className="w-full rounded border border-stroke bg-transparent py-2 px-4 md:py-3 md:px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              />
-            </div>
-            <div className="form-group col-md-6 col-sm-12">
-              <input
-                type="text"
-                placeholder="Enter Product Key"
-                name="productKey"
-                value={filter.productKey}
-                onChange={handleFilterChange}
-                className="w-full rounded border border-stroke bg-transparent  py-2 px-4 md:py-3 md:px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              />
-            </div>
-
-            <div className="form-group col-md-6 col-sm-12">
-              <button
-                type="submit"
-                name="submit"
-                className="w-full rounded bg-primary py-2 px-4 md:py-3 md:px-6 text-white transition duration-200 ease-in-out hover:bg-primary-dark dark:bg-primary-600 dark:hover:bg-primary-700"
-              >
-                Filter
-              </button>
-            </div>
-            <div className="form-group col-md-6 col-sm-12">
-              <button
-                type="button"
-                onClick={() => {
-                  setFilter({
-                    mName: '',
-                    productKey: '',
-                  });
-                }}
-                className="w-full rounded bg-gray-500 py-2 px-4 md:py-3 md:px-6 text-white transition duration-200 ease-in-out hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <>
-        <div className="rounded-sm border mt-6 border-stroke bg-white px-4 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-          <div className="max-w-full overflow-x-auto custom-scrollbar">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  <th className="min-w-[150px] py-2 px-2 font-medium text-black dark:text-white uppercase">
-                    Sr
-                  </th>
-                  <th className="min-w-[130px] py-2 px-2 font-medium text-black dark:text-white uppercase">
-                    Userid
-                  </th>
-                  <th className="min-w-[150px] py-2 px-2 font-medium text-black dark:text-white uppercase">
-                    Full Name
-                  </th>
-                  <th className="min-w-[200px] py-2 px-2 font-medium text-black dark:text-white uppercase">
-                    Amount
-                  </th>
-                  <th className="min-w-[210px] py-2 px-2 font-medium text-black dark:text-white uppercase">
-                    Wallet Type
-                  </th>
-                  <th className="min-w-[100px] py-2 px-2 font-medium text-black dark:text-white uppercase">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {staticData.length > 0 ? (
-                  staticData.map((item, index) => (
-                    <tr key={index} className="table-row">
-                      <td>{index + 1}</td>
-                      <td>{item.Userid}</td>
-                      <td>{item.fCode?.name}</td>
-                      <td>{item.amount}</td>
-                      <td>{item.walletType}</td>
-                      <td>{item.date}</td>
+      <div className="table-bg">
+        <div className="card-body overflow-x-auto">
+          <table
+            ref={tableRef}
+            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
+          >
+            <thead>
+              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <th>S No.</th>
+                <th>USER</th>
+                <th>Amount($)</th>
+                <th>WALLET TYPE</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                Array(5)
+                  .fill(null)
+                  .map((_, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Array(13)
+                        .fill(null)
+                        .map((_, cellIndex) => (
+                          <td key={cellIndex}>
+                            <Skeleton width="100%" height="20px" />
+                          </td>
+                        ))}
                     </tr>
                   ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className="text-center">
-                      No data available
+              ) : adminFundTransactions.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={13}
+                    className="text-center py-4 text-gray-600 dark:text-gray-300"
+                  >
+                    No Transaction found
+                  </td>
+                </tr>
+              ) : (
+                adminFundTransactions.map((tx: any, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>
+                      {tx.txUCode?.username
+                        ? tx.txUCode.name
+                          ? `${tx.txUCode.username} (${tx.txUCode.name})`
+                          : tx.txUCode.username
+                        : 'N/A'}
                     </td>
+                    <td>${tx.amount || 'N/A'}</td>
+                    <td>{tx.walletType || 'N/A'}</td>
+
+                    <td>{formatDate(tx.createdAt)}</td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      </>
+      </div>
     </div>
   );
 };

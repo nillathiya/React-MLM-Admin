@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { Pagination } from '../../types';
-import { addUser, getAllUser, getUserById, updateUserProfile } from './userApi';
+import { getAllUser, getUserById, updateUserProfile,checkUsername } from './userApi';
 
 interface UserState {
   user: any;
@@ -21,20 +21,6 @@ const initialState: UserState = {
 };
 
 // Async Thunks
-export const addUserAsync = createAsyncThunk(
-  'user/addUserAsync',
-  async (formData: any, { rejectWithValue }) => {
-    try {
-      const data = await addUser(formData);
-      return data;
-    } catch (error: unknown) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'An unknown error occurred',
-      );
-    }
-  },
-);
-
 export const getAllUserAsync = createAsyncThunk(
   'user/getAllUser',
   async (_, { rejectWithValue }) => {
@@ -81,23 +67,31 @@ export const updateUserProfileAsync = createAsyncThunk(
   },
 );
 
+
+export const checkUsernameAsync = createAsyncThunk(
+  'user/checkUsername',
+  async (formData:any, { rejectWithValue }) => {
+    try {
+      const data = await checkUsername(formData);
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Add User
-      .addCase(addUserAsync.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(addUserAsync.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user.push(action.payload.data);
-      })
-      .addCase(addUserAsync.rejected, (state) => {
-        state.isLoading = false;
-      })
       //   getAllUserAsync
       .addCase(getAllUserAsync.pending, (state) => {
         state.isLoading = true;
@@ -129,6 +123,17 @@ const userSlice = createSlice({
         state.user = action.payload.data;
       })
       .addCase(updateUserProfileAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // checkUsernameAsync
+      .addCase(checkUsernameAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkUsernameAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(checkUsernameAsync.rejected, (state) => {
         state.isLoading = false;
       })
   },
