@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import '../../../src/pages/Withdrawal/withdrawal.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchWithdrawals } from '../../features/withdrawal/withdrawalSlice';
 import { AppDispatch, RootState } from '../../store/store';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import SearchInput from '../../common/Search/SearchInput';
-import Pagination from '../../common/Pagination/Pagination';
-import { DEFAULT_CURRENT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '../../constants';
+import { useNavigate } from 'react-router-dom';
+import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import Skeleton from '../../components/ui/Skeleton/Skeleton';
+import toast from 'react-hot-toast';
+import 'datatables.net';
+import 'datatables.net-dt';
+import 'datatables.net-select-dt';
+import { formatDate } from '../../utils/dateUtils';
 
 const WithdrawalPending: React.FC = () => {
   const [selectAll, setSelectAll] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const navigate = useNavigate(); // Initialize navigation function
+  const navigate = useNavigate();
 
   const handleSelectAll = (e: any) => {
     const isChecked = e.target.checked;
@@ -22,12 +26,20 @@ const WithdrawalPending: React.FC = () => {
   };
 
   const withdrawals = useSelector((state: RootState) => state.withdrawals.data);
-  console.log('withdrawals', withdrawals);
-  useEffect(() => {
-    dispatch(fetchWithdrawals());
-  }, []);
+  const isLoading = useSelector((state: RootState) => state.withdrawals.data);
 
-  // Handle row checkbox selection
+  useEffect(() => {
+    (async () => {
+      try {
+        if (withdrawals.length === 0) {
+          await dispatch(fetchWithdrawals()).unwrap();
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    })();
+  }, [dispatch, withdrawals]);
+
   const handleRowSelect = (id: string) => {
     if (selectedRows.includes(id)) {
       setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
@@ -39,90 +51,54 @@ const WithdrawalPending: React.FC = () => {
     navigate(`/view-withdrawal/${id}`);
   };
 
-  const itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
-  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
-  const [searchTerm, setSearchTerm] = useState('');
+  const tableRef = useRef<HTMLTableElement>(null);
+  console.log('tableReftableRef', tableRef);
+  useEffect(() => {
+    if (tableRef.current && !isLoading && withdrawals.length > 0) {
+      const table = $(tableRef.current).DataTable({
+        paging: true,
+        ordering: true,
+        info: true,
+        responsive: true,
+        searching: true,
+        pageLength: DEFAULT_PER_PAGE_ITEMS,
+      });
 
-  const filteredData = withdrawals.filter((withdrawal: any) => {
-    const searchLower = searchTerm.toLowerCase().trim();
-  
-    // Convert status to text representation
-    const statusText =
-      withdrawal.status === 0
-        ? "pending"
-        : withdrawal.status === 1
-        ? "approved"
-        : "cancelled";
-  
-    // Calculate formatted total amount
-    const totalAmount = (
-      (withdrawal.amount ?? 0) +
-      (withdrawal.txCharge ?? 0) +
-      (withdrawal.wPool ?? 0)
-    ).toFixed(2);
-  
-    // Convert numeric fields to string before using `.includes()`
-    const amountStr = withdrawal.amount?.toFixed(2) || "";
-    const txChargeStr = withdrawal.txCharge?.toFixed(2) || "";
-  
-    // Format date for searching
-    const createdAtStr = new Date(withdrawal.createdAt).toLocaleDateString();
-  
-    return (
-      totalAmount.includes(searchTerm) ||  // Search in displayed total
-      amountStr.includes(searchTerm) ||  // Search in amount
-      txChargeStr.includes(searchTerm) ||  // Search in txCharge
-      statusText.includes(searchLower) || // Search in status text
-      withdrawal.status.toString() === searchTerm || // Exact number match on status
-      withdrawal.uCode?.username?.toLowerCase().includes(searchLower) ||
-      withdrawal.uCode?.name?.toLowerCase().includes(searchLower) ||
-      withdrawal.walletType.toLowerCase().includes(searchLower) ||
-      withdrawal.txType.toLowerCase().includes(searchLower) ||
-      withdrawal.remark.toLowerCase().includes(searchLower) ||
-      createdAtStr.includes(searchTerm) // Search in formatted date
-    );
-  });
+      return () => {
+        table.destroy();
+        console.log('tabletable', table);
+      };
+    }
+  }, [withdrawals, isLoading]);
+  const groupOrdersByCustomer = (withdrawals: any) => {
+    const groupedOrders = withdrawals.reduce((acc: any, withdrawal: any) => {
+      const username = withdrawal.customerId?.username || 'Guest';
+      if (!acc[username]) {
+        acc[username] = { ...withdrawal, amount: withdrawal.amount };
+      } else {
+        acc[username].amount += withdrawal.amount;
+      }
+      return acc;
+    }, {});
 
-
-  // Paginate Data
-  const offset = currentPage * itemsPerPage;
-  const currentItems = filteredData.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
-
-  // Handle Page Change
-  const handlePageClick = (event: { selected: number }) => {
-    setCurrentPage(event.selected);
+    return Object.values(groupedOrders);
   };
 
-  console.log("withdrawals",withdrawals)
+  const groupedOrders = groupOrdersByCustomer(withdrawals);
+  console.log('groupedOrdersgroupedOrders', groupedOrders);
   return (
     <div>
       <Breadcrumb pageName="Pending Withdrwals" />
-      <div className="row">
-        {/* <div
-          className="flex-wrap gap-2 mt-3 justify-content-md-end justify-content-center"
-          style={{ display: 'flex' }}
-        >
-          <button className="btn btn-sm approveButton responsive-btn">
-            Approve All
-          </button>
-          <button className="btn btn-sm rejectButton responsive-btn">
-            Reject All
-          </button>
-        </div> */}
-        <div className="mt-3">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+      <div className="row"></div>
 
       <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
         <div className="max-w-full overflow-x-auto custom-scrollbar">
-          <table className="w-full table-auto">
+          <table
+            ref={tableRef}
+            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
+          >
             <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                 <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
                   S.No
                 </th>
@@ -164,8 +140,31 @@ const WithdrawalPending: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.length > 0 ? (
-                currentItems.map((withdrawal: any, index: number) => (
+              {isLoading ? (
+                Array(5)
+                  .fill(null)
+                  .map((_, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Array(13)
+                        .fill(null)
+                        .map((_, cellIndex) => (
+                          <td key={cellIndex}>
+                            <Skeleton width="100%" height="20px" />
+                          </td>
+                        ))}
+                    </tr>
+                  ))
+              ) : withdrawals.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={13}
+                    className="text-center py-4 text-gray-600 dark:text-gray-300"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+              ) : (
+                groupedOrders.map((withdrawal: any, index: number) => (
                   <tr key={withdrawal._id}>
                     <td>{index + 1}</td>
 
@@ -243,25 +242,14 @@ const WithdrawalPending: React.FC = () => {
                         ? 'Approved'
                         : 'Cancelled'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {new Date(withdrawal.createdAt).toLocaleDateString()}
-                      </h5>
-                    </td>
+                    <td>{formatDate(withdrawal.createdAt)}</td>
                   </tr>
                 ))
-              ) : (
-                <tr>
-                  <td colSpan={8}>No data available</td>
-                </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
-      {filteredData.length > itemsPerPage && (
-        <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
-      )}
     </div>
   );
 };
