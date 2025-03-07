@@ -49,7 +49,7 @@ export const MENU: {
     id: 2,
     title: 'Network',
     path: '/network',
-    icon: 'USER',
+    icon: 'NETWORK',
     children: [
       {
         id: 11,
@@ -63,60 +63,59 @@ export const MENU: {
     id: 2,
     title: 'Withdrawal',
     path: '/withdrawal',
-    icon: 'USER',
+    icon: 'WIDTHDRAWAL',
     children: [
       {
         id: 11,
         title: 'Pending',
         path: '/withdrawal/pending',
-        icon: 'DASHBOARD',
+        icon: 'WIDTHDRAWAL',
       },
       {
         id: 12,
         title: 'Approved',
         path: '/withdrawal/approved',
-        icon: 'DASHBOARD',
+        icon: 'WIDTHDRAWAL',
       },
       {
         id: 13,
         title: 'Cancelled',
         path: '/withdrawal/cancelled',
-        icon: 'DASHBOARD',
+        icon: 'WIDTHDRAWAL',
       },
-
     ],
   },
   {
     id: 1,
     title: 'Orders',
     path: '/order',
-    icon: 'DASHBOARD',
+    icon: 'ORDER',
     children: [],
   },
   {
     id: 1,
     title: 'Income',
     path: '/income',
-    icon: 'DASHBOARD',
+    icon: 'INCOME',
     children: [],
   },
   {
     id: 2,
     title: 'Fund',
     path: '/fund',
-    icon: 'USER',
+    icon: 'FUND',
     children: [
       {
         id: 3,
         title: 'Add Fund',
         path: '/fund/add-fund',
-        icon: 'USER',
+        icon: 'FUND',
       },
       {
         id: 3,
         title: 'Fund Transfer History',
         path: '/fund/fund-transfer',
-        icon: 'USER',
+        icon: 'FUND',
       },
     ],
   },
@@ -146,7 +145,7 @@ export const MENU: {
     id: 1,
     title: 'Contact Us',
     path: '/Contact',
-    icon: 'DASHBOARD',
+    icon: 'CONTACTUs',
     children: [],
   },
   {

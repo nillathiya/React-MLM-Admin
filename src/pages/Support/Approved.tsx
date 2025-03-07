@@ -4,7 +4,7 @@ import SearchInput from '../../common/Search/SearchInput';
 import Pagination from '../../common/Pagination/Pagination';
 
 const Approved = () => {
-  const itemsPerPage =5;
+  const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -42,7 +42,6 @@ const Approved = () => {
       amount: '2000',
       replay: '',
     },
-    
   ];
 
   // Filtered Data based on Search
