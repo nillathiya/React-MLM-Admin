@@ -55,12 +55,20 @@ interface Routes {
   TRANSACTION: {
     GET_ALL: string;
     FUND: {
-      GET_ALL:string;
+      GET_ALL: string;
       DIRECT_TRANSFER: string;
     };
     INCOME: {
       GET_ALL: string;
     };
+  };
+  SETTINGS: {
+    GET_RANK_SETTINGS: string;
+    CREATE: string;
+    UPDATE: (id: string) => string;
+    DELETE: (id: string) => string;
+    DELETE_ROW: string;
+    SAVE_ROW:string;
   };
 }
 
@@ -164,5 +172,13 @@ export const ROUTES: Routes = {
     INCOME: {
       GET_ALL: `${API_URL}/api/transaction/income/all`,
     },
+  },
+  SETTINGS: {
+    GET_RANK_SETTINGS: `${API_URL}/api/rank-settings/get`,
+    CREATE: `${API_URL}/api/rank-settings/create`,
+    UPDATE: (id: string) => `${API_URL}/api/rank-settings/update/${id}`,
+    DELETE: (id: string) => `${API_URL}/api/rank-settings/delete/${id}`,
+    DELETE_ROW: `${API_URL}/api/rank-settings/delete-row`,
+    SAVE_ROW:`${API_URL}/api/rank-settings/save-row`,
   },
 };

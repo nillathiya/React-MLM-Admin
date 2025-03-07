@@ -11,7 +11,7 @@ import { IoSettings } from 'react-icons/io5';
 import { MdOutlineSupport } from 'react-icons/md';
 import { MdOutlineCreateNewFolder } from 'react-icons/md';
 import { RiWechatPayLine } from 'react-icons/ri';
-import { IoTrophyOutline } from 'react-icons/io5';
+import { IoTrophyOutline ,IoTrashOutline} from 'react-icons/io5';
 import { FaCommentDollar } from 'react-icons/fa';
 import { GiTightrope } from 'react-icons/gi';
 import { FaCoins } from 'react-icons/fa';
@@ -22,6 +22,10 @@ import { MdOutlineModeEditOutline } from 'react-icons/md';
 import { IoMdEyeOff, IoMdEye } from 'react-icons/io';
 import { MdPayments } from 'react-icons/md';
 import { IoMdRefresh } from "react-icons/io";
+import { FiPlus,FiMinus } from "react-icons/fi";
+import { LiaSave } from "react-icons/lia";
+
+
 
 export const ICONS = {
   HOME: FaHome,
@@ -51,4 +55,8 @@ export const ICONS = {
   EYEOFF: IoMdEyeOff,
   EYE: IoMdEye,
   REFRESH:IoMdRefresh,
+  PLUS:FiPlus,
+  MINUS:FiMinus,
+  TRASH:IoTrashOutline,
+  SAVE:LiaSave,
 } as const;

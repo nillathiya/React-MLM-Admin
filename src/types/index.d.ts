@@ -6,4 +6,5 @@ export * from './common';
 export * from './orders';
 export * from './transaction';
 export * from './support';
-export * from "./user"
+export * from "./user";
+export * from "./package";

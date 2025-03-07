@@ -1,6 +1,6 @@
 import React from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { Package } from '../../types/package';
+import { Package } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import './setting.css';
 const GeneralSetting: React.FC = () => {
@@ -67,6 +67,12 @@ const GeneralSetting: React.FC = () => {
       invoiceDate: 'Jan 14,2023',
       status: 'Paid',
     },
+    {
+      id: 15,
+      name: 'Rank Settings',
+      invoiceDate: 'Jan 14,2023',
+      status: 'Paid',
+    },
   ];
 
   const navigate = useNavigate();
@@ -118,6 +124,9 @@ const GeneralSetting: React.FC = () => {
         break;
       case 'Company':
         navigate(`/setting/general-setting/companyinfo/${id}`);
+        break;
+      case 'Rank Settings':
+        navigate(`/setting/general-setting/rank-settings/${id}`);
         break;
       default:
         console.warn(`No handler defined for ${name}`);

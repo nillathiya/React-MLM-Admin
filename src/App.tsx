@@ -56,6 +56,7 @@ import OrderView from './pages/Order/OrderView';
 import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
 import CustomerList from './pages/Dashboard/CustomerList';
 import Cards from './pages/Dashboard/Cards';
+import RankSettings from './pages/Settings/RankSettings';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -363,6 +364,16 @@ function App() {
             <>
               <PageTitle title="Company Info settings" />
               <CompanyInfoSetting />
+            </>
+          }
+        />
+
+        <Route
+          path="/setting/general-setting/rank-settings/:id"
+          element={
+            <>
+              <PageTitle title="Rank settings" />
+              <RankSettings />
             </>
           }
         />
