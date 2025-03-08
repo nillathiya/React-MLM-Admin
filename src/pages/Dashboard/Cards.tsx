@@ -4,7 +4,7 @@ const Cards: React.FC = () => {
   return (
     <div className="grid gap-6 md:grid-cols-2 mt-6">
       <div className="bg-white dark:bg-boxdark dark:border-strokedark border border-gray-200 rounded-lg shadow-md p-6">
-        <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 dark:text-white mb-6 text-center">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-500 dark:text-gray-400 mb-6 text-center">
           Investment
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
@@ -12,7 +12,7 @@ const Cards: React.FC = () => {
             <h4 className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">
               Total
             </h4>
-            <strong className="text-lg md:text-xl text-gray-900 dark:text-gray-300">
+            <strong className="text-lg md:text-base text-gray-600 dark:text-gray-300">
               $120,700
             </strong>
           </div>
@@ -21,7 +21,7 @@ const Cards: React.FC = () => {
             <h4 className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">
               Today
             </h4>
-            <strong className="text-lg md:text-xl text-gray-900 dark:text-gray-300">
+            <strong className="text-lg md:text-base text-gray-600 dark:text-gray-300">
               $0
             </strong>
           </div>
@@ -30,7 +30,7 @@ const Cards: React.FC = () => {
             <h4 className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">
               Yesterday
             </h4>
-            <strong className="text-lg md:text-xl text-gray-900 dark:text-gray-300">
+            <strong className="text-lg md:text-base text-gray-600 dark:text-gray-300">
               $0
             </strong>
           </div>
