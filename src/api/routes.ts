@@ -75,6 +75,10 @@ interface Routes {
     GET_ALL: string;
     UPDATE: string;
   };
+  CONTACT_US: {
+    GET_MESSAGES: string;
+    TOGGLE_STATUS: string;
+  };
 }
 
 // Define and export the ROUTES object
@@ -190,5 +194,9 @@ export const ROUTES: Routes = {
     CREATE: `${API_URL}/api/news-events/create`,
     GET_ALL: `${API_URL}/api/news-events/get-all`,
     UPDATE: `${API_URL}/api/news-events/update`,
+  },
+  CONTACT_US: {
+    GET_MESSAGES: `${API_URL}/api/contact-us/list`,
+    TOGGLE_STATUS: `${API_URL}/api/contact-us/change-status`,
   },
 };

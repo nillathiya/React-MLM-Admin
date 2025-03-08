@@ -9,3 +9,4 @@ export * from './support';
 export * from "./user";
 export * from "./package";
 export * from "./newsEvent"
+export * from "./contact-us";

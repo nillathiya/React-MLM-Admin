@@ -46,7 +46,7 @@ import WithdrawalApproved from './pages/Withdrawal/WithdrawalApproved';
 import WithdrawalCancle from './pages/Withdrawal/WithdrawalCancle';
 import WithdrawalPending from './pages/Withdrawal/WithdrawalPending';
 import Income from './pages/Income/Income';
-import Contact from './pages/Contact/Contact';
+import ContactUs from './pages/Contact-us';
 import Order from './pages/Order/Order';
 import AddFund from './pages/Fund/AddFund';
 import FundTransfer from './pages/Fund/FundTransfer';
@@ -549,7 +549,7 @@ function App() {
           element={
             <>
               <PageTitle title="Contact" />
-              <Contact />
+              <ContactUs />
             </>
           }
         />
