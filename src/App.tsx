@@ -46,7 +46,7 @@ import WithdrawalApproved from './pages/Withdrawal/WithdrawalApproved';
 import WithdrawalCancle from './pages/Withdrawal/WithdrawalCancle';
 import WithdrawalPending from './pages/Withdrawal/WithdrawalPending';
 import Income from './pages/Income/Income';
-import Contact from './pages/Contact/Contact';
+import ContactUs from './pages/Contact-us';
 import Order from './pages/Order/Order';
 import AddFund from './pages/Fund/AddFund';
 import FundTransfer from './pages/Fund/FundTransfer';
@@ -57,6 +57,7 @@ import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
 import CustomerList from './pages/Dashboard/CustomerList';
 import Cards from './pages/Dashboard/Cards';
 import RankSettings from './pages/Settings/RankSettings';
+import NewAndEvents from './pages/Settings/NewAndEvent';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -200,6 +201,15 @@ function App() {
             <>
               <PageTitle title="General settings" />
               <GeneralSetting />
+            </>
+          }
+        />
+             <Route
+          path="/setting/news-and-events"
+          element={
+            <>
+              <PageTitle title="News & Events" />
+              <NewAndEvents />
             </>
           }
         />
@@ -539,7 +549,7 @@ function App() {
           element={
             <>
               <PageTitle title="Contact" />
-              <Contact />
+              <ContactUs />
             </>
           }
         />

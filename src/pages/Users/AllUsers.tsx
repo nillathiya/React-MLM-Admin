@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAllOrdersAsync } from '../../features/order/orderSlice';
 import { ICONS } from '../../constants';
 import Icon from '../../components/Icons/Icon';
+import { requestImpersonationTokenAsync } from '../../features/auth/authSlice';
 
 function AllUsers() {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
@@ -90,6 +91,27 @@ function AllUsers() {
   const handleEdit = (id: string) => {
     navigate(`/users/edituser/${id}`);
   };
+
+  const handleRequestImpersonationToken = async (userId: string) => {
+    try {
+      const response = await dispatch(
+        requestImpersonationTokenAsync(userId),
+      ).unwrap();
+      console.log("response",response);
+      if (response.status === 'success') {
+        const token = response.data;
+        const userAppURL = `${
+          import.meta.env.VITE_USER_API_URL
+        }?impersonate=${token}`;
+        window.open(userAppURL, '_blank');
+      } else {
+        toast.error('Failed to request user login');
+      }
+    } catch (error: any) {
+      toast.error(error || 'unexpected error occurred');
+    }
+  };
+
   return (
     <>
       <Breadcrumb pageName="All Users" />
@@ -98,10 +120,7 @@ function AllUsers() {
           {/* Refresh button */}
           <div className="flex justify-end mb-2">
             <div className="w-15">
-              <button
-                onClick={handleRefresh}
-                className="btn-refresh"
-              >
+              <button onClick={handleRefresh} className="btn-refresh">
                 <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
               </button>
             </div>
@@ -164,7 +183,12 @@ function AllUsers() {
                       >
                         Edit
                       </button>
-                      <button className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                      <button
+                        className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                        onClick={() =>
+                          handleRequestImpersonationToken(user._id)
+                        }
+                      >
                         Login
                       </button>
                     </td>

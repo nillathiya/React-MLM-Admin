@@ -146,10 +146,16 @@ export default function DynamicTable() {
   ) => {
     setData((prevData) => {
       const updatedData = [...prevData];
-      updatedData[colIndex].value[rowIndex] = newValue;
+      updatedData[colIndex] = { 
+        ...updatedData[colIndex], 
+        value: [...updatedData[colIndex].value], 
+      };
+  
+      updatedData[colIndex].value[rowIndex] = newValue; 
       return updatedData;
     });
   };
+  
 
   // Handle column title change
   const handleTitleChange = (colIndex: number, newTitle: string) => {
@@ -170,15 +176,14 @@ export default function DynamicTable() {
     console.log('colIndex', colIndex);
 
     setData((prevData) => {
-      const updatedData = [...prevData]; // Shallow copy of state array
+      const updatedData = [...prevData]; 
 
       if (editingTitles[colIndex] !== undefined) {
         console.log('Updating title...');
 
-        // Create a new object instead of mutating directly
         updatedData[colIndex] = {
-          ...updatedData[colIndex], // Spread the existing object
-          title: editingTitles[colIndex], // Update the title
+          ...updatedData[colIndex],
+          title: editingTitles[colIndex],
         };
       }
 

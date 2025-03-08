@@ -1,6 +1,7 @@
 import { apiClient } from '../../api/apiClient';
 import { ROUTES } from '../../api/routes';
 import { AxiosError } from 'axios';
+import { ApiResponse, IContactUs } from '../../types';
 
 export const getAllUser = async (): Promise<any> => {
   try {
@@ -48,5 +49,39 @@ export const checkUsername = async (formData: any): Promise<any> => {
       throw new Error(error.response?.data?.message || 'An error occurred.');
     }
     throw new Error('User Check Name failed. Please try again later.');
+  }
+};
+
+export const getContactMessages = async (): Promise<
+  ApiResponse<IContactUs[]>
+> => {
+  try {
+    const response = await apiClient.post(ROUTES.CONTACT_US.GET_MESSAGES);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Get Conatct Messages failed. Please try again later.');
+  }
+};
+
+export const changeConatctMesasgeStatus = async (formData: {
+  id: string;
+  status: string;
+}): Promise<ApiResponse<IContactUs>> => {
+  try {
+    const response = await apiClient.post(
+      ROUTES.CONTACT_US.TOGGLE_STATUS,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error(
+      'Toggle Conatct Messages status failed. Please try again later.',
+    );
   }
 };
