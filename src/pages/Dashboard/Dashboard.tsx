@@ -23,6 +23,13 @@ const Dashboard: React.FC = () => {
     (state: RootState) => state.auth,
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [incomeData, setIncomeData] = useState({
+    totalIncome: 0,
+    stakingReward: 0,
+    profitSharingReward: 0,
+    royaltyReward: 0,
+    arbBonusReward: 0,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -30,15 +37,59 @@ const Dashboard: React.FC = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
         if (isMounted) {
-          if (orders.length === 0) await dispatch(getAllOrdersAsync()).unwrap();
-          if (users.length === 0) await dispatch(getAllUserAsync()).unwrap();
-          if (incomeTransactions.length === 0) {
-            const formData = {
-              txType: 'all',
-            };
-            await dispatch(getAllIncomeTransactionAsync(formData)).unwrap();
+          const apiCalls = [];
+
+          // Orders API
+          if (orders.length === 0) {
+            apiCalls.push(dispatch(getAllOrdersAsync()).unwrap());
           }
+
+          // Users API
+          if (users.length === 0) {
+            apiCalls.push(dispatch(getAllUserAsync()).unwrap());
+          }
+
+          // Income Transactions (All)
+          if (incomeTransactions.length === 0) {
+            const formData = { txType: 'all' };
+            apiCalls.push(
+              dispatch(getAllIncomeTransactionAsync(formData)).unwrap(),
+            );
+          }
+
+          // Income Transactions (Income)
+          const incomeFormData = { txType: 'income' };
+          apiCalls.push(
+            dispatch(getAllIncomeTransactionAsync(incomeFormData)).unwrap(),
+          );
+
+          const responses = await Promise.all(apiCalls);
+          const incomeResponse = responses[responses.length - 1];
+          const transactions = incomeResponse?.data ?? [];
+
+          let total = 0,
+            staking = 0,
+            profitSharing = 0,
+            royalty = 0,
+            arbBonus = 0;
+
+          transactions.forEach((tx: any) => {
+            total += tx.amount;
+            if (tx.source === 'reward') staking += tx.amount;
+            if (tx.source === 'direct') profitSharing += tx.amount;
+            if (tx.source === 'roi') royalty += tx.amount;
+            if (tx.source === 'royalty') arbBonus += tx.amount;
+          });
+
+          setIncomeData({
+            totalIncome: total,
+            stakingReward: staking,
+            profitSharingReward: profitSharing,
+            royaltyReward: royalty,
+            arbBonusReward: arbBonus,
+          });
         }
       } catch (error: any) {
         toast.error(error?.message || 'Service error');
@@ -54,7 +105,13 @@ const Dashboard: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [loggedInUser, orders.length, users.length, dispatch]);
+  }, [
+    loggedInUser,
+    orders.length,
+    users.length,
+    incomeTransactions.length,
+    dispatch,
+  ]);
 
   const activeUserCount = users.reduce(
     (acc, user) => (user.accountStatus?.activeStatus === 1 ? acc + 1 : acc),
@@ -86,24 +143,25 @@ const Dashboard: React.FC = () => {
           isLoading={isLoading}
         >
           <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="18"
-            viewBox="0 0 22 18"
+            className="fill-gray dark:fill-white"
+            width="26"
+            height="30"
+            viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M7.18418 8.03751C9.31543 8.03751 11.0686 6.35313 11.0686 4.25626C11.0686 2.15938 9.31543 0.475006 7.18418 0.475006C5.05293 0.475006 3.2998 2.15938 3.2998 4.25626C3.2998 6.35313 5.05293 8.03751 7.18418 8.03751ZM7.18418 2.05626C8.45605 2.05626 9.52168 3.05313 9.52168 4.29063C9.52168 5.52813 8.49043 6.52501 7.18418 6.52501C5.87793 6.52501 4.84668 5.52813 4.84668 4.29063C4.84668 3.05313 5.9123 2.05626 7.18418 2.05626Z"
-              fill=""
+            <circle
+              cx="12"
+              cy="8"
+              r="4"
+              stroke="currentColor"
+              strokeWidth="2"
             />
             <path
-              d="M15.8124 9.6875C17.6687 9.6875 19.1468 8.24375 19.1468 6.42188C19.1468 4.6 17.6343 3.15625 15.8124 3.15625C13.9905 3.15625 12.478 4.6 12.478 6.42188C12.478 8.24375 13.9905 9.6875 15.8124 9.6875ZM15.8124 4.7375C16.8093 4.7375 17.5999 5.49375 17.5999 6.45625C17.5999 7.41875 16.8093 8.175 15.8124 8.175C14.8155 8.175 14.0249 7.41875 14.0249 6.45625C14.0249 5.49375 14.8155 4.7375 15.8124 4.7375Z"
-              fill=""
-            />
-            <path
-              d="M15.9843 10.0313H15.6749C14.6437 10.0313 13.6468 10.3406 12.7874 10.8563C11.8593 9.61876 10.3812 8.79376 8.73115 8.79376H5.67178C2.85303 8.82814 0.618652 11.0625 0.618652 13.8469V16.3219C0.618652 16.975 1.13428 17.4906 1.7874 17.4906H20.2468C20.8999 17.4906 21.4499 16.9406 21.4499 16.2875V15.4625C21.4155 12.4719 18.9749 10.0313 15.9843 10.0313ZM2.16553 15.9438V13.8469C2.16553 11.9219 3.74678 10.3406 5.67178 10.3406H8.73115C10.6562 10.3406 12.2374 11.9219 12.2374 13.8469V15.9438H2.16553V15.9438ZM19.8687 15.9438H13.7499V13.8469C13.7499 13.2969 13.6468 12.7469 13.4749 12.2313C14.0937 11.7844 14.8499 11.5781 15.6405 11.5781H15.9499C18.0812 11.5781 19.8343 13.3313 19.8343 15.4625V15.9438H19.8687Z"
-              fill=""
+              d="M4 20C4 16.6863 7.13401 14 12 14C16.866 14 20 16.6863 20 20"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
             />
           </svg>
         </CardDataStats>
@@ -113,22 +171,22 @@ const Dashboard: React.FC = () => {
           isLoading={isLoading}
         >
           <svg
-            className="fill-primary dark:fill-white"
+            className="fill-gray dark:fill-white"
             width="22"
             height="22"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M12 3V15M12 3L16 7M12 3L8 7"
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
               stroke="currentColor"
               strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             />
             <path
-              d="M4 15C4 17.2091 5.79086 19 8 19H16C18.2091 19 20 17.2091 20 15"
+              d="M8 12L11 15L16 9"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
@@ -150,7 +208,21 @@ const Dashboard: React.FC = () => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M12 3V21M12 3L8 7M12 3L16 7M5 13L8 10M8 10L11 13M8 10V21M11 13L14 16M14 16L17 13M14 16V21M17 13L20 10M20 10V21"
+              d="M4 20V10M10 20V4M16 20V14M22 20H2"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle
+              cx="17"
+              cy="6"
+              r="3"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M15.5 6.5L17 8L20 4"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
@@ -158,23 +230,32 @@ const Dashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-
         <CardDataStats
           title="Total Income"
           total={totalIncome || 0}
           isLoading={isLoading}
         >
           <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="22"
+            className="fill-gray dark:fill-white"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
             <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-              fill="currentColor"
+              d="M12 7V17M9 10H15M9 14H15"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </CardDataStats>
@@ -184,24 +265,33 @@ const Dashboard: React.FC = () => {
           isLoading={isLoading}
         >
           <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="18"
-            viewBox="0 0 22 18"
+            className="fill-gray dark:fill-white"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M7.18418 8.03751C9.31543 8.03751 11.0686 6.35313 11.0686 4.25626C11.0686 2.15938 9.31543 0.475006 7.18418 0.475006C5.05293 0.475006 3.2998 2.15938 3.2998 4.25626C3.2998 6.35313 5.05293 8.03751 7.18418 8.03751ZM7.18418 2.05626C8.45605 2.05626 9.52168 3.05313 9.52168 4.29063C9.52168 5.52813 8.49043 6.52501 7.18418 6.52501C5.87793 6.52501 4.84668 5.52813 4.84668 4.29063C4.84668 3.05313 5.9123 2.05626 7.18418 2.05626Z"
-              fill=""
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              stroke="currentColor"
+              strokeWidth="2"
             />
             <path
-              d="M15.8124 9.6875C17.6687 9.6875 19.1468 8.24375 19.1468 6.42188C19.1468 4.6 17.6343 3.15625 15.8124 3.15625C13.9905 3.15625 12.478 4.6 12.478 6.42188C12.478 8.24375 13.9905 9.6875 15.8124 9.6875ZM15.8124 4.7375C16.8093 4.7375 17.5999 5.49375 17.5999 6.45625C17.5999 7.41875 16.8093 8.175 15.8124 8.175C14.8155 8.175 14.0249 7.41875 14.0249 6.45625C14.0249 5.49375 14.8155 4.7375 15.8124 4.7375Z"
-              fill=""
+              d="M12 7V17M9 10H15M9 14H15"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
-              d="M15.9843 10.0313H15.6749C14.6437 10.0313 13.6468 10.3406 12.7874 10.8563C11.8593 9.61876 10.3812 8.79376 8.73115 8.79376H5.67178C2.85303 8.82814 0.618652 11.0625 0.618652 13.8469V16.3219C0.618652 16.975 1.13428 17.4906 1.7874 17.4906H20.2468C20.8999 17.4906 21.4499 16.9406 21.4499 16.2875V15.4625C21.4155 12.4719 18.9749 10.0313 15.9843 10.0313ZM2.16553 15.9438V13.8469C2.16553 11.9219 3.74678 10.3406 5.67178 10.3406H8.73115C10.6562 10.3406 12.2374 11.9219 12.2374 13.8469V15.9438H2.16553V15.9438ZM19.8687 15.9438H13.7499V13.8469C13.7499 13.2969 13.6468 12.7469 13.4749 12.2313C14.0937 11.7844 14.8499 11.5781 15.6405 11.5781H15.9499C18.0812 11.5781 19.8343 13.3313 19.8343 15.4625V15.9438H19.8687Z"
-              fill=""
+              d="M16 6L12 2L8 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </CardDataStats>

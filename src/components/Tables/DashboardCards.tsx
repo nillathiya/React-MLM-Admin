@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 interface Card {
   title: string;
   value: string;
   color: string;
   icon: string;
+  status: string;
 }
 
 const DashboardCards: React.FC = () => {
@@ -14,19 +15,21 @@ const DashboardCards: React.FC = () => {
       value: '0',
       color: 'bg-blue-200',
       icon: '💵',
+      status: 'Approved',
     },
     {
-      title: 'Rewards',
+      title: 'Withdrawal',
       value: '0',
       color: 'bg-red-300',
-      icon: '🏆',
+      icon: '💵',
+      status: 'Pending',
     },
     {
-      title: 'Payouts',
+      title: 'Withdrawal',
       value: '0',
-
       color: 'bg-blue-200',
-      icon: '💰',
+      icon: '💵',
+      status: 'Rejected',
     },
   ];
 
@@ -40,7 +43,7 @@ const DashboardCards: React.FC = () => {
           <div className="text-3xl mb-2">{card.icon}</div>
           <h3 className="text-xl font-bold mb-1">{card.title}</h3>
           <hr className="w-50 border-black mb-2 dark:border-gray-300" />
-          <p className="text-sm">(Coin Wise)</p>
+          <p className="text-sm">{card.status}</p>
           <p className="text-lg font-semibold">{card.value}</p>
         </div>
       ))}
