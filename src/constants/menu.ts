@@ -157,6 +157,12 @@ export const MENU: {
         path: '/setting/general-setting',
         icon: 'USER',
       },
+      {
+        id: generateUniqueId(),
+        title: 'News And Events',
+        path: '/setting/news-and-events',
+        icon: 'USER',
+      },
     ],
   },
   {

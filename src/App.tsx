@@ -57,6 +57,7 @@ import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
 import CustomerList from './pages/Dashboard/CustomerList';
 import Cards from './pages/Dashboard/Cards';
 import RankSettings from './pages/Settings/RankSettings';
+import NewAndEvents from './pages/Settings/NewAndEvent';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -200,6 +201,15 @@ function App() {
             <>
               <PageTitle title="General settings" />
               <GeneralSetting />
+            </>
+          }
+        />
+             <Route
+          path="/setting/news-and-events"
+          element={
+            <>
+              <PageTitle title="News & Events" />
+              <NewAndEvents />
             </>
           }
         />

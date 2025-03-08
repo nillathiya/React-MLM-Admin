@@ -9,6 +9,7 @@ import ordersReducer from '../features/order/orderSlice';
 import transactionReducer from '../features/transaction/transactionSlice';
 import supportReducer from '../features/support/supportSlice';
 import settingsReducer from '../features/settings/settingsSlice';
+import newsEventReducer from "../features/news-event/newsEventSlice";
 
 const authPersistConfig = {
   key: 'auth',
@@ -28,6 +29,7 @@ export const store = configureStore({
     transaction: transactionReducer,
     support: supportReducer,
     settings: settingsReducer,
+    newsEvent:newsEventReducer,
   },
 });
 

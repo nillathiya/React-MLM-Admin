@@ -68,7 +68,12 @@ interface Routes {
     UPDATE: (id: string) => string;
     DELETE: (id: string) => string;
     DELETE_ROW: string;
-    SAVE_ROW:string;
+    SAVE_ROW: string;
+  };
+  NEWS_EVENT: {
+    CREATE: string;
+    GET_ALL: string;
+    UPDATE: string;
   };
 }
 
@@ -179,6 +184,11 @@ export const ROUTES: Routes = {
     UPDATE: (id: string) => `${API_URL}/api/rank-settings/update/${id}`,
     DELETE: (id: string) => `${API_URL}/api/rank-settings/delete/${id}`,
     DELETE_ROW: `${API_URL}/api/rank-settings/delete-row`,
-    SAVE_ROW:`${API_URL}/api/rank-settings/save-row`,
+    SAVE_ROW: `${API_URL}/api/rank-settings/save-row`,
+  },
+  NEWS_EVENT: {
+    CREATE: `${API_URL}/api/news-events/create`,
+    GET_ALL: `${API_URL}/api/news-events/get-all`,
+    UPDATE: `${API_URL}/api/news-events/update`,
   },
 };
