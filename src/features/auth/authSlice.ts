@@ -168,7 +168,6 @@ const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(requestImpersonationTokenAsync.rejected, (state, action) => {
-        console.log('error mesasge', action.payload);
         state.loading = false;
         state.errorMessage = action.payload as string;
       });

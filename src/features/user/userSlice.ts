@@ -110,8 +110,7 @@ export const getContactMessagesAsync = createAsyncThunk(
 
 export const changeConatctMesasgeStatusAsync = createAsyncThunk(
   'user/changeConatctMesasgeStatus',
-  async (formData:{  id:string,
-    status:string}, { rejectWithValue }) => {
+  async (formData: { id: string; status: string }, { rejectWithValue }) => {
     try {
       const data = await changeConatctMesasgeStatus(formData);
       return data;
