@@ -26,6 +26,13 @@ import { FiPlus,FiMinus } from "react-icons/fi";
 import { LiaSave } from "react-icons/lia";
 
 
+import { MdPayment } from 'react-icons/md';
+import { BiMoneyWithdraw } from 'react-icons/bi';
+import { AiOutlineOrderedList } from 'react-icons/ai';
+import { GrMoney } from 'react-icons/gr';
+import { RiFundsBoxLine } from 'react-icons/ri';
+import { MdOutlineContactPhone } from 'react-icons/md';
+import { MdNetworkCheck } from 'react-icons/md';
 
 export const ICONS = {
   HOME: FaHome,
@@ -59,4 +66,10 @@ export const ICONS = {
   MINUS:FiMinus,
   TRASH:IoTrashOutline,
   SAVE:LiaSave,
+  WIDTHDRAWAL: BiMoneyWithdraw,
+  ORDER: AiOutlineOrderedList,
+  INCOME: GrMoney,
+  FUND: RiFundsBoxLine,
+  CONTACTUs: MdOutlineContactPhone,
+  NETWORK: MdNetworkCheck,
 } as const;

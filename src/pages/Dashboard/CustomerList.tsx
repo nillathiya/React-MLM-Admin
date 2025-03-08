@@ -52,7 +52,7 @@ const NewCustomerList: React.FC = () => {
           View All
         </Link>
       </div>
-      <div className="card-body" style={{padding:"10px"}}>
+      <div className="card-body dark:bg-boxdark" style={{ padding: '10px' }}>
         <div
           className="table-responsive dark:border-strokedark dark:bg-boxdark"
           style={{ padding: '10px' }}
