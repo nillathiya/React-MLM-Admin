@@ -21,16 +21,16 @@ const ChangePassword: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // const { oldPassword, newPassword, confirmPassword } = formData;
+    const { oldPassword, newPassword, confirmPassword } = formData;
 
-    // if (!oldPassword || !newPassword || !confirmPassword) {
-    //   toast.error('All fields are required.');
-    //   return;
-    // }
-    // if (newPassword !== confirmPassword) {
-    //   toast.error('New Password and Confirm Password do not match.');
-    //   return;
-    // }
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      toast.error('All fields are required.');
+      return;
+    }
+    if (newPassword.trim() !== confirmPassword.trim()) {
+      toast.error('New Password and Confirm Password do not match.');
+      return;
+    }
 
     setIsSubmitting(true);
 
