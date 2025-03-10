@@ -126,3 +126,19 @@ export const getUserDetailsWithInvestmentInfo = async (
     );
   }
 };
+
+export const AddNewMember = async (formData: {
+  wallet: string;
+  sponsorUsername: string;
+}) => {
+  try {
+    const response = await apiClient.post(ROUTES.USER.ADD_MEMBER, formData);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+
+    throw new Error('Add New Member failed. Please try again later.');
+  }
+};

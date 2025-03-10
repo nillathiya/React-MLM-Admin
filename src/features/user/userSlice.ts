@@ -10,6 +10,7 @@ import {
   changeConatctMesasgeStatus,
   getUserGenerationTree,
   getUserDetailsWithInvestmentInfo,
+  AddNewMember,
 } from './userApi';
 import { CRYPTO_SECRET_KEY } from '../../constants';
 
@@ -151,6 +152,28 @@ export const getUserDetailsWithInvestmentInfoAsync = createAsyncThunk(
   async (formData: any, { signal, rejectWithValue }) => {
     try {
       const data = await getUserDetailsWithInvestmentInfo(formData, signal);
+      return data;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+export const AddNewMemberAsync = createAsyncThunk(
+  'user/AddNewMember',
+  async (
+    formData: {
+      wallet: string;
+      sponsorUsername: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const data = await AddNewMember(formData);
       return data;
     } catch (error: any) {
       if (error.name === 'AbortError') {
@@ -314,7 +337,18 @@ const userSlice = createSlice({
       )
       .addCase(getUserDetailsWithInvestmentInfoAsync.rejected, (state) => {
         state.isLoading = false;
-      });
+      })
+      // AddNewMemberAsync
+      .addCase(AddNewMemberAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(AddNewMemberAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(AddNewMemberAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+
   },
 });
 
