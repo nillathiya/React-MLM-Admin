@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import CryptoJS from 'crypto-js';
 import { IContactUs, Pagination } from '../../types';
 import {
   getAllUser,
@@ -7,7 +8,10 @@ import {
   checkUsername,
   getContactMessages,
   changeConatctMesasgeStatus,
+  getUserGenerationTree,
+  getUserDetailsWithInvestmentInfo,
 } from './userApi';
+import { CRYPTO_SECRET_KEY } from '../../constants';
 
 interface UserState {
   user: any;
@@ -15,6 +19,7 @@ interface UserState {
   isLoading: boolean;
   pagination: Pagination | null;
   contactMessages: IContactUs[];
+  userGenerationTree: any[];
 }
 
 export interface RootState {
@@ -27,6 +32,7 @@ const initialState: UserState = {
   isLoading: false,
   pagination: null,
   contactMessages: [],
+  userGenerationTree: [],
 };
 
 // Async Thunks
@@ -124,6 +130,40 @@ export const changeConatctMesasgeStatusAsync = createAsyncThunk(
   },
 );
 
+export const getUserGenerationTreeAsync = createAsyncThunk(
+  'user/getUserGenerationTree',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const data = await getUserGenerationTree(userId);
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+export const getUserDetailsWithInvestmentInfoAsync = createAsyncThunk(
+  'user/getUserDetailsWithInvestmentInfo',
+  async (formData: any, { signal, rejectWithValue }) => {
+    try {
+      const data = await getUserDetailsWithInvestmentInfo(formData, signal);
+      return data;
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Request was aborted');
+        return rejectWithValue('Request canceled');
+      }
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      );
+    }
+  },
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -199,6 +239,80 @@ const userSlice = createSlice({
         );
       })
       .addCase(changeConatctMesasgeStatusAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // getUserGenerationTreeAsync
+      .addCase(getUserGenerationTreeAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getUserGenerationTreeAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const response = action.payload;
+        const encryptedUserGenerationData = response.data;
+
+        if (!encryptedUserGenerationData) {
+          console.error('Error: No encrypted data received!');
+          return;
+        }
+
+        try {
+          const decryptedData = CryptoJS.AES.decrypt(
+            encryptedUserGenerationData,
+            CRYPTO_SECRET_KEY,
+          ).toString(CryptoJS.enc.Utf8);
+
+          if (!decryptedData) {
+            console.error('Error: Decryption resulted in empty data!');
+            return;
+          }
+
+          const decryptedUserGenerationData = JSON.parse(decryptedData);
+
+          state.userGenerationTree = decryptedUserGenerationData;
+        } catch (error) {
+          console.error('Decryption failed:', error);
+        }
+      })
+      .addCase(getUserGenerationTreeAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // getUserDetailsWithInvestmentInfoAsync
+      .addCase(getUserDetailsWithInvestmentInfoAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(
+        getUserDetailsWithInvestmentInfoAsync.fulfilled,
+        (state, action) => {
+          state.isLoading = false;
+          const encryptedUserDetails = action.payload.data;
+
+          if (typeof encryptedUserDetails !== 'string') {
+            console.error(
+              'Received data is not encrypted:',
+              encryptedUserDetails,
+            );
+            return;
+          }
+
+          try {
+            const decryptedData = CryptoJS.AES.decrypt(
+              encryptedUserDetails,
+              CRYPTO_SECRET_KEY,
+            ).toString(CryptoJS.enc.Utf8);
+
+            if (!decryptedData || decryptedData.trim() === '') {
+              console.error('Decryption failed. Empty or invalid string.');
+              return;
+            }
+
+            const decryptedUserDetails = JSON.parse(decryptedData);
+            state.user = decryptedUserDetails;
+          } catch (error) {
+            console.error('Decryption error:', error);
+          }
+        },
+      )
+      .addCase(getUserDetailsWithInvestmentInfoAsync.rejected, (state) => {
         state.isLoading = false;
       });
   },

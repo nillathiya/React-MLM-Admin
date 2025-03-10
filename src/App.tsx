@@ -58,6 +58,7 @@ import CustomerList from './pages/Dashboard/CustomerList';
 import Cards from './pages/Dashboard/Cards';
 import RankSettings from './pages/Settings/RankSettings';
 import NewAndEvents from './pages/Settings/NewAndEvent';
+import ViewUserGeneration from './pages/Network/viewUserGeneration';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -130,12 +131,22 @@ function App() {
             </>
           }
         />
+        {/* Network */}
         <Route
           path="/network/team"
           element={
             <>
               <PageTitle title="Netwok" />
               <Team />
+            </>
+          }
+        />
+          <Route
+          path="/network/team/user/:id"
+          element={
+            <>
+              <PageTitle title="Edit User" />
+              <ViewUserGeneration />
             </>
           }
         />
