@@ -47,6 +47,9 @@ interface Routes {
     GET_ALL: string;
     UPDATE_PROFILE: string;
     CHECK_NAME: string;
+    GET_GENERATION_TREE: string;
+    GET_DETAILS_WITH_INVEST_INFO: string;
+    ADD_MEMBER: string;
   };
   ORDER: {
     GET_ALL: string;
@@ -167,6 +170,9 @@ export const ROUTES: Routes = {
     GET_ALL: `${API_URL}/api/user/get-all`,
     UPDATE_PROFILE: `${API_URL}/api/user/update/profile`,
     CHECK_NAME: `${API_URL}/api/user/check-name`,
+    GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
+    GET_DETAILS_WITH_INVEST_INFO: `${API_URL}/api/user/details-with-investment`,
+    ADD_MEMBER: `${API_URL}/api/user/create`,
   },
   ORDER: {
     GET_ALL: `${API_URL}/api/orders/get-all`,

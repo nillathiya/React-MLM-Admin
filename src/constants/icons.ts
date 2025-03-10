@@ -24,8 +24,6 @@ import { MdPayments } from 'react-icons/md';
 import { IoMdRefresh } from "react-icons/io";
 import { FiPlus,FiMinus } from "react-icons/fi";
 import { LiaSave } from "react-icons/lia";
-
-
 import { MdPayment } from 'react-icons/md';
 import { BiMoneyWithdraw } from 'react-icons/bi';
 import { AiOutlineOrderedList } from 'react-icons/ai';

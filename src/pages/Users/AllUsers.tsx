@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { getAllUserAsync } from '../../features/user/userSlice';
-import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import { DEFAULT_PER_PAGE_ITEMS, USER_API_URL } from '../../constants';
 import { formatDate } from '../../utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
 import { getAllOrdersAsync } from '../../features/order/orderSlice';
@@ -26,10 +26,10 @@ const AllUsers: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        if (orders.length == 0) {
+        if (users.length == 0) {
           await dispatch(getAllUserAsync()).unwrap();
         }
-        if (users.length == 0) {
+        if (orders.length == 0) {
           await dispatch(getAllOrdersAsync()).unwrap();
         }
       } catch (error: any) {
@@ -101,9 +101,7 @@ const AllUsers: React.FC = () => {
       console.log('response', response);
       if (response.status === 'success') {
         const token = response.data;
-        const userAppURL = `${
-          import.meta.env.VITE_USER_API_URL
-        }?impersonate=${token}`;
+        const userAppURL = `${USER_API_URL}?impersonate=${token}`;
         window.open(userAppURL, '_blank');
       } else {
         toast.error('Failed to request user login');

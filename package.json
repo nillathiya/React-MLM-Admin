@@ -15,10 +15,12 @@
     "url": "https://tailadmin.com"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.6.0",
     "apexcharts": "^3.41.0",
     "axios": "^1.7.9",
     "country-state-city": "^3.2.1",
+    "crypto-js": "^4.2.0",
     "datatables.net-dt": "^2.2.2",
     "datatables.net-react": "^1.0.0",
     "datatables.net-responsive-dt": "^3.0.4",
@@ -35,6 +37,7 @@
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
+    "react-d3-tree": "^3.6.6",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.54.2",
     "react-hot-toast": "^2.5.1",
@@ -52,6 +55,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/datatables.net": "^1.10.28",
     "@types/file-saver": "^2.0.7",
     "@types/google-libphonenumber": "^7.4.30",
