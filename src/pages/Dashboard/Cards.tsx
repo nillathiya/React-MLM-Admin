@@ -1,65 +1,193 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { getAllOrdersAsync } from '../../features/order/orderSlice';
+import { getAllUserAsync } from '../../features/user/userSlice';
+import toast from 'react-hot-toast';
+import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
+
+export interface IncomeTransaction {
+  totalIncome: number;
+  stakingReward: number;
+  profitSharingReward: number;
+  royaltyReward: number;
+  arbBonusReward: number;
+}
 
 const Cards: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { orders } = useSelector((state: RootState) => state.orders);
+  const { users } = useSelector((state: RootState) => state.user);
+  const { incomeTransactions } = useSelector(
+    (state: RootState) => state.transaction,
+  );
+  const { currentUser: loggedInUser } = useSelector(
+    (state: RootState) => state.auth,
+  );
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [incomeData, setIncomeData] = useState<IncomeTransaction>({
+    totalIncome: 0,
+    stakingReward: 0,
+    profitSharingReward: 0,
+    royaltyReward: 0,
+    arbBonusReward: 0,
+  });
+
+  useEffect(() => {
+    if (!loggedInUser?._id) return;
+
+    let isMounted = true;
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const apiCalls = [];
+        if (!orders.length)
+          apiCalls.push(dispatch(getAllOrdersAsync()).unwrap());
+        if (!users.length) apiCalls.push(dispatch(getAllUserAsync()).unwrap());
+
+        const incomeFormData = { txType: 'income' };
+        apiCalls.push(
+          dispatch(getAllIncomeTransactionAsync(incomeFormData)).unwrap(),
+        );
+
+        const responses = await Promise.all(apiCalls);
+        const incomeResponse = responses[responses.length - 1];
+        const transactions = incomeResponse?.data ?? [];
+
+        if (isMounted) {
+          setIncomeData(
+            transactions.reduce(
+              (acc: any, tx: any) => {
+                acc.totalIncome += tx.amount;
+                if (tx.source === 'reward') acc.stakingReward += tx.amount;
+                if (tx.source === 'direct')
+                  acc.profitSharingReward += tx.amount;
+                if (tx.source === 'roi') acc.royaltyReward += tx.amount;
+                if (tx.source === 'royalty') acc.arbBonusReward += tx.amount;
+                return acc;
+              },
+              {
+                totalIncome: 0,
+                stakingReward: 0,
+                profitSharingReward: 0,
+                royaltyReward: 0,
+                arbBonusReward: 0,
+              },
+            ),
+          );
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Service error');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchData();
+    return () => {
+      isMounted = false;
+    };
+  }, [loggedInUser, orders.length, users.length, dispatch]);
+
+  const updatedUsers = useMemo(() => {
+    if (!orders.length || !users.length) return [];
+    return users.map((user) => ({
+      ...user,
+      package: orders
+        .filter((order) => order.customerId?._id === user._id)
+        .reduce((acc, order) => acc + order.bv, 0),
+    }));
+  }, [users, orders]);
+
+  const totalInvestment = useMemo(
+    () => updatedUsers.reduce((acc, user) => acc + user.package, 0),
+    [updatedUsers],
+  );
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+
+  const todayInvestment = updatedUsers.reduce((acc, user) => {
+    return (
+      acc +
+      orders
+        .filter(
+          (order) =>
+            new Date(order.createdAt).setHours(0, 0, 0, 0) ===
+              today.getTime() && order.customerId?._id === user._id,
+        )
+        .reduce((sum, order) => sum + order.bv, 0)
+    );
+  }, 0);
+
+  const yesterdayInvestment = updatedUsers.reduce((acc, user) => {
+    return (
+      acc +
+      orders
+        .filter(
+          (order) =>
+            new Date(order.createdAt).setHours(0, 0, 0, 0) ===
+              yesterday.getTime() && order.customerId?._id === user._id,
+        )
+        .reduce((sum, order) => sum + order.bv, 0)
+    );
+  }, 0);
+
   return (
     <div className="grid gap-6 md:grid-cols-2 mt-6">
-      <div className="bg-white dark:bg-boxdark dark:border-strokedark border border-gray-200 rounded-lg shadow-md p-6">
-        <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-500 dark:text-gray-400 mb-6 text-center">
+      {/* Investment Section */}
+      <div className="bg-white dark:bg-boxdark border border-gray-200 rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold text-gray-500 dark:text-gray-400 mb-6 text-center">
           Investment
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-          <div className="flex flex-col items-center bg-gray-100 dark:bg-[#1a222c] rounded-lg shadow p-4 md:p-5 w-full">
-            <h4 className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">
-              Total
-            </h4>
-            <strong className="text-lg md:text-base text-gray-600 dark:text-gray-300">
-              $120,700
-            </strong>
-          </div>
-
-          <div className="flex flex-col items-center bg-gray-100 dark:bg-[#1a222c] rounded-lg shadow p-4 md:p-5 w-full">
-            <h4 className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">
-              Today
-            </h4>
-            <strong className="text-lg md:text-base text-gray-600 dark:text-gray-300">
-              $0
-            </strong>
-          </div>
-
-          <div className="flex flex-col items-center bg-gray-100 dark:bg-[#1a222c] rounded-lg shadow p-4 md:p-5 w-full">
-            <h4 className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1 md:mb-2">
-              Yesterday
-            </h4>
-            <strong className="text-lg md:text-base text-gray-600 dark:text-gray-300">
-              $0
-            </strong>
-          </div>
+        <div className="grid grid-cols-3 gap-6">
+          {[
+            { label: 'Total', value: totalInvestment },
+            { label: 'Today', value: todayInvestment },
+            { label: 'Yesterday', value: yesterdayInvestment },
+          ].map(({ label, value }, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center bg-gray-100 dark:bg-[#1a222c] rounded-lg shadow p-5"
+            >
+              <h4 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {label}
+              </h4>
+              <strong className="text-lg text-gray-600 dark:text-gray-300">
+                ${value.toFixed(2)}
+              </strong>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="cards income-card dark:border-strokedark dark:bg-boxdark">
-        <h3 className="card-title">Income Report</h3>
-
-        <div className="card-content">
-          <p className="highlight dark:bg-[#1a222c]">
-            <span>Total Income</span> <strong>5531</strong>
-          </p>
-
-          <p>
-            <span>Staking Reward</span> <strong>4423</strong>
-          </p>
-
-          <p>
-            <span>Profit Sharing Reward</span> <strong>808</strong>
-          </p>
-
-          <p>
-            <span>Royalty Reward</span> <strong>300</strong>
-          </p>
-
-          <p>
-            <span>ARB Bonus Reward</span> <strong>0</strong>
-          </p>
+      {/* Income Report Section */}
+      <div className="bg-white dark:bg-boxdark border border-gray-200 rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold text-gray-500 dark:text-gray-400 mb-6 text-center">
+          Income Report
+        </h3>
+        <div className="space-y-4">
+          {[
+            { label: 'Total Income', value: incomeData.totalIncome },
+            { label: 'Staking Reward', value: incomeData.stakingReward },
+            {
+              label: 'Profit Sharing Reward',
+              value: incomeData.profitSharingReward,
+            },
+            { label: 'Royalty Reward', value: incomeData.royaltyReward },
+            { label: 'ARB Bonus Reward', value: incomeData.arbBonusReward },
+          ].map(({ label, value }) => (
+            <p key={label} className="flex justify-between text-lg font-medium">
+              <span>{label}</span>
+              <strong>${value.toFixed(2)}</strong>
+            </p>
+          ))}
         </div>
       </div>
     </div>

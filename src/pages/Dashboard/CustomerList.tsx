@@ -68,7 +68,7 @@ const NewCustomerList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {customers.map((customer, index) => (
+              {customers.map((customer) => (
                 <tr
                   key={customer.id}
                   className="text-gray-600 dark:text-gray-300"
