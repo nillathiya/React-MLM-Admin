@@ -10,10 +10,10 @@ import { getAllOrdersAsync } from '../../features/order/orderSlice';
 import toast from 'react-hot-toast';
 import { getAllUserAsync } from '../../features/user/userSlice';
 import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
-import Skeleton from '../../components/ui/Skeleton/Skeleton';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const [isLoading, setIsLoading] = useState(true);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { users } = useSelector((state: RootState) => state.user);
   const { incomeTransactions } = useSelector(
@@ -22,7 +22,6 @@ const Dashboard: React.FC = () => {
   const { currentUser: loggedInUser } = useSelector(
     (state: RootState) => state.auth,
   );
-  const [isLoading, setIsLoading] = useState(true);
   const [incomeData, setIncomeData] = useState({
     totalIncome: 0,
     stakingReward: 0,

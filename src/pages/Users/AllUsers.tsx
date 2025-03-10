@@ -17,7 +17,7 @@ import { ICONS } from '../../constants';
 import Icon from '../../components/Icons/Icon';
 import { requestImpersonationTokenAsync } from '../../features/auth/authSlice';
 
-function AllUsers() {
+const AllUsers: React.FC = () => {
   const { users, isLoading } = useSelector((state: RootState) => state.user);
   const { orders } = useSelector((state: RootState) => state.orders);
   const dispatch = useDispatch<AppDispatch>();
@@ -86,6 +86,7 @@ function AllUsers() {
   }, [users, orders]);
 
   console.log('updatedUsers', updatedUsers);
+
   const navigate = useNavigate();
 
   const handleEdit = (id: string) => {
@@ -97,7 +98,7 @@ function AllUsers() {
       const response = await dispatch(
         requestImpersonationTokenAsync(userId),
       ).unwrap();
-      console.log("response",response);
+      console.log('response', response);
       if (response.status === 'success') {
         const token = response.data;
         const userAppURL = `${
@@ -255,6 +256,6 @@ function AllUsers() {
       </div>
     </>
   );
-}
+};
 
 export default AllUsers;
