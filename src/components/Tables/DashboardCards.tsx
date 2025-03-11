@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import toast from 'react-hot-toast';
+import { fetchWithdrawals } from '../../features/withdrawal/withdrawalSlice';
 
 interface Card {
   title: string;
@@ -9,24 +13,49 @@ interface Card {
 }
 
 const DashboardCards: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { withdrawals, isLoading } = useSelector(
+    (state: RootState) => state.withdrawal,
+  );
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (withdrawals.length === 0) {
+          await dispatch(fetchWithdrawals()).unwrap();
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    })();
+  }, [dispatch, withdrawals]);
+
+  // Count withdrawals based on status
+  const withdrawalCounts = {
+    pending: withdrawals.filter((w) => w.status === 0).length,
+    approved: withdrawals.filter((w) => w.status === 1).length,
+    rejected: withdrawals.filter((w) => w.status === 2).length,
+  };
+
   const cards: Card[] = [
     {
       title: 'Withdrawal',
-      value: '0',
+      value: withdrawalCounts.approved.toString(),
       color: 'bg-blue-200',
       icon: '💵',
       status: 'Approved',
     },
     {
       title: 'Withdrawal',
-      value: '0',
+      value: withdrawalCounts.pending.toString(),
       color: 'bg-red-300',
       icon: '💵',
       status: 'Pending',
     },
     {
       title: 'Withdrawal',
-      value: '0',
+      value: withdrawalCounts.rejected.toString(),
       color: 'bg-blue-200',
       icon: '💵',
       status: 'Rejected',

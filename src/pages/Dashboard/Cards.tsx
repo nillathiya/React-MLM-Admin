@@ -106,6 +106,7 @@ const Cards: React.FC = () => {
     () => updatedUsers.reduce((acc, user) => acc + user.package, 0),
     [updatedUsers],
   );
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -142,11 +143,11 @@ const Cards: React.FC = () => {
   return (
     <div className="grid gap-6 md:grid-cols-2 mt-6">
       {/* Investment Section */}
-      <div className="bg-white dark:bg-boxdark border border-gray-200 rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-boxdark rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold text-gray-500 dark:text-gray-400 mb-6 text-center">
           Investment
         </h3>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             { label: 'Total', value: totalInvestment },
             { label: 'Today', value: todayInvestment },
@@ -168,13 +169,17 @@ const Cards: React.FC = () => {
       </div>
 
       {/* Income Report Section */}
-      <div className="bg-white dark:bg-boxdark border border-gray-200 rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-boxdark rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold text-gray-500 dark:text-gray-400 mb-6 text-center">
           Income Report
         </h3>
         <div className="space-y-4">
           {[
-            { label: 'Total Income', value: incomeData.totalIncome },
+            {
+              label: 'Total Income',
+              value: incomeData.totalIncome,
+              highlight: true,
+            },
             { label: 'Staking Reward', value: incomeData.stakingReward },
             {
               label: 'Profit Sharing Reward',
@@ -182,11 +187,23 @@ const Cards: React.FC = () => {
             },
             { label: 'Royalty Reward', value: incomeData.royaltyReward },
             { label: 'ARB Bonus Reward', value: incomeData.arbBonusReward },
-          ].map(({ label, value }) => (
-            <p key={label} className="flex justify-between text-lg font-medium">
-              <span>{label}</span>
-              <strong>${value.toFixed(2)}</strong>
-            </p>
+          ].map(({ label, value, highlight }) => (
+            <div
+              key={label}
+              className={`flex justify-between items-center p-4 rounded-lg shadow-sm 
+          ${
+            highlight
+              ? 'bg-[#fca5a5] dark:bg-[#1a222c] text-white font-semibold'
+              : 'bg-gray-100 dark:bg-[#1a222c]'
+          }`}
+            >
+              <span className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
+                {label}
+              </span>
+              <strong className="text-lg sm:text-xl text-gray-800 dark:text-gray-200">
+                ${value.toFixed(2)}
+              </strong>
+            </div>
           ))}
         </div>
       </div>

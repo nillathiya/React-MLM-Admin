@@ -1,45 +1,41 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import './Dashboard.css';
-import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-const NewCustomerList: React.FC = () => {
-  const navigate = useNavigate();
+import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { getAllUserAsync } from '../../features/user/userSlice';
+import toast from 'react-hot-toast';
 
-  const customers = [
-    {
-      id: 1,
-      name: 'Dianne Russell',
-      email: 'osgoodwy@gmail.com',
-      username: 'ARB163827',
-      date: '24 Jun 2024',
-    },
-    {
-      id: 2,
-      name: 'Wade Warren',
-      email: 'redaniel@gmail.com',
-      username: 'ARB750293',
-      date: '24 Jun 2024',
-    },
-    {
-      id: 3,
-      name: 'Albert Flores',
-      email: 'seema@gmail.com',
-      username: 'ARB378296',
-      date: '24 Jun 2024',
-    },
-    {
-      id: 4,
-      name: 'Bessie Cooper',
-      email: 'hamli@gmail.com',
-      username: 'ARB438915',
-      date: '24 Jun 2024',
-    },
-  ];
+const NewCustomerList: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { users } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (users.length === 0) {
+          await dispatch(getAllUserAsync()).unwrap();
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    })();
+  }, [dispatch, users.length]);
+
+  // Get latest 5 users
+  const latestUsers = useMemo(() => {
+    return [...users]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .slice(0, 5);
+  }, [users]);
 
   return (
     <div className="card new-customer-card mt-6" style={{ padding: '0px' }}>
       <div
-        className=" bg-white card-header d-flex align-items-center justify-content-between mb-2 dark:bg-[#24303f] "
+        className="bg-white card-header d-flex align-items-center justify-content-between mb-2 dark:bg-[#24303f]"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -59,7 +55,7 @@ const NewCustomerList: React.FC = () => {
         >
           <table className="table table-striped dark:border-strokedark dark:bg-boxdark dark:text-gray-300">
             <thead>
-              <tr className="bg-white text-gray-600 dark:bg-[#1a222c] dark:text-gray-300 ">
+              <tr className="bg-white text-gray-600 dark:bg-[#1a222c] dark:text-gray-300">
                 <th>Sr no.</th>
                 <th className="text-center">Name</th>
                 <th className="text-center">Username</th>
@@ -68,18 +64,24 @@ const NewCustomerList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {customers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="text-gray-600 dark:text-gray-300"
-                >
-                  <td className="text-center">{customer.id}</td>
-                  <td>{customer.name}</td>
-                  <td className="text-center">{customer.username}</td>
-                  <td className="text-center">{customer.email}</td>
-                  <td className="text-center">{customer.date}</td>
+              {latestUsers.map((user, index) => (
+                <tr key={user._id} className="text-gray-600 dark:text-gray-300">
+                  <td className="text-center">{index + 1}</td>
+                  <td>{user.name || 'N/A'}</td>
+                  <td className="text-center">{user.username || 'N/A'}</td>
+                  <td className="text-center">{user.email || 'N/A'}</td>
+                  <td className="text-center">
+                    {new Date(user.createdAt).toLocaleDateString() || 'N/A'}
+                  </td>
                 </tr>
               ))}
+              {latestUsers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    No users found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
