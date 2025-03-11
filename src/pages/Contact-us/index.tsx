@@ -96,25 +96,22 @@ function ContactUs() {
           <div className="flex justify-end mb-2">
             <div className="w-15">
               <button onClick={handleRefresh} className="btn-refresh">
-                <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
+                <Icon Icon={ICONS.REFRESH} className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
           </div>
-          <table
-            ref={tableRef}
-            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
-          >
+          <table ref={tableRef} className="table bordered-table display">
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                <th>S No.</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>Subject</th>
-                <th>Message</th>
-                <th>Status</th>
-                <th>Action</th>
-                <th>Date</th>
+              <tr>
+                <th className="table-header">S No.</th>
+                <th className="table-header">Name</th>
+                <th className="table-header">Email</th>
+                <th className="table-header">Mobile</th>
+                <th className="table-header">Subject</th>
+                <th className="table-header">Message</th>
+                <th className="table-header">Status</th>
+                <th className="table-header">Action</th>
+                <th className="table-header">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -144,31 +141,29 @@ function ContactUs() {
               ) : (
                 contactMessages.map((message: IContactUs, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{message.name}</td>
-                    <td>{message.email}</td>
-                    <td>{message.mobile}</td>
-                    <td>{message.subject}</td>
-                    <td>{message.message}</td>
-                    <td>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold capitalize${
-                          message.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-green-100 text-green-700'
-                        }`}
-                      >
-                        {message.status}
-                      </span>
+                    <td className="table-cell">{index + 1}</td>
+                    <td className="table-cell">{message.name}</td>
+                    <td className="table-cell">{message.email}</td>
+                    <td className="table-cell">{message.mobile}</td>
+                    <td className="table-cell">{message.subject}</td>
+                    <td className="table-cell">{message.message}</td>
+                    <td
+                      className={`table-cell capitalize ${
+                        message.status === 'pending'
+                          ? ' !text-yellow-700'
+                          : '!text-green-700'
+                      }`}
+                    >
+                      {message.status}
                     </td>
-                    <td>
+                    <td className="table-cell">
                       <div className="relative">
                         <select
                           value={message.status}
                           onChange={(e) =>
                             handleStatusChange(message._id, e.target.value)
                           }
-                          className="px-2 py-1 rounded-md text-xs font-semibold cursor-pointer 
+                          className="px-2 py-1 rounded-md text-sm font-semibold cursor-pointer 
                  border shadow-md focus:outline-none focus:ring-2 
                  dark:bg-gray-800 dark:text-white dark:border-gray-600
                  bg-white text-gray-700 border-gray-300"

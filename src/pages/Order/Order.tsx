@@ -19,9 +19,8 @@ import ExportModal from '../../common/ExportModal';
 interface Column {
   label: string;
   key: string;
-  format?: (value: any, index?: number) => string; 
+  format?: (value: any, index?: number) => string;
 }
-
 
 const Order: React.FC = () => {
   const { orders, isLoading } = useSelector((state: RootState) => state.orders);
@@ -29,7 +28,7 @@ const Order: React.FC = () => {
   const tableRef = useRef<HTMLTableElement>(null);
   const navigate = useNavigate();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [exportData,setExportData]=useState<any[]>([]);
+  const [exportData, setExportData] = useState<any[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -84,73 +83,70 @@ const Order: React.FC = () => {
 
   const handlePrintOrder = (orderUsername: string) => {
     if (!orderUsername) {
-      toast.error("User not found");
+      toast.error('User not found');
       return;
     }
     const userOrders = orders
-    .filter(order => order.customerId?.username === orderUsername)
-    .map(order => ({
-      ...order,
-      username: order.customerId?.username || "N/A", 
-    }));
+      .filter((order) => order.customerId?.username === orderUsername)
+      .map((order) => ({
+        ...order,
+        username: order.customerId?.username || 'N/A',
+      }));
 
-  
-    setExportData(userOrders); 
+    setExportData(userOrders);
     setIsExportModalOpen(true);
   };
-  
-  console.log("export data",exportData);
+
+  console.log('export data', exportData);
   const exportColumns: Column[] = [
     {
-      label: "S No.",
-      key: "index",
-      format: (_, index?: number) => (index !== undefined ? (index + 1).toString() : ""),
+      label: 'S No.',
+      key: 'index',
+      format: (_, index?: number) =>
+        index !== undefined ? (index + 1).toString() : '',
     },
-    { 
-      label: "User", 
-      key: "username", 
-    },
-  
     {
-      label: "Order Amount ($)",
-      key: "amount",
+      label: 'User',
+      key: 'username',
+    },
+
+    {
+      label: 'Order Amount ($)',
+      key: 'amount',
       format: (value: number) => `$${value}`,
     },
     {
-      label: "Tx Type",
-      key: "txType",
+      label: 'Tx Type',
+      key: 'txType',
       format: (value: string) => `${value}`,
     },
-    { label: "BV($)", key: "bv", format: (value: number) => `$${value}` },
+    { label: 'BV($)', key: 'bv', format: (value: number) => `$${value}` },
     {
-      label: "Status",
-      key: "status",
-      format: (value: number) => (value === 0 ? "Pending" : "Confirmed"),
+      label: 'Status',
+      key: 'status',
+      format: (value: number) => (value === 0 ? 'Pending' : 'Confirmed'),
     },
     {
-      label: "Date",
-      key: "createdAt",
+      label: 'Date',
+      key: 'createdAt',
       format: (value: string) => new Date(value).toLocaleDateString(),
     },
   ];
-  
+
   return (
     <div>
       <Breadcrumb pageName="All Orders" />
       <div className="table-bg">
         <div className="card-body overflow-x-auto">
-          <table
-            ref={tableRef}
-            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
-          >
+          <table ref={tableRef} className="table bordered-table display">
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                <th>S No.</th>
-                <th>Action</th>
-                <th>USER</th>
-                <th>Order Amount ($)</th>
-                <th>Payment Status</th>
-                <th>Date</th>
+              <tr>
+                <th className="table-header">S No.</th>
+                <th className="table-header">Action</th>
+                <th className="table-header">USER</th>
+                <th className="table-header">Order Amount ($)</th>
+                <th className="table-header">Payment Status</th>
+                <th className="table-header">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -180,7 +176,7 @@ const Order: React.FC = () => {
               ) : (
                 groupedOrders.map((order: any, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td className="table-cell">{index + 1}</td>
                     <td className="flex gap-2">
                       <button
                         className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
@@ -190,22 +186,24 @@ const Order: React.FC = () => {
                       </button>
                       <button
                         className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-                        onClick={()=>handlePrintOrder(order.customerId?.username)}
+                        onClick={() =>
+                          handlePrintOrder(order.customerId?.username)
+                        }
                       >
                         Print All
                       </button>
                     </td>
 
-                    <td>
+                    <td className="table-cell">
                       {order.customerId?.username
                         ? order.customerId.name
                           ? `${order.customerId.username} (${order.customerId.name})`
                           : order.customerId.username
                         : 'N/A'}
                     </td>
-                    <td>${order.amount || 'N/A'}</td>
+                    <td className="table-cell">${order.amount || 'N/A'}</td>
                     <td
-                      className={`px-4 py-2 font-medium ${
+                      className={`table-cell ${
                         order.status === 0
                           ? 'text-yellow-500   dark:text-yellow-300'
                           : 'text-green-500  dark:text-green-300'
@@ -214,7 +212,9 @@ const Order: React.FC = () => {
                       {order.status === 0 ? 'Pending' : 'Confirmed'}
                     </td>
 
-                    <td>{formatDate(order.createdAt)}</td>
+                    <td className="table-cell">
+                      {formatDate(order.createdAt)}
+                    </td>
                   </tr>
                 ))
               )}

@@ -9,12 +9,22 @@
 }
 
 @layer components {
+  /* DataTable custom style */
   .table-bg {
     @apply dark:bg-boxdark p-6 bg-white rounded-lg shadow-md;
   }
 
+  .table-header {
+    @apply font-medium text-black dark:text-white uppercase 
+    !text-sm sm:!text-sm md:!text-base;
+  }
+  .table-cell {
+    @apply font-medium text-black dark:text-white text-center !text-sm sm:!text-sm md:!text-base;
+  }
+
+  /* Buttons */
   .btn-refresh {
-    @apply flex items-center justify-center gap-2 px-1 py-1 sm:px-3 sm:py-2 
+    @apply flex items-center gap-2 !px-4 !py-2 
     bg-blue-600 text-white rounded-md 
     hover:bg-blue-700 transition active:scale-95
     dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200;

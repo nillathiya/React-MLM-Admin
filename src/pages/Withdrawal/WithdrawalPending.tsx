@@ -85,48 +85,25 @@ const WithdrawalPending: React.FC = () => {
         <div className="card-body overflow-x-auto">
           {/* Refresh button */}
           <div className="flex justify-end mb-2">
-            <div className="w-15">
+            <div className="">
               <button onClick={handleRefresh} className="btn-refresh">
-                <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
+                <Icon Icon={ICONS.REFRESH} className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
           </div>
-          <table
-            ref={tableRef}
-            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
-          >
+          <table ref={tableRef} className="table bordered-table display">
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  S.No
-                </th>
-                <th className=" min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Tx user
-                </th>
-                <th className="min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Action
-                </th>
-                <th className="min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Amount
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Tx Charge
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Withdrawal pool
-                </th>
-                <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Payable Amount
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  TDS
-                </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Status
-                </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Date
-                </th>
+              <tr>
+                <th className="table-header">S.No</th>
+                <th className="table-header">Tx user</th>
+                <th className="table-header">Action</th>
+                <th className="table-header">Amount</th>
+                <th className="table-header">Tx Charge</th>
+                <th className="table-header">Withdrawal pool</th>
+                <th className="table-header">Payable Amount</th>
+                <th className="table-header">TDS</th>
+                <th className="table-header">Status</th>
+                <th className="table-header">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -155,58 +132,37 @@ const WithdrawalPending: React.FC = () => {
                 </tr>
               ) : (
                 pendingWithdrawals.map((withdrawal: any, index: number) => (
-                  <tr key={withdrawal._id}>
+                  <tr key={withdrawal._id} className="">
                     <td>{index + 1}</td>
 
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.uCode?.username || 'N/A'}
-                      </h5>
+                    <td className="table-cell">
+                      {withdrawal.uCode?.username || 'N/A'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        <button
-                          onClick={() => handleClick(withdrawal._id)}
-                          className="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
-                        >
-                          View
-                        </button>
-                      </h5>
+                    <td className="table-cell">
+                      <button
+                        onClick={() => handleClick(withdrawal._id)}
+                        className="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+                      >
+                        View
+                      </button>
                     </td>
 
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        $
-                        {(
-                          (withdrawal.amount ?? 0) +
-                          (withdrawal.txCharge ?? 0) +
-                          (withdrawal.wPool ?? 0)
-                        ).toFixed(2)}
-                      </h5>
+                    <td className="table-cell">
+                      $
+                      {(
+                        (withdrawal.amount ?? 0) +
+                        (withdrawal.txCharge ?? 0) +
+                        (withdrawal.wPool ?? 0)
+                      ).toFixed(2)}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        ${withdrawal.txCharge}
-                      </h5>
+                    <td className="table-cell">${withdrawal.txCharge}</td>
+                    <td className="table-cell">
+                      {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        ${withdrawal.amount}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.tds || '0'}
-                      </h5>
-                    </td>
+                    <td className="table-cell">${withdrawal.amount}</td>
+                    <td className="table-cell">{withdrawal.tds || '0'}</td>
                     <td
-                      className={`
-                      rounded-md font-semibold text-start border-b border-[#eee] py-5 px-4 dark:border-strokedark
+                      className={`table-cell
                         ${
                           withdrawal.status === 0
                             ? ' !text-yellow-700'
@@ -222,7 +178,9 @@ const WithdrawalPending: React.FC = () => {
                         ? 'Approved'
                         : 'Cancelled'}
                     </td>
-                    <td>{formatDate(withdrawal.createdAt)}</td>
+                    <td className="table-cell">
+                      {formatDate(withdrawal.createdAt)}
+                    </td>
                   </tr>
                 ))
               )}

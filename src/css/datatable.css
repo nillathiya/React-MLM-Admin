@@ -874,6 +874,7 @@ div.dt-container.dt-empty-footer .dt-scroll-body tbody > tr:last-child > * {
     flex-direction: row;
     align-items: center;
     justify-content: start;
+    font-size: 15px;
   }
 
   .dt-container .dt-search input {
@@ -2049,6 +2050,7 @@ label {
 
   .dt-search {
     width: 100%;
+    font-size: 10px;
   }
   .dt-length {
     width: 100% !important;

@@ -1,4 +1,4 @@
-import { FaHome, FaUser } from 'react-icons/fa';
+import { FaHome, FaUser,FaRegCopy } from 'react-icons/fa';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { RxDashboard } from 'react-icons/rx';
 import { BiBarChart } from 'react-icons/bi';
@@ -70,4 +70,5 @@ export const ICONS = {
   FUND: RiFundsBoxLine,
   CONTACTUs: MdOutlineContactPhone,
   NETWORK: MdNetworkCheck,
+  COPY:FaRegCopy,
 } as const;

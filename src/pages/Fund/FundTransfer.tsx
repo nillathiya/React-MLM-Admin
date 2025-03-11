@@ -61,17 +61,14 @@ const FundTransfer: React.FC = () => {
       <Breadcrumb pageName="Fund Transfer" />
       <div className="table-bg">
         <div className="card-body overflow-x-auto">
-          <table
-            ref={tableRef}
-            className="table bordered-table mb-0 w-full border border-gray-300 dark:border-gray-700 rounded-lg display overflow-x-auto"
-          >
+          <table ref={tableRef} className="table bordered-table display">
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                <th>S No.</th>
-                <th>USER</th>
-                <th>Amount($)</th>
-                <th>WALLET TYPE</th>
-                <th>Date</th>
+              <tr>
+                <th className="table-header">S No.</th>
+                <th className="table-header">USER</th>
+                <th className="table-header">Amount($)</th>
+                <th className="table-header">WALLET TYPE</th>
+                <th className="table-header">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -101,18 +98,18 @@ const FundTransfer: React.FC = () => {
               ) : (
                 adminFundTransactions.map((tx: any, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
+                    <td className="table-cell">{index + 1}</td>
+                    <td className="table-cell">
                       {tx.txUCode?.username
                         ? tx.txUCode.name
                           ? `${tx.txUCode.username} (${tx.txUCode.name})`
                           : tx.txUCode.username
                         : 'N/A'}
                     </td>
-                    <td>${tx.amount || 'N/A'}</td>
-                    <td>{tx.walletType || 'N/A'}</td>
+                    <td className="table-cell">${tx.amount || 'N/A'}</td>
+                    <td className="table-cell">{tx.walletType || 'N/A'}</td>
 
-                    <td>{formatDate(tx.createdAt)}</td>
+                    <td className="table-cell">{formatDate(tx.createdAt)}</td>
                   </tr>
                 ))
               )}
