@@ -159,7 +159,7 @@ export const MENU: {
       },
       {
         id: generateUniqueId(),
-        title: 'News And Events',
+        title: 'News & Events',
         path: '/setting/news-and-events',
         icon: 'USER',
       },
