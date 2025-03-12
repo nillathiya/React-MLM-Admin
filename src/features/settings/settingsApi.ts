@@ -2,7 +2,7 @@ import { apiClient } from '../../api/apiClient';
 import { ROUTES } from '../../api/routes';
 import { AxiosError } from 'axios';
 import { ApiResponse } from '../../types';
-import { RankSettings } from '../../types/settings';
+import { ICompanyInfo, RankSettings } from '../../types/settings';
 
 // Add a new rank setting (column)
 export const createRankSetting = async (
@@ -68,7 +68,7 @@ export const deleteRow = async (
   formData: any,
 ): Promise<ApiResponse<RankSettings[]>> => {
   try {
-    const response = await apiClient.post(ROUTES.SETTINGS.DELETE_ROW,formData);
+    const response = await apiClient.post(ROUTES.SETTINGS.DELETE_ROW, formData);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -82,12 +82,69 @@ export const saveRow = async (
   formData: any,
 ): Promise<ApiResponse<RankSettings>> => {
   try {
-    const response = await apiClient.post(ROUTES.SETTINGS.SAVE_ROW,formData);
+    const response = await apiClient.post(ROUTES.SETTINGS.SAVE_ROW, formData);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       throw new Error(error.response?.data?.message || 'An error occurred.');
     }
     throw new Error('Save Rank settings row failed. Please try again later.');
+  }
+};
+export const getAllCompanyInfo = async (): Promise<
+  ApiResponse<ICompanyInfo[]>
+> => {
+  try {
+    const response = await apiClient.post(ROUTES.COMPANY_INFO.GET_ALL);
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Get Company info failed. Please try again later.');
+  }
+};
+
+export const updateCompanyInfo = async ({
+  id,
+  formData,
+}: {
+  id: string;
+  formData: any;
+}): Promise<ApiResponse<any>> => {
+  try {
+    const response = await apiClient.post(
+      ROUTES.COMPANY_INFO.UPDATE(id),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Update company info failed. Please try again later.');
+  }
+};
+
+export const deleteCompanyInfo = async (
+  settingId: string,
+): Promise<ApiResponse<any>> => {
+  try {
+    const response = await apiClient.post(ROUTES.COMPANY_INFO.DELETE, {
+      settingId,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Delete company info failed. Please try again later.');
   }
 };

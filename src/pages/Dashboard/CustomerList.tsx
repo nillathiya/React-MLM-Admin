@@ -56,21 +56,25 @@ const NewCustomerList: React.FC = () => {
           <table className="table table-striped dark:border-strokedark dark:bg-boxdark dark:text-gray-300">
             <thead>
               <tr className="bg-white text-gray-600 dark:bg-[#1a222c] dark:text-gray-300">
-                <th>Sr no.</th>
-                <th className="text-center">Name</th>
-                <th className="text-center">Username</th>
-                <th className="text-center">Email</th>
-                <th className="text-center">Join Date</th>
+                <th className="text-center table-header">Sr no.</th>
+                <th className="text-center table-header">Name</th>
+                <th className="text-center table-header">Username</th>
+                <th className="text-center table-header">Email</th>
+                <th className="text-center table-header">Join Date</th>
               </tr>
             </thead>
             <tbody>
               {latestUsers.map((user, index) => (
                 <tr key={user._id} className="text-gray-600 dark:text-gray-300">
-                  <td className="text-center">{index + 1}</td>
+                  <td className="text-center table-cell">{index + 1}</td>
                   <td>{user.name || 'N/A'}</td>
-                  <td className="text-center">{user.username || 'N/A'}</td>
-                  <td className="text-center">{user.email || 'N/A'}</td>
-                  <td className="text-center">
+                  <td className="text-center table-cell">
+                    {user.username || 'N/A'}
+                  </td>
+                  <td className="text-center table-cell">
+                    {user.email || 'N/A'}
+                  </td>
+                  <td className="text-center table-cell">
                     {new Date(user.createdAt).toLocaleDateString() || 'N/A'}
                   </td>
                 </tr>

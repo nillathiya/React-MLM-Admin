@@ -39,9 +39,7 @@ function Team() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (tableRef.current && !isLoading && users.length > 0) return;
-
-    setTimeout(() => {
+    if (tableRef.current && !isLoading && users.length > 0) {
       const $table = $(tableRef.current as HTMLTableElement);
 
       // Ensure DataTable is initialized only once
@@ -58,8 +56,8 @@ function Team() {
         // Mark DataTable initialization
         if (tableRef.current) tableRef.current.dataset.dtInstance = 'true';
       }
-    }, 300);
-  }, [users, isLoading]);
+    }
+  }, [users]);
 
   const handleRefresh = async () => {
     try {

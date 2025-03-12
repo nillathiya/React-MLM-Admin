@@ -39,7 +39,7 @@ import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
 import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
 import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
 import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn } from './features/auth/authSlice';
 import Team from './pages/Network/Team';
 import WithdrawalApproved from './pages/Withdrawal/WithdrawalApproved';
@@ -59,7 +59,14 @@ import Cards from './pages/Dashboard/Cards';
 import RankSettings from './pages/Settings/RankSettings';
 import NewAndEvents from './pages/Settings/NewAndEvent';
 import ViewUserGeneration from './pages/Network/viewUserGeneration';
+import { AppDispatch, RootState } from './store/store';
+import { ICompanyInfo } from './types/settings';
+import { getAllCompanyInfoAsync } from './features/settings/settingsSlice';
+import toast from 'react-hot-toast';
+import { API_URL } from './constants';
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
   const { pathname } = useLocation();
@@ -71,6 +78,49 @@ function App() {
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
+
+  useEffect(() => {
+    const fetchCompanyInfo = async () => {
+      try {
+        await dispatch(getAllCompanyInfoAsync()).unwrap();
+      } catch (error: any) {
+        toast.error(error || 'Server Error');
+      }
+    };
+
+    if (companyInfo.length === 0) {
+      fetchCompanyInfo();
+    }
+  }, [companyInfo.length, dispatch]);
+
+  // Extract values correctly
+  const appName =
+    companyInfo.find((data) => data.label === 'companyName')?.value ||
+    'Default App';
+  const favicon =
+    companyInfo.find((data) => data.label === 'companyFavicon')?.value ||
+    '/default-favicon.ico';
+
+  console.log(favicon);
+  useEffect(() => {
+    if (appName && favicon) {
+      // Set Application Name
+      document.title = appName;
+
+      // Set Favicon
+      let link = document.querySelector(
+        "link[rel~='icon']",
+      ) as HTMLLinkElement | null;
+
+      if (!link) {
+        link = document.createElement('link') as HTMLLinkElement;
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+
+      link.href = `${API_URL}${favicon}`;
+    }
+  }, [appName, favicon]);
 
   return loading ? (
     <Loader loader="ClipLoader" size={50} color="blue" fullPage={true} />
@@ -141,7 +191,7 @@ function App() {
             </>
           }
         />
-          <Route
+        <Route
           path="/network/team/user/:id"
           element={
             <>
@@ -215,7 +265,7 @@ function App() {
             </>
           }
         />
-             <Route
+        <Route
           path="/setting/news-and-events"
           element={
             <>

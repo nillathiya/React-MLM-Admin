@@ -10,10 +10,12 @@ import { getAllOrdersAsync } from '../../features/order/orderSlice';
 import toast from 'react-hot-toast';
 import { getAllUserAsync } from '../../features/user/userSlice';
 import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
+import { getAllCompanyInfoAsync } from '../../features/settings/settingsSlice';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(true);
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { users } = useSelector((state: RootState) => state.user);
   const { incomeTransactions } = useSelector(
@@ -48,6 +50,11 @@ const Dashboard: React.FC = () => {
           // Users API
           if (users.length === 0) {
             apiCalls.push(dispatch(getAllUserAsync()).unwrap());
+          }
+
+          // Company Info API
+          if (companyInfo.length === 0) {
+            apiCalls.push(dispatch(getAllCompanyInfoAsync()).unwrap());
           }
 
           // Income Transactions (All)

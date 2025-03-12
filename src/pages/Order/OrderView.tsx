@@ -39,7 +39,7 @@ const OrderView = () => {
       <div className="container">
         <div className="order-layout">
           <div className="order-main">
-            <div className="card">
+            <div className="card dark:bg-form-strokedark dark:text-white">
               <h2 style={{ fontSize: '20px' }}>Order Detail</h2>
               <table className="table table-striped">
                 <tbody>

@@ -6,7 +6,11 @@ import {
   deleteRankSetting,
   deleteRow,
   saveRow,
+  getAllCompanyInfo,
+  updateCompanyInfo,
+  deleteCompanyInfo,
 } from './settingsApi';
+import { ICompanyInfo } from '../../types/settings';
 
 interface SettingsState {
   isLoading: boolean;
@@ -15,7 +19,9 @@ interface SettingsState {
   addSettingsIsLoading: boolean;
   deleteRowIsLoading: boolean;
   saveRowIsLoading: boolean;
+  companyInfoLoading: boolean;
   rankSettings: any[];
+  companyInfo: ICompanyInfo[];
 }
 
 export interface RootState {
@@ -29,7 +35,9 @@ const initialState: SettingsState = {
   addSettingsIsLoading: false,
   deleteRowIsLoading: false,
   saveRowIsLoading: false,
+  companyInfoLoading: false,
   rankSettings: [],
+  companyInfo: [],
 };
 
 export const getRankSettingsAsync = createAsyncThunk(
@@ -131,6 +139,60 @@ export const saveRowAsync = createAsyncThunk(
   },
 );
 
+export const getAllCompanyInfoAsync = createAsyncThunk(
+  'settings/getAllCompanyInfo',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getAllCompanyInfo();
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+export const updateCompanyInfoAsync = createAsyncThunk(
+  'settings/updateCompanyInfo',
+  async (
+    params: {
+      id: string;
+      formData: any;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const data = await updateCompanyInfo(params);
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+export const deleteCompanyInfoAsync = createAsyncThunk(
+  'settings/deleteCompanyInfo',
+  async (settingId: string, { rejectWithValue }) => {
+    try {
+      const data = await deleteCompanyInfo(settingId);
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
 const settingsSlice = createSlice({
   name: 'settings',
   initialState,
@@ -202,7 +264,6 @@ const settingsSlice = createSlice({
         state.deleteRowIsLoading = false;
       })
       // saveRowAsync
-      // saveRowAsync
       .addCase(saveRowAsync.pending, (state) => {
         state.saveRowIsLoading = true;
       })
@@ -219,6 +280,50 @@ const settingsSlice = createSlice({
       .addCase(saveRowAsync.rejected, (state, action) => {
         state.saveRowIsLoading = false;
         console.error('Error saving row:', action.error?.message);
+      })
+      // getAllCompanyInfoAsync
+      .addCase(getAllCompanyInfoAsync.pending, (state) => {
+        state.companyInfoLoading = true;
+      })
+      .addCase(getAllCompanyInfoAsync.fulfilled, (state, action) => {
+        state.companyInfoLoading = false;
+        state.companyInfo = action.payload.data;
+      })
+      .addCase(getAllCompanyInfoAsync.rejected, (state) => {
+        state.companyInfoLoading = false;
+      })
+      // updateCompanyInfoAsync
+      .addCase(updateCompanyInfoAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateCompanyInfoAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const updatedSetting = action.payload?.data;
+        if (updatedSetting?._id) {
+          state.companyInfo = state.companyInfo.filter(
+            (data) => data._id !== updatedSetting._id,
+          );
+        }
+      })
+      .addCase(updateCompanyInfoAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // deleteCompanyInfoAsync
+      .addCase(deleteCompanyInfoAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteCompanyInfoAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const deletedSetting = action.payload?.data;
+        if (deletedSetting?._id) {
+          state.companyInfo = state.companyInfo.filter(
+            (data) => data._id !== deletedSetting._id,
+          );
+        }
+      })
+      .addCase(deleteCompanyInfoAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        console.error('Delete failed:', action.error.message);
       });
   },
 });

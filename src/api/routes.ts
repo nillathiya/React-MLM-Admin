@@ -11,17 +11,9 @@ interface Routes {
     IMPERSONATE: string;
   };
   COMPANY_INFO: {
-    GET: (
-      title?: string,
-      label?: string,
-      value?: string,
-      type?: string,
-      searchterm?: string,
-      status?: number,
-      limit?: number,
-      page?: number,
-    ) => string;
+    GET_ALL: string;
     UPDATE: (id: string) => string;
+    DELETE:string;
   };
   SUPPORT: {
     GET_ALL: (
@@ -94,38 +86,9 @@ export const ROUTES: Routes = {
     IMPERSONATE: `${API_URL}/api/auth/admin/impersonate`,
   },
   COMPANY_INFO: {
-    GET: (
-      title?: string,
-      label?: string,
-      value?: string,
-      type?: string,
-      searchterm?: string,
-      status?: number,
-      limit?: number,
-      page?: number,
-    ) => {
-      const query = new URLSearchParams();
-
-      if (title !== undefined && title !== null)
-        query.append('title', title.toString());
-      if (label !== undefined && label !== null)
-        query.append('label', label.toString());
-      if (value !== undefined && value !== null)
-        query.append('value', value.toString());
-      if (type !== undefined && type !== null)
-        query.append('type', type.toString());
-      if (searchterm !== undefined && searchterm !== null)
-        query.append('searchterm', searchterm.toString());
-      if (status !== undefined && status !== null)
-        query.append('status', status.toString());
-      if (limit !== undefined && limit !== null)
-        query.append('limit', limit.toString());
-      if (page !== undefined && page !== null)
-        query.append('searchterm', page.toString());
-
-      return `${API_URL}/api/company-info/get?${query.toString()}`;
-    },
+    GET_ALL: `${API_URL}/api/company-info/get`,
     UPDATE: (id: string) => `${API_URL}/api/company-info/update/${id}`,
+    DELETE: `${API_URL}/api/company-info/delete`,
   },
   SUPPORT: {
     GET_ALL: (

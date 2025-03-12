@@ -42,9 +42,9 @@ function ContactUs() {
 
   useEffect(() => {
     if (
-      !tableRef.current ||
-      contactMessageIsLoading ||
-      contactMessages.length === 0
+      tableRef.current &&
+      !contactMessageIsLoading &&
+      contactMessages.length > 0
     )
       return;
 
