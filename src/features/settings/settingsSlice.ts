@@ -9,6 +9,10 @@ import {
   getAllCompanyInfo,
   updateCompanyInfo,
   deleteCompanyInfo,
+  getUserSettings,
+  getAdminSettings,
+  updateUserSetting,
+  updateAdminSetting,
 } from './settingsApi';
 import { ICompanyInfo } from '../../types/settings';
 
@@ -21,6 +25,8 @@ interface SettingsState {
   saveRowIsLoading: boolean;
   companyInfoLoading: boolean;
   rankSettings: any[];
+  userSettings: any[];
+  adminSettings: any[];
   companyInfo: ICompanyInfo[];
 }
 
@@ -37,6 +43,8 @@ const initialState: SettingsState = {
   saveRowIsLoading: false,
   companyInfoLoading: false,
   rankSettings: [],
+  userSettings: [],
+  adminSettings: [],
   companyInfo: [],
 };
 
@@ -192,6 +200,82 @@ export const deleteCompanyInfoAsync = createAsyncThunk(
     }
   },
 );
+export const getUserSettingsAsync = createAsyncThunk(
+  'settings/getUserSettings',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getUserSettings();
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+export const getAdminSettingsAsync = createAsyncThunk(
+  'settings/getAdminSettings',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getAdminSettings();
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+export const updateUserSettingAsync = createAsyncThunk(
+  'settings/updateUserSetting',
+  async (
+    params: {
+      id: string;
+      formData: any;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const data = await updateUserSetting(params);
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
+
+
+export const updateAdminSettingAsync = createAsyncThunk(
+  'settings/updateAdminSetting',
+  async (
+    params: {
+      id: string;
+      formData: any;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const data = await updateAdminSetting(params);
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  },
+);
 
 const settingsSlice = createSlice({
   name: 'settings',
@@ -293,16 +377,23 @@ const settingsSlice = createSlice({
         state.companyInfoLoading = false;
       })
       // updateCompanyInfoAsync
-      .addCase(updateCompanyInfoAsync.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(updateCompanyInfoAsync.fulfilled, (state, action) => {
         state.isLoading = false;
         const updatedSetting = action.payload?.data;
         if (updatedSetting?._id) {
-          state.companyInfo = state.companyInfo.filter(
-            (data) => data._id !== updatedSetting._id,
+          const index = state.companyInfo.findIndex(
+            (item) => item._id === updatedSetting._id,
           );
+          if (index !== -1) {
+            // Update the existing item
+            state.companyInfo[index] = {
+              ...state.companyInfo[index],
+              ...updatedSetting,
+            };
+          } else {
+            // If not found, add it (though this shouldn't happen on update)
+            state.companyInfo.push(updatedSetting);
+          }
         }
       })
       .addCase(updateCompanyInfoAsync.rejected, (state) => {
@@ -324,6 +415,78 @@ const settingsSlice = createSlice({
       .addCase(deleteCompanyInfoAsync.rejected, (state, action) => {
         state.isLoading = false;
         console.error('Delete failed:', action.error.message);
+      })
+      // getUserSettingsAsync
+      .addCase(getUserSettingsAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getUserSettingsAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userSettings = action.payload.data;
+      })
+      .addCase(getUserSettingsAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // updateUserSettingAsync
+      .addCase(updateUserSettingAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUserSettingAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const updatedSetting = action.payload?.data;
+        if (updatedSetting?._id) {
+          const index = state.userSettings.findIndex(
+            (item) => item._id === updatedSetting._id,
+          );
+          if (index !== -1) {
+            // Update the existing item
+            state.userSettings[index] = {
+              ...state.userSettings[index],
+              ...updatedSetting,
+            };
+          } else {
+            state.userSettings.push(updatedSetting);
+          }
+        }
+      })
+      .addCase(updateUserSettingAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // getAdminSettingsAsync
+      .addCase(getAdminSettingsAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAdminSettingsAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.adminSettings = action.payload.data;
+      })
+      .addCase(getAdminSettingsAsync.rejected, (state) => {
+        state.isLoading = false;
+      })
+      // updateAdminSettingAsync
+      .addCase(updateAdminSettingAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateAdminSettingAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const updatedSetting = action.payload?.data;
+        if (updatedSetting?._id) {
+          const index = state.adminSettings.findIndex(
+            (item) => item._id === updatedSetting._id,
+          );
+          if (index !== -1) {
+            // Update the existing item
+            state.adminSettings[index] = {
+              ...state.adminSettings[index],
+              ...updatedSetting,
+            };
+          } else {
+            state.adminSettings.push(updatedSetting);
+          }
+        }
+      })
+      .addCase(updateAdminSettingAsync.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });

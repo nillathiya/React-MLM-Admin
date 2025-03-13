@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import Icon from '../../components/Icons/Icon';
-import { ICONS } from '../../constants';
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import Icon from '../../../components/Icons/Icon';
+import { ICONS } from '../../../constants';
+import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store/store';
+import { AppDispatch, RootState } from '../../../store/store';
 import {
   createRankSettingAsync,
   deleteRankSettingAsync,
@@ -12,7 +12,7 @@ import {
   getRankSettingsAsync,
   saveRowAsync,
   updateRankSettingAsync,
-} from '../../features/settings/settingsSlice';
+} from '../../../features/settings/settingsSlice';
 interface DataColumn {
   _id: string;
   slug: string;
@@ -146,16 +146,15 @@ export default function DynamicTable() {
   ) => {
     setData((prevData) => {
       const updatedData = [...prevData];
-      updatedData[colIndex] = { 
-        ...updatedData[colIndex], 
-        value: [...updatedData[colIndex].value], 
+      updatedData[colIndex] = {
+        ...updatedData[colIndex],
+        value: [...updatedData[colIndex].value],
       };
-  
-      updatedData[colIndex].value[rowIndex] = newValue; 
+
+      updatedData[colIndex].value[rowIndex] = newValue;
       return updatedData;
     });
   };
-  
 
   // Handle column title change
   const handleTitleChange = (colIndex: number, newTitle: string) => {
@@ -176,7 +175,7 @@ export default function DynamicTable() {
     console.log('colIndex', colIndex);
 
     setData((prevData) => {
-      const updatedData = [...prevData]; 
+      const updatedData = [...prevData];
 
       if (editingTitles[colIndex] !== undefined) {
         console.log('Updating title...');

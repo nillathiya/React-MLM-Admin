@@ -148,3 +148,73 @@ export const deleteCompanyInfo = async (
     throw new Error('Delete company info failed. Please try again later.');
   }
 };
+
+export const getUserSettings = async (): Promise<ApiResponse<any>> => {
+  try {
+    const response = await apiClient.post(ROUTES.SETTINGS.GET_USER_SETTINGS);
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Get user settings failed. Please try again later.');
+  }
+};
+
+export const getAdminSettings = async (): Promise<ApiResponse<any>> => {
+  try {
+    const response = await apiClient.post(ROUTES.SETTINGS.GET_ADMIN_SETTINGS);
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Get admin settings failed. Please try again later.');
+  }
+};
+
+export const updateUserSetting = async ({
+  id,
+  formData,
+}: {
+  id: string;
+  formData: any;
+}): Promise<ApiResponse<any>> => {
+  try {
+    const response = await apiClient.post(
+      ROUTES.SETTINGS.UPDATE_USER_SETTING(id),
+      formData,
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Update user setting failed. Please try again later.');
+  }
+};
+
+export const updateAdminSetting = async ({
+  id,
+  formData,
+}: {
+  id: string;
+  formData: any;
+}): Promise<ApiResponse<any>> => {
+  try {
+    const response = await apiClient.post(
+      ROUTES.SETTINGS.UPDATE_ADMIN_SETTING(id),
+      formData,
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Update Admin setting failed. Please try again later.');
+  }
+};

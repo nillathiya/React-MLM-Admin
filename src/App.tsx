@@ -16,7 +16,8 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import AllUsers from './pages/Users/AllUsers';
 import Support from './pages/Support/Support';
-import GeneralSetting from './pages/Settings/GeneralSetting';
+import GeneralSetting from './pages/Settings/GeneralSettings';
+import CategorySettings from './pages/Settings/GeneralSettings/CategorySettings';
 import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
 import EditUser from './pages/Users/EditUser';
 import Login from './pages/Login/Login';
@@ -35,7 +36,7 @@ import BtcAddressWithOTPSetting from './pages/Settings/BtcAddressWithOTPSetting'
 import LoginWithOTPSetting from './pages/Settings/LoginWithOTPSetting';
 import PaymentMethodSetting from './pages/Settings/PaymentMethodSetting';
 import PaymentMethodAcceptSetting from './pages/Settings/PaymentMethodAcceptSetting';
-import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
+import CompanyInfoSetting from './pages/Settings/GeneralSettings/CompanyInfoSetting';
 import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
 import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
 import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
@@ -56,7 +57,7 @@ import OrderView from './pages/Order/OrderView';
 import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
 import CustomerList from './pages/Dashboard/CustomerList';
 import Cards from './pages/Dashboard/Cards';
-import RankSettings from './pages/Settings/RankSettings';
+import RankSettings from './pages/Settings/GeneralSettings/RankSettings';
 import NewAndEvents from './pages/Settings/NewAndEvent';
 import ViewUserGeneration from './pages/Network/viewUserGeneration';
 import { AppDispatch, RootState } from './store/store';
@@ -64,6 +65,7 @@ import { ICompanyInfo } from './types/settings';
 import { getAllCompanyInfoAsync } from './features/settings/settingsSlice';
 import toast from 'react-hot-toast';
 import { API_URL } from './constants';
+import EditSetting from './pages/Settings/GeneralSettings/EditSetting';
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const { companyInfo } = useSelector((state: RootState) => state.settings);
@@ -255,7 +257,7 @@ function App() {
             </>
           }
         />
-        {/* setting */}
+        {/* Settings Routes Start*/}
         <Route
           path="/setting/general-setting"
           element={
@@ -275,14 +277,46 @@ function App() {
           }
         />
         <Route
-          path="/setting/general-setting/registration/:id"
+          path="/setting/general-setting/:category"
           element={
             <>
               <PageTitle title="Registration settings" />
-              <RegistrationSetting />
+              <CategorySettings />
             </>
           }
         />
+         <Route
+          path="/setting/general-setting/:category/:title"
+          element={
+            <>
+              <PageTitle title="Registration settings" />
+              <EditSetting />
+            </>
+          }
+        />
+
+        <Route
+          path="/setting/general-setting/rank-settings"
+          element={
+            <>
+              <PageTitle title="Rank settings" />
+              <RankSettings />
+            </>
+          }
+        />
+
+        <Route
+          path="/setting/general-setting/companyinfo"
+          element={
+            <>
+              <PageTitle title="Company Info settings" />
+              <CompanyInfoSetting />
+            </>
+          }
+        />
+
+        {/* Settings Routes End*/}
+
         <Route
           path="/setting/general-setting/investment/:id"
           element={
@@ -425,26 +459,6 @@ function App() {
             <>
               <PageTitle title="UPI settings" />
               <PaymentMethodAcceptUsdtSetting />
-            </>
-          }
-        />
-
-        <Route
-          path="/setting/general-setting/companyinfo/:id"
-          element={
-            <>
-              <PageTitle title="Company Info settings" />
-              <CompanyInfoSetting />
-            </>
-          }
-        />
-
-        <Route
-          path="/setting/general-setting/rank-settings/:id"
-          element={
-            <>
-              <PageTitle title="Rank settings" />
-              <RankSettings />
             </>
           }
         />

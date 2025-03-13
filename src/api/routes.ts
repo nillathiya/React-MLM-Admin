@@ -59,6 +59,10 @@ interface Routes {
   };
   SETTINGS: {
     GET_RANK_SETTINGS: string;
+    GET_USER_SETTINGS: string;
+    GET_ADMIN_SETTINGS: string;
+    UPDATE_USER_SETTING:(id:string)=>string;
+    UPDATE_ADMIN_SETTING:(id:string)=>string;
     CREATE: string;
     UPDATE: (id: string) => string;
     DELETE: (id: string) => string;
@@ -153,11 +157,18 @@ export const ROUTES: Routes = {
   },
   SETTINGS: {
     GET_RANK_SETTINGS: `${API_URL}/api/rank-settings/get`,
+    GET_USER_SETTINGS: `${API_URL}/api/user-settings/get`,
+    GET_ADMIN_SETTINGS: `${API_URL}/api/admin-settings/get`,
+    UPDATE_USER_SETTING:(id:string)=>`${API_URL}/api/user-settings/update/${id}`,
+    UPDATE_ADMIN_SETTING:(id:string)=> `${API_URL}/api/admin-settings/update/${id}`,
+
+
     CREATE: `${API_URL}/api/rank-settings/create`,
     UPDATE: (id: string) => `${API_URL}/api/rank-settings/update/${id}`,
     DELETE: (id: string) => `${API_URL}/api/rank-settings/delete/${id}`,
     DELETE_ROW: `${API_URL}/api/rank-settings/delete-row`,
     SAVE_ROW: `${API_URL}/api/rank-settings/save-row`,
+
   },
   NEWS_EVENT: {
     CREATE: `${API_URL}/api/news-events/create`,
