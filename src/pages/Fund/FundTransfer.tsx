@@ -18,7 +18,10 @@ const FundTransfer: React.FC = () => {
     (state: RootState) => state.transaction,
   );
   const tableRef = useRef<HTMLTableElement>(null);
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
 
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -66,7 +69,7 @@ const FundTransfer: React.FC = () => {
               <tr>
                 <th className="table-header">S No.</th>
                 <th className="table-header">USER</th>
-                <th className="table-header">Amount($)</th>
+                <th className="table-header">Amount({companyCurrency})</th>
                 <th className="table-header">WALLET TYPE</th>
                 <th className="table-header">Date</th>
               </tr>
@@ -106,7 +109,10 @@ const FundTransfer: React.FC = () => {
                           : tx.txUCode.username
                         : 'N/A'}
                     </td>
-                    <td className="table-cell">${tx.amount || 'N/A'}</td>
+                    <td className="table-cell">
+                      {companyCurrency}
+                      {tx.amount || 'N/A'}
+                    </td>
                     <td className="table-cell">{tx.walletType || 'N/A'}</td>
 
                     <td className="table-cell">{formatDate(tx.createdAt)}</td>

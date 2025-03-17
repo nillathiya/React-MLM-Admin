@@ -27,7 +27,8 @@ const WithdrawalPending: React.FC = () => {
   const { withdrawals, isLoading } = useSelector(
     (state: RootState) => state.withdrawal,
   );
-
+  const {companyInfo}=useSelector((state:RootState)=>state.settings)
+  const companyCurrency=companyInfo.find((data)=>data.label==="currency")?.value
   useEffect(() => {
     (async () => {
       try {
@@ -77,6 +78,8 @@ const WithdrawalPending: React.FC = () => {
       toast.error(error || 'Server error');
     }
   };
+
+
   return (
     <div>
       <Breadcrumb pageName="Pending Withdrwals" />
@@ -148,18 +151,18 @@ const WithdrawalPending: React.FC = () => {
                     </td>
 
                     <td className="table-cell">
-                      $
+                      {companyCurrency}
                       {(
                         (withdrawal.amount ?? 0) +
                         (withdrawal.txCharge ?? 0) +
                         (withdrawal.wPool ?? 0)
                       ).toFixed(2)}
                     </td>
-                    <td className="table-cell">${withdrawal.txCharge}</td>
+                    <td className="table-cell"> {companyCurrency}{withdrawal.txCharge}</td>
                     <td className="table-cell">
-                      {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
+                      {withdrawal.wPool ? `${companyCurrency}${withdrawal.wPool}` : 0}
                     </td>
-                    <td className="table-cell">${withdrawal.amount}</td>
+                    <td className="table-cell"> {companyCurrency}{withdrawal.amount}</td>
                     <td className="table-cell">{withdrawal.tds || '0'}</td>
                     <td
                       className={`table-cell

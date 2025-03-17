@@ -10,7 +10,10 @@ const Income: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [filteredMonth, setFilteredMonth] = useState<string>('');
+  const {companyInfo}=useSelector((state:RootState)=>state.settings)
 
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+  ?.value;
   const { incomeTransactions } = useSelector(
     (state: RootState) => state.transaction,
   );
@@ -179,7 +182,7 @@ const Income: React.FC = () => {
               <tr className="border text-black dark:text-gray-500">
                 {Object.keys(INCOME_FIELDS).map((key) => (
                   <td key={key} className="border p-4">
-                    ${(incomeSummary[key] || 0).toFixed(2)}
+                    {companyCurrency}{(incomeSummary[key] || 0).toFixed(2)}
                   </td>
                 ))}
               </tr>
@@ -191,7 +194,7 @@ const Income: React.FC = () => {
         <p className="text-xl font-semibold text-center mt-6 text-gray-500">
           Total Income:
           <span className="text-blue-600 dark:text-white p-2">
-            ${totalIncome.toFixed(2)}
+            {companyCurrency}{totalIncome.toFixed(2)}
           </span>
         </p>
       </div>

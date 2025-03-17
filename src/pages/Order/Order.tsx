@@ -29,6 +29,10 @@ const Order: React.FC = () => {
   const navigate = useNavigate();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportData, setExportData] = useState<any[]>([]);
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
+
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
 
   useEffect(() => {
     (async () => {
@@ -78,6 +82,7 @@ const Order: React.FC = () => {
   const groupedOrders = groupOrdersByCustomer(orders);
 
   const handleView = (id: string) => {
+    if (!id) return;
     navigate(`/order/OrderView?id=${id}`);
   };
 
@@ -111,16 +116,20 @@ const Order: React.FC = () => {
     },
 
     {
-      label: 'Order Amount ($)',
+      label: `Order Amount (${companyCurrency})`,
       key: 'amount',
-      format: (value: number) => `$${value}`,
+      format: (value: number) => `${companyCurrency}${value}`,
     },
     {
       label: 'Tx Type',
       key: 'txType',
       format: (value: string) => `${value}`,
     },
-    { label: 'BV($)', key: 'bv', format: (value: number) => `$${value}` },
+    {
+      label: 'BV($)',
+      key: 'bv',
+      format: (value: number) => `${companyCurrency}${value}`,
+    },
     {
       label: 'Status',
       key: 'status',
@@ -144,7 +153,9 @@ const Order: React.FC = () => {
                 <th className="table-header">S No.</th>
                 <th className="table-header">Action</th>
                 <th className="table-header">USER</th>
-                <th className="table-header">Order Amount ($)</th>
+                <th className="table-header">
+                  Order Amount ({companyCurrency})
+                </th>
                 <th className="table-header">Payment Status</th>
                 <th className="table-header">Date</th>
               </tr>
@@ -180,7 +191,7 @@ const Order: React.FC = () => {
                     <td className="flex gap-2">
                       <button
                         className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                        onClick={() => handleView(order._id)}
+                        onClick={() => handleView(order.customerId?._id)}
                       >
                         View
                       </button>
@@ -201,7 +212,10 @@ const Order: React.FC = () => {
                           : order.customerId.username
                         : 'N/A'}
                     </td>
-                    <td className="table-cell">${order.amount || 'N/A'}</td>
+                    <td className="table-cell">
+                      {companyCurrency}
+                      {order.amount || 'N/A'}
+                    </td>
                     <td
                       className={`table-cell ${
                         order.status === 0

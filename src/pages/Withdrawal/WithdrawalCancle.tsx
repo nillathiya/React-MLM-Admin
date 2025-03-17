@@ -27,7 +27,9 @@ const WithdrawalCancle: React.FC = () => {
   const { withdrawals, isLoading } = useSelector(
     (state: RootState) => state.withdrawal,
   );
-
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
   useEffect(() => {
     (async () => {
       try {
@@ -137,18 +139,26 @@ const WithdrawalCancle: React.FC = () => {
                     </td>
 
                     <td className="table-cell">
-                      $
+                      {companyCurrency}
                       {(
                         (withdrawal.amount ?? 0) +
                         (withdrawal.txCharge ?? 0) +
                         (withdrawal.wPool ?? 0)
                       ).toFixed(2)}
                     </td>
-                    <td className="table-cell">${withdrawal.txCharge}</td>
                     <td className="table-cell">
-                      {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
+                      {companyCurrency}
+                      {withdrawal.txCharge}
                     </td>
-                    <td className="table-cell">${withdrawal.amount}</td>
+                    <td className="table-cell">
+                      {withdrawal.wPool
+                        ? `${companyCurrency}${withdrawal.wPool}`
+                        : `${companyCurrency}0`}
+                    </td>
+                    <td className="table-cell">
+                      {companyCurrency}
+                      {withdrawal.amount}
+                    </td>
                     <td className="table-cell">{withdrawal.tds || '0'}</td>
                     <td
                       className={`

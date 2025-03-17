@@ -16,7 +16,7 @@ export interface IncomeTransaction {
 
 const Cards: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { users } = useSelector((state: RootState) => state.user);
   const { incomeTransactions } = useSelector(
@@ -34,6 +34,7 @@ const Cards: React.FC = () => {
     royaltyReward: 0,
     arbBonusReward: 0,
   });
+  const companyCurrency=companyInfo.find((data)=>data.label==="currency")?.value
 
   useEffect(() => {
     if (!loggedInUser?._id) return;
@@ -161,7 +162,7 @@ const Cards: React.FC = () => {
                 {label}
               </h4>
               <strong className="text-lg text-gray-600 dark:text-gray-300">
-                ${value.toFixed(2)}
+                {companyCurrency}{value.toFixed(2)}
               </strong>
             </div>
           ))}
@@ -201,7 +202,7 @@ const Cards: React.FC = () => {
                 {label}
               </span>
               <strong className="text-lg sm:text-xl text-gray-800 dark:text-gray-200">
-                ${value.toFixed(2)}
+                {companyCurrency}{value.toFixed(2)}
               </strong>
             </div>
           ))}

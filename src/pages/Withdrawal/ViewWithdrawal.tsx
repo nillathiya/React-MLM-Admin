@@ -24,6 +24,7 @@ const ViewWithdrawal: React.FC = () => {
     label: '',
     value: false,
   });
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
   useEffect(() => {
     const fetchAllWithdrawals = async () => {
       try {
@@ -65,6 +66,9 @@ const ViewWithdrawal: React.FC = () => {
     }
   };
 
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
+
   return (
     <>
       <Breadcrumb pageName="Edit Withdrawal" />
@@ -98,9 +102,12 @@ const ViewWithdrawal: React.FC = () => {
                                 }`
                               : 'N/A',
                           ],
-                          ['Amount', `$${withdrawal.amount}`],
-                          ['Tx Charge', `$${withdrawal.txCharge}`],
-                          ['wPool', `$${withdrawal.wPool}`],
+                          ['Amount', `${companyCurrency}${withdrawal.amount}`],
+                          [
+                            'Tx Charge',
+                            `${companyCurrency}${withdrawal.txCharge}`,
+                          ],
+                          ['wPool', `${companyCurrency}${withdrawal.wPool}`],
                           ['Date', formatDate(withdrawal.createdAt)],
                         ].map(([label, value], idx) => (
                           <tr key={idx} className="border-b">
@@ -111,7 +118,7 @@ const ViewWithdrawal: React.FC = () => {
                             <td className="px-4 py-2">{value}</td>
                           </tr>
                         ))}
-                        <tr className='border-b'>
+                        <tr className="border-b">
                           <th className="text-left px-4 py-2 font-medium">
                             Status
                           </th>
