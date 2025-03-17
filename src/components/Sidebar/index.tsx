@@ -118,7 +118,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
           {companyLogo ? (
-            <img src={`${API_URL}${companyLogo}`} width={100} height={100} />
+            <img src={`${API_URL}${companyLogo}`} width={130} height={100} />
           ) : (
             <div className="text-white flex items-center gap-2 justify-center">
               <span className="bg-blue-700 p-1 rounded-lg">

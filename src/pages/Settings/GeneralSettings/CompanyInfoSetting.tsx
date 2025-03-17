@@ -112,8 +112,8 @@ const CompanyInfoSetting: React.FC = () => {
         updateCompanyInfoAsync({ id: settingId, formData: formDataToSend }),
       ).unwrap();
       toast.success('Updated successfully.');
-    } catch (error) {
-      toast.error('Failed to update.');
+    } catch (error:any) {
+      toast.error(error ||'Failed to update.');
     } finally {
       setSubmittingField({ name, index, value: false, action: 'update' });
     }
