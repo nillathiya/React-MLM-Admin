@@ -6,6 +6,7 @@ interface CardDataStatsProps {
   total: number;
   children: ReactNode;
   isLoading: boolean;
+  bgGradient: string; // New prop for gradient background
 }
 
 const CardDataStats: React.FC<CardDataStatsProps> = ({
@@ -13,9 +14,12 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   total,
   children,
   isLoading,
+  bgGradient,
 }) => {
   return (
-    <div className="flex items-center justify-between rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div
+      className={`group flex items-center justify-between rounded-sm rounded-[7px] border border-stroke py-6 px-7.5 shadow-default dark:border-strokedark transition-transform duration-300 ease-in-out hover:scale-105 ${bgGradient}`}
+    >
       <div className="mt-4 flex items-end justify-between">
         <div>
           {isLoading ? (
@@ -25,7 +29,6 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
               {total}
             </h4>
           )}
-
           <span className="text-sm font-medium">{title}</span>
         </div>
       </div>
