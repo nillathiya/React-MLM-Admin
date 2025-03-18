@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../../store/store';
 import {
   getAdminSettingsAsync,
-  getAllCompanyInfoAsync,
+  
   getUserSettingsAsync,
 } from '../../../features/settings/settingsSlice';
 import toast from 'react-hot-toast';
@@ -12,7 +12,6 @@ import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 
 interface SettingItem {
   title: string;
-  // Add other properties as needed
 }
 
 const formatCategoryName = (category: string): string =>
@@ -27,64 +26,78 @@ const CategorySettings: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { rankSettings, userSettings, adminSettings, companyInfo } =
-    useSelector((state: RootState) => state.settings);
+  const { userSettings, adminSettings } = useSelector(
+    (state: RootState) => state.settings
+  );
+
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState<SettingItem[]>([]);
 
-  // Fetch settings based on category
   const fetchSettings = useCallback(async () => {
     if (!category) return;
-
+  
     setIsLoading(true);
     try {
+      let fetchedSettings: SettingItem[] = [];
       switch (category) {
-        case 'rank-settings':
-          navigate('/setting/general-setting/rank-settings');
-          break;
         case 'user-settings':
           if (userSettings.length === 0) {
-            await dispatch(getUserSettingsAsync()).unwrap();
+            const response = await dispatch(getUserSettingsAsync()).unwrap();
+            fetchedSettings = response.data || [];
+          } else {
+            fetchedSettings = userSettings;
           }
-          setSettings(userSettings);
           break;
         case 'admin-settings':
           if (adminSettings.length === 0) {
-            await dispatch(getAdminSettingsAsync()).unwrap();
+            const response = await dispatch(getAdminSettingsAsync()).unwrap();
+            fetchedSettings = response.data || [];
+          } else {
+            fetchedSettings = adminSettings;
           }
-          setSettings(adminSettings);
           break;
+        case 'rank-settings':
+          navigate('/setting/general-setting/rank-settings');
+          return;
         case 'companyInfo-settings':
           navigate('/setting/general-setting/companyinfo');
-          break;
+          return;
         default:
           toast.error('Invalid category');
-          break;
+          return;
       }
+      setSettings(fetchedSettings);
     } catch (error: any) {
       toast.error(error?.message || 'Server Error');
     } finally {
       setIsLoading(false);
     }
   }, [category, dispatch, navigate, userSettings, adminSettings]);
+  
 
   useEffect(() => {
     fetchSettings();
   }, [fetchSettings]);
 
-  // Memoize setting titles to prevent recalculation
+  useEffect(() => {
+    if (category === 'user-settings' && userSettings.length > 0) {
+      setSettings(userSettings);
+    } else if (category === 'admin-settings' && adminSettings.length > 0) {
+      setSettings(adminSettings);
+    }
+  }, [userSettings, adminSettings, category]);
+
   const settingTitles = React.useMemo(
     () =>
       Array.from(new Set(settings.map((item) => item.title).filter(Boolean))),
-    [settings],
+    [settings]
   );
 
-  // Memoize navigation handler
   const handleEditClick = useCallback(
     (title: string) => {
       navigate(`/setting/general-setting/${category}/${title}`);
     },
-    [navigate, category],
+    [navigate, category]
   );
 
   if (!category) {

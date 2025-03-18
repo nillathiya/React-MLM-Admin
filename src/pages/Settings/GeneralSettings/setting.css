@@ -14,3 +14,17 @@
 button:hover {
   /* background-color: #8091f3 !important; */
 }
+
+
+input[type="checkbox"] {
+  appearance: auto; /* Ensure browser default */
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.check_box_scroll{
+  overflow-y: scroll;
+    height: 68px;
+    scrollbar-width: thin;
+    scrollbar-color: #e8e9e9 transparent;
+}

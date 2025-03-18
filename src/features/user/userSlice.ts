@@ -3,6 +3,7 @@ import CryptoJS from 'crypto-js';
 import { IContactUs, Pagination } from '../../types';
 import {
   getAllUser,
+  getAllUserUpdate,
   getUserById,
   updateUserProfile,
   checkUsername,
@@ -17,6 +18,7 @@ import { CRYPTO_SECRET_KEY } from '../../constants';
 interface UserState {
   user: any;
   users: any[];
+  updateUsers: any[];
   isLoading: boolean;
   pagination: Pagination | null;
   contactMessages: IContactUs[];
@@ -30,6 +32,7 @@ export interface RootState {
 const initialState: UserState = {
   user: [],
   users: [],
+  updateUsers: [],
   isLoading: false,
   pagination: null,
   contactMessages: [],
@@ -42,6 +45,27 @@ export const getAllUserAsync = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const data = await getAllUser();
+      return data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
+  },
+);
+
+export const updateUserStatusAsync = createAsyncThunk(
+  'user/getAllUserUpdate',
+  async (
+    payload: {
+      userId: string;
+      accountStatus: Partial<{ activeStatus: number; blockStatus: number }>;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const data = await getAllUserUpdate(payload);
       return data;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -204,6 +228,17 @@ const userSlice = createSlice({
       .addCase(getAllUserAsync.rejected, (state) => {
         state.isLoading = false;
       })
+      //   updateUserStatusAsync
+      .addCase(updateUserStatusAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        const updatedUser = action.payload.data; // Get the updated user from API
+        state.users = state.users.map((user) =>
+          user._id === updatedUser._id
+            ? { ...user, accountStatus: updatedUser.accountStatus }
+            : user,
+        );
+      })
       // getUserByIdAsync
       .addCase(getUserByIdAsync.pending, (state) => {
         state.isLoading = true;
@@ -347,8 +382,8 @@ const userSlice = createSlice({
       })
       .addCase(AddNewMemberAsync.rejected, (state) => {
         state.isLoading = false;
-      })
-
+      });
+      
   },
 });
 
