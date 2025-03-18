@@ -67,7 +67,7 @@ const DashboardCards: React.FC = () => {
       {cards.map((card, index) => (
         <div
           key={index}
-          className={`${card.color} text-black dark:bg-[#24303f] dark:text-gray-300 rounded-md shadow-md p-4 flex flex-col items-center`}
+          className={`${card.color} text-black dark:bg-[#24303f] dark:text-gray-300 rounded-md shadow-md p-4 flex flex-col items-center transition-transform duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105`}
         >
           <div className="text-3xl mb-2">{card.icon}</div>
           <h3 className="text-xl font-bold mb-1">{card.title}</h3>

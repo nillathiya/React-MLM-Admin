@@ -34,7 +34,8 @@ const Cards: React.FC = () => {
     royaltyReward: 0,
     arbBonusReward: 0,
   });
-  const companyCurrency=companyInfo.find((data)=>data.label==="currency")?.value
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
 
   useEffect(() => {
     if (!loggedInUser?._id) return;
@@ -150,19 +151,36 @@ const Cards: React.FC = () => {
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { label: 'Total', value: totalInvestment },
-            { label: 'Today', value: todayInvestment },
-            { label: 'Yesterday', value: yesterdayInvestment },
-          ].map(({ label, value }, index) => (
+            {
+              label: 'Total',
+              value: totalInvestment,
+              gradient:
+                'from-blue-500 to-indigo-500 dark:from-gray-900 dark:to-gray-800',
+            },
+            {
+              label: 'Today',
+              value: todayInvestment,
+              gradient:
+                'from-green-400 to-emerald-500 dark:from-gray-800 dark:to-gray-700',
+            },
+            {
+              label: 'Yesterday',
+              value: yesterdayInvestment,
+              gradient:
+                'from-red-400 to-orange-500 dark:from-gray-700 dark:to-gray-600',
+            },
+          ].map(({ label, value, gradient }, index) => (
             <div
               key={index}
-              className="flex flex-col items-center bg-gray-100 dark:bg-[#1a222c] rounded-lg shadow p-5"
+              className={`flex flex-col items-center rounded-lg shadow p-5 transition-transform duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105
+          bg-gradient-to-r ${gradient}`}
             >
-              <h4 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <h4 className="text-base font-medium text-white dark:text-gray-300 mb-2">
                 {label}
               </h4>
-              <strong className="text-lg text-gray-600 dark:text-gray-300">
-                {companyCurrency}{value.toFixed(2)}
+              <strong className="text-lg text-white dark:text-gray-300">
+                {companyCurrency}
+                {value.toFixed(2)}
               </strong>
             </div>
           ))}
@@ -202,7 +220,8 @@ const Cards: React.FC = () => {
                 {label}
               </span>
               <strong className="text-lg sm:text-xl text-gray-800 dark:text-gray-200">
-                {companyCurrency}{value.toFixed(2)}
+                {companyCurrency}
+                {value.toFixed(2)}
               </strong>
             </div>
           ))}

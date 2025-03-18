@@ -31,7 +31,8 @@ const Dashboard: React.FC = () => {
     royaltyReward: 0,
     arbBonusReward: 0,
   });
-  const companyCurrency=companyInfo.find((data)=>data.label==="currency")?.value
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
 
   useEffect(() => {
     let isMounted = true;
@@ -142,7 +143,6 @@ const Dashboard: React.FC = () => {
     0,
   );
 
- 
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -150,6 +150,7 @@ const Dashboard: React.FC = () => {
           title="Total Users"
           total={users.length || 0}
           isLoading={isLoading}
+          bgGradient="bg-gradient-to-r from-blue-300 to-purple-300 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-lg hover:shadow-xl"
         >
           <svg
             className="fill-gray dark:fill-white"
@@ -174,10 +175,12 @@ const Dashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
+
         <CardDataStats
           title="Active"
           total={activeUserCount || 0}
           isLoading={isLoading}
+          bgGradient="bg-gradient-to-r from-green-300 to-teal-300 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >
           <svg
             className="fill-gray dark:fill-white"
@@ -203,10 +206,12 @@ const Dashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
+
         <CardDataStats
           title="Investment"
           total={totalInvestment || 0}
           isLoading={isLoading}
+          bgGradient="bg-gradient-to-r from-yellow-300 to-orange-300 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >
           <svg
             className="fill-primary dark:fill-white"
@@ -239,10 +244,12 @@ const Dashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
+
         <CardDataStats
           title="Total Income"
           total={totalIncome || 0}
           isLoading={isLoading}
+          bgGradient="bg-gradient-to-r from-green-300 to-blue-300 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >
           <svg
             className="fill-gray dark:fill-white"
@@ -268,10 +275,12 @@ const Dashboard: React.FC = () => {
             />
           </svg>
         </CardDataStats>
+
         <CardDataStats
           title="Income Charge"
           total={totalIncomeTransactionCharge || 0}
           isLoading={isLoading}
+          bgGradient="bg-gradient-to-r from-purple-400 to-pink-400 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >
           <svg
             className="fill-gray dark:fill-white"
