@@ -15,6 +15,25 @@ export const getAllUser = async (): Promise<any> => {
   }
 };
 
+export const getAllUserUpdate = async (payload: {
+  userId: string;
+  accountStatus: {
+    activeStatus?: number;
+    blockStatus?: number; 
+  };
+}): Promise<any> => {
+  try {
+    const response = await apiClient.post(ROUTES.USER.UPDATE_USER, payload);
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || 'An error occurred.');
+    }
+    throw new Error('Update user status failed. Please try again later.');
+  }
+};
+
+
 export const getUserById = async (userId: string): Promise<any> => {
   try {
     const response = await apiClient.post(ROUTES.USER.GET_BY_ID, { userId });

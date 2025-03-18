@@ -8,7 +8,10 @@ import Skeleton from '../../components/ui/Skeleton/Skeleton';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { getAllUserAsync } from '../../features/user/userSlice';
+import {
+  getAllUserAsync,
+  updateUserStatusAsync,
+} from '../../features/user/userSlice';
 import { DEFAULT_PER_PAGE_ITEMS, USER_API_URL } from '../../constants';
 import { formatDate } from '../../utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +21,9 @@ import Icon from '../../components/Icons/Icon';
 import { requestImpersonationTokenAsync } from '../../features/auth/authSlice';
 
 const AllUsers: React.FC = () => {
-  const { users, isLoading } = useSelector((state: RootState) => state.user);
+  const { users, isLoading, updateUsers } = useSelector(
+    (state: RootState) => state.user,
+  );
   const { orders } = useSelector((state: RootState) => state.orders);
   const dispatch = useDispatch<AppDispatch>();
   const tableRef = useRef<HTMLTableElement>(null);
@@ -72,6 +77,54 @@ const AllUsers: React.FC = () => {
     }
   };
 
+  const handleToggleStatus = async (
+    userId: string,
+    currentStatus: number,
+    currentBlockStatus: number,
+  ) => {
+    try {
+      const newStatus = currentStatus === 1 ? 0 : 1;
+
+      await dispatch(
+        updateUserStatusAsync({
+          userId,
+          accountStatus: {
+            activeStatus: newStatus,
+            blockStatus: currentBlockStatus,
+          }, // ✅ Keep blockStatus unchanged
+        }),
+      ).unwrap();
+
+      toast.success('User active status updated successfully');
+    } catch (error: any) {
+      console.error('Error updating user active status:', error);
+      toast.error('Failed to update user active status');
+    }
+  };
+
+  const handleToggleBlock = async (
+    userId: string,
+    isBlocked: boolean,
+    currentStatus: number,
+  ) => {
+    try {
+      await dispatch(
+        updateUserStatusAsync({
+          userId,
+          accountStatus: {
+            blockStatus: isBlocked ? 0 : 1,
+            activeStatus: currentStatus,
+          }, // ✅ Keep activeStatus unchanged
+        }),
+      ).unwrap();
+
+      toast.success('User block status updated successfully');
+    } catch (error: any) {
+      console.error('Error updating user block status:', error);
+      toast.error('Failed to update user block status');
+    }
+  };
+
   const updatedUsers = useMemo(() => {
     if (orders.length > 0 && users.length > 0) {
       return users.map((user) => {
@@ -86,8 +139,6 @@ const AllUsers: React.FC = () => {
     }
     return [];
   }, [users, orders]);
-
-  console.log('updatedUsers', updatedUsers);
 
   const navigate = useNavigate();
 
@@ -233,27 +284,37 @@ const AllUsers: React.FC = () => {
                       {' '}
                       {formatDate(user.createdAt)}
                     </td>
-                    <td
-                      className={`!font-semibold 
-                      ${
-                        user.accountStatus.activeStatus == 1
-                          ? '!text-green-600 dark:!text-green-400'
-                          : '!text-red-600 dark:!text-red-400'
-                      }`}
-                    >
-                      {user.accountStatus.activeStatus == 1
-                        ? 'Active'
-                        : 'Inactive'}
+                    <td>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          checked={user.accountStatus.activeStatus === 1}
+                          onChange={() =>
+                            handleToggleStatus(
+                              user._id,
+                              user.accountStatus.activeStatus,
+                              user.accountStatus.blockStatus,
+                            )
+                          }
+                        />
+                        <span className="slider round"></span>
+                      </label>
                     </td>
-                    <td
-                      className={`!font-semibold 
-      ${
-        user.isBlocked
-          ? '!text-red-500 !dark:text-red-400'
-          : '!text-green-600 !dark:text-green-400'
-      }`}
-                    >
-                      {user.isBlocked ? 'Blocked' : 'Unblocked'}
+                    <td>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          checked={user.accountStatus.blockStatus === 1}
+                          onChange={() =>
+                            handleToggleBlock(
+                              user._id,
+                              user.accountStatus.blockStatus === 1,
+                              user.accountStatus.activeStatus,
+                            )
+                          }
+                        />
+                        <span className="slider round"></span>
+                      </label>
                     </td>
                   </tr>
                 ))
@@ -262,6 +323,54 @@ const AllUsers: React.FC = () => {
           </table>
         </div>
       </div>
+      <style>
+        {`
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+          }
+          
+          .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+          }
+          
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+          }
+          
+          input:checked + .slider {
+            background-color: #4caf50;
+          }
+          
+          input:checked + .slider:before {
+            transform: translateX(14px);
+          }
+        `}
+      </style>
     </>
   );
 };

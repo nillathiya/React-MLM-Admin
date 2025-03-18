@@ -37,6 +37,7 @@ interface Routes {
   USER: {
     GET_BY_ID: string;
     GET_ALL: string;
+    UPDATE_USER:any;
     UPDATE_PROFILE: string;
     CHECK_NAME: string;
     GET_GENERATION_TREE: string;
@@ -135,6 +136,7 @@ export const ROUTES: Routes = {
   USER: {
     GET_BY_ID: `${API_URL}/api/user/info/get`,
     GET_ALL: `${API_URL}/api/user/get-all`,
+    UPDATE_USER:`${API_URL}/api/user/update/profile`,
     UPDATE_PROFILE: `${API_URL}/api/user/update/profile`,
     CHECK_NAME: `${API_URL}/api/user/check-name`,
     GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
