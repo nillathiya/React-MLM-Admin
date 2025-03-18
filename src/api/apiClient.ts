@@ -6,7 +6,7 @@ export const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FjMzAzMDBjMjQ4MDZjZmVkZGQyY2MiLCJlbWFpbCI6ImtyaXNoQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoia3Jpc2giLCJyb2xlIjoxLCJzdGF0dXMiOjEsImlhdCI6MTc0MjIwNTU0MCwiZXhwIjoxNzQyMjkxOTQwfQ.MLkYP3ER-AXsPZvhLnIZBQIVmQhzDYQIAarxufMkNn0',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FjMzAzMDBjMjQ4MDZjZmVkZGQyY2MiLCJlbWFpbCI6ImtyaXNoQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoia3Jpc2giLCJyb2xlIjoxLCJzdGF0dXMiOjEsImlhdCI6MTc0MjI5OTgyNSwiZXhwIjoxNzQyMzg2MjI1fQ.4i7Fp5HLppHXyVBZAlQc6N3-kcFLEPPz65AP6wOgeJc',
   },
   // withCredentials: true,
 });
