@@ -13,7 +13,7 @@ interface Routes {
   COMPANY_INFO: {
     GET_ALL: string;
     UPDATE: (id: string) => string;
-    DELETE:string;
+    DELETE: string;
   };
   SUPPORT: {
     GET_ALL: (
@@ -37,7 +37,7 @@ interface Routes {
   USER: {
     GET_BY_ID: string;
     GET_ALL: string;
-    UPDATE_USER:any;
+    UPDATE_USER: any;
     UPDATE_PROFILE: string;
     CHECK_NAME: string;
     GET_GENERATION_TREE: string;
@@ -62,8 +62,8 @@ interface Routes {
     GET_RANK_SETTINGS: string;
     GET_USER_SETTINGS: string;
     GET_ADMIN_SETTINGS: string;
-    UPDATE_USER_SETTING:(id:string)=>string;
-    UPDATE_ADMIN_SETTING:(id:string)=>string;
+    UPDATE_USER_SETTING: (id: string) => string;
+    UPDATE_ADMIN_SETTING: (id: string) => string;
     CREATE: string;
     UPDATE: (id: string) => string;
     DELETE: (id: string) => string;
@@ -86,7 +86,7 @@ export const ROUTES: Routes = {
   AUTH: {
     ADMIN_LOGIN: `${API_URL}/api/auth/admin/login`,
     REGISTER: `${API_URL}/api/user/add`,
-    LOGOUT: `${API_URL}/api/auth/logout`,
+    LOGOUT: `${API_URL}/api/auth/admin/logout`,
     CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
     IMPERSONATE: `${API_URL}/api/auth/admin/impersonate`,
   },
@@ -136,7 +136,7 @@ export const ROUTES: Routes = {
   USER: {
     GET_BY_ID: `${API_URL}/api/user/info/get`,
     GET_ALL: `${API_URL}/api/user/get-all`,
-    UPDATE_USER:`${API_URL}/api/user/update/profile`,
+    UPDATE_USER: `${API_URL}/api/user/update/profile`,
     UPDATE_PROFILE: `${API_URL}/api/user/update/profile`,
     CHECK_NAME: `${API_URL}/api/user/check-name`,
     GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
@@ -161,16 +161,16 @@ export const ROUTES: Routes = {
     GET_RANK_SETTINGS: `${API_URL}/api/rank-settings/get`,
     GET_USER_SETTINGS: `${API_URL}/api/user-settings/get`,
     GET_ADMIN_SETTINGS: `${API_URL}/api/admin-settings/get`,
-    UPDATE_USER_SETTING:(id:string)=>`${API_URL}/api/user-settings/update/${id}`,
-    UPDATE_ADMIN_SETTING:(id:string)=> `${API_URL}/api/admin-settings/update/${id}`,
-
+    UPDATE_USER_SETTING: (id: string) =>
+      `${API_URL}/api/user-settings/update/${id}`,
+    UPDATE_ADMIN_SETTING: (id: string) =>
+      `${API_URL}/api/admin-settings/update/${id}`,
 
     CREATE: `${API_URL}/api/rank-settings/create`,
     UPDATE: (id: string) => `${API_URL}/api/rank-settings/update/${id}`,
     DELETE: (id: string) => `${API_URL}/api/rank-settings/delete/${id}`,
     DELETE_ROW: `${API_URL}/api/rank-settings/delete-row`,
     SAVE_ROW: `${API_URL}/api/rank-settings/save-row`,
-
   },
   NEWS_EVENT: {
     CREATE: `${API_URL}/api/news-events/create`,

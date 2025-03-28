@@ -5,10 +5,8 @@ export const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL as string,
   headers: {
     'Content-Type': 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2FjMzAzMDBjMjQ4MDZjZmVkZGQyY2MiLCJlbWFpbCI6ImtyaXNoQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoia3Jpc2giLCJyb2xlIjoxLCJzdGF0dXMiOjEsImlhdCI6MTc0MjI5OTgyNSwiZXhwIjoxNzQyMzg2MjI1fQ.4i7Fp5HLppHXyVBZAlQc6N3-kcFLEPPz65AP6wOgeJc',
   },
-  // withCredentials: true,
+  withCredentials: true,
 });
 
 // Add response interceptor to the apiClient instance
@@ -25,13 +23,14 @@ apiClient.interceptors.response.use(
 
       try {
         // Lazy-load store and actions to prevent circular dependencies
-        // const { store } = await import('../store/store');
-        // const { adminLogoutAsync, clearUser } = await import(
-        //   '../features/auth/authSlice'
-        // );
+        const { store } = await import('../store/store');
+        const { adminLogoutAsync, clearUser } = await import(
+          '../features/auth/authSlice'
+        );
+
         // await store.dispatch(adminLogoutAsync());
         // await store.dispatch(clearUser());
-        // window.location.href = '/';
+        window.location.href = '/';
       } catch (err) {
         console.error('Error during 401 handling:', err);
       }
