@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { getAllOrdersAsync } from '../../features/order/orderSlice';
 import { getAllUserAsync } from '../../features/user/userSlice';
-import toast from 'react-hot-toast';
-import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
 
 export interface IncomeTransaction {
   totalIncome: number;
@@ -19,23 +17,44 @@ const Cards: React.FC = () => {
   const { companyInfo } = useSelector((state: RootState) => state.settings);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { users } = useSelector((state: RootState) => state.user);
-  const { incomeTransactions } = useSelector(
-    (state: RootState) => state.transaction,
-  );
-  const { currentUser: loggedInUser } = useSelector(
-    (state: RootState) => state.auth,
-  );
+  const { incomeTransactions } = useSelector((state: RootState) => state.transaction);
+  const { currentUser: loggedInUser } = useSelector((state: RootState) => state.auth);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [incomeData, setIncomeData] = useState<IncomeTransaction>({
-    totalIncome: 0,
-    stakingReward: 0,
-    profitSharingReward: 0,
-    royaltyReward: 0,
-    arbBonusReward: 0,
-  });
-  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
-    ?.value;
+
+  // Compute incomeData from existing incomeTransactions, defaulting to 0
+  const incomeData = useMemo(() => {
+    if (!incomeTransactions.length) {
+      return {
+        totalIncome: 0,
+        stakingReward: 0,
+        profitSharingReward: 0,
+        royaltyReward: 0,
+        arbBonusReward: 0,
+      };
+    }
+
+    return incomeTransactions.reduce(
+      (acc: IncomeTransaction, tx: any) => {
+        const amount = tx.amount || 0; // Default to 0 if amount is undefined
+        acc.totalIncome += amount;
+        if (tx.source === 'reward') acc.stakingReward += amount;
+        if (tx.source === 'direct') acc.profitSharingReward += amount;
+        if (tx.source === 'roi') acc.royaltyReward += amount;
+        if (tx.source === 'royalty') acc.arbBonusReward += amount;
+        return acc;
+      },
+      {
+        totalIncome: 0,
+        stakingReward: 0,
+        profitSharingReward: 0,
+        royaltyReward: 0,
+        arbBonusReward: 0,
+      }
+    );
+  }, [incomeTransactions]);
+
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')?.value;
 
   useEffect(() => {
     if (!loggedInUser?._id) return;
@@ -46,43 +65,14 @@ const Cards: React.FC = () => {
         setIsLoading(true);
 
         const apiCalls = [];
-        if (!orders.length)
-          apiCalls.push(dispatch(getAllOrdersAsync()).unwrap());
+        if (!orders.length) apiCalls.push(dispatch(getAllOrdersAsync()).unwrap());
         if (!users.length) apiCalls.push(dispatch(getAllUserAsync()).unwrap());
 
-        const incomeFormData = { txType: 'income' };
-        apiCalls.push(
-          dispatch(getAllIncomeTransactionAsync(incomeFormData)).unwrap(),
-        );
-
-        const responses = await Promise.all(apiCalls);
-        const incomeResponse = responses[responses.length - 1];
-        const transactions = incomeResponse?.data ?? [];
-
-        if (isMounted) {
-          setIncomeData(
-            transactions.reduce(
-              (acc: any, tx: any) => {
-                acc.totalIncome += tx.amount;
-                if (tx.source === 'reward') acc.stakingReward += tx.amount;
-                if (tx.source === 'direct')
-                  acc.profitSharingReward += tx.amount;
-                if (tx.source === 'roi') acc.royaltyReward += tx.amount;
-                if (tx.source === 'royalty') acc.arbBonusReward += tx.amount;
-                return acc;
-              },
-              {
-                totalIncome: 0,
-                stakingReward: 0,
-                profitSharingReward: 0,
-                royaltyReward: 0,
-                arbBonusReward: 0,
-              },
-            ),
-          );
+        if (apiCalls.length > 0) {
+          await Promise.all(apiCalls);
         }
       } catch (error: any) {
-        toast.error(error?.message || 'Service error');
+        console.error('Fetch error:', error); // Log silently, no toast
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -100,13 +90,13 @@ const Cards: React.FC = () => {
       ...user,
       package: orders
         .filter((order) => order.customerId?._id === user._id)
-        .reduce((acc, order) => acc + order.bv, 0),
+        .reduce((acc, order) => acc + (order.bv || 0), 0),
     }));
   }, [users, orders]);
 
   const totalInvestment = useMemo(
-    () => updatedUsers.reduce((acc, user) => acc + user.package, 0),
-    [updatedUsers],
+    () => updatedUsers.reduce((acc, user) => acc + (user.package || 0), 0),
+    [updatedUsers]
   );
 
   const today = new Date();
@@ -122,10 +112,10 @@ const Cards: React.FC = () => {
       orders
         .filter(
           (order) =>
-            new Date(order.createdAt).setHours(0, 0, 0, 0) ===
-              today.getTime() && order.customerId?._id === user._id,
+            new Date(order.createdAt).setHours(0, 0, 0, 0) === today.getTime() &&
+            order.customerId?._id === user._id
         )
-        .reduce((sum, order) => sum + order.bv, 0)
+        .reduce((sum, order) => sum + (order.bv || 0), 0)
     );
   }, 0);
 
@@ -135,10 +125,10 @@ const Cards: React.FC = () => {
       orders
         .filter(
           (order) =>
-            new Date(order.createdAt).setHours(0, 0, 0, 0) ===
-              yesterday.getTime() && order.customerId?._id === user._id,
+            new Date(order.createdAt).setHours(0, 0, 0, 0) === yesterday.getTime() &&
+            order.customerId?._id === user._id
         )
-        .reduce((sum, order) => sum + order.bv, 0)
+        .reduce((sum, order) => sum + (order.bv || 0), 0)
     );
   }, 0);
 
@@ -154,20 +144,17 @@ const Cards: React.FC = () => {
             {
               label: 'Total',
               value: totalInvestment,
-              gradient:
-                'from-blue-500 to-indigo-500 dark:from-gray-900 dark:to-gray-800',
+              gradient: 'from-blue-500 to-indigo-500 dark:from-gray-900 dark:to-gray-800',
             },
             {
               label: 'Today',
               value: todayInvestment,
-              gradient:
-                'from-green-400 to-emerald-500 dark:from-gray-800 dark:to-gray-700',
+              gradient: 'from-green-400 to-emerald-500 dark:from-gray-800 dark:to-gray-700',
             },
             {
               label: 'Yesterday',
               value: yesterdayInvestment,
-              gradient:
-                'from-red-400 to-orange-500 dark:from-gray-700 dark:to-gray-600',
+              gradient: 'from-red-400 to-orange-500 dark:from-gray-700 dark:to-gray-600',
             },
           ].map(({ label, value, gradient }, index) => (
             <div
@@ -194,16 +181,9 @@ const Cards: React.FC = () => {
         </h3>
         <div className="space-y-4">
           {[
-            {
-              label: 'Total Income',
-              value: incomeData.totalIncome,
-              highlight: true,
-            },
+            { label: 'Total Income', value: incomeData.totalIncome, highlight: true },
             { label: 'Staking Reward', value: incomeData.stakingReward },
-            {
-              label: 'Profit Sharing Reward',
-              value: incomeData.profitSharingReward,
-            },
+            { label: 'Profit Sharing Reward', value: incomeData.profitSharingReward },
             { label: 'Royalty Reward', value: incomeData.royaltyReward },
             { label: 'ARB Bonus Reward', value: incomeData.arbBonusReward },
           ].map(({ label, value, highlight }) => (

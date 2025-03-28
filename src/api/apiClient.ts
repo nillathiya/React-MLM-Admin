@@ -1,6 +1,4 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-
-// Create an Axios instance with proper type annotations
 export const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL as string,
   headers: {
@@ -30,7 +28,7 @@ apiClient.interceptors.response.use(
 
         // await store.dispatch(adminLogoutAsync());
         // await store.dispatch(clearUser());
-        window.location.href = '/';
+        // window.location.href = '/';
       } catch (err) {
         console.error('Error during 401 handling:', err);
       }

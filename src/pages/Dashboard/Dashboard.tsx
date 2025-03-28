@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
+import { AppDispatch, RootState } from '../../store/store';
+import { getAllOrdersAsync } from '../../features/order/orderSlice';
+import { getAllUserAsync } from '../../features/user/userSlice';
+import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
+import { getAllCompanyInfoAsync } from '../../features/settings/settingsSlice';
 import CardDataStats from '../../components/CardDataStats';
 import DashboardCards from '../../components/Tables/DashboardCards';
 import CustomerList from './CustomerList';
 import Cards from './Cards';
 import './DashboardCard.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store/store';
-import { getAllOrdersAsync } from '../../features/order/orderSlice';
-import toast from 'react-hot-toast';
-import { getAllUserAsync } from '../../features/user/userSlice';
-import { getAllIncomeTransactionAsync } from '../../features/transaction/transactionSlice';
-import { getAllCompanyInfoAsync } from '../../features/settings/settingsSlice';
+import {
+  ApiResponse,
+  Order,
+  User,
+  IncomeTransaction,
+  ICompanyInfo,
+} from '../../types';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
   const { companyInfo } = useSelector((state: RootState) => state.settings);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { users } = useSelector((state: RootState) => state.user);
@@ -24,6 +33,7 @@ const Dashboard: React.FC = () => {
   const { currentUser: loggedInUser } = useSelector(
     (state: RootState) => state.auth,
   );
+
   const [incomeData, setIncomeData] = useState({
     totalIncome: 0,
     stakingReward: 0,
@@ -31,6 +41,7 @@ const Dashboard: React.FC = () => {
     royaltyReward: 0,
     arbBonusReward: 0,
   });
+
   const companyCurrency = companyInfo.find((data) => data.label === 'currency')
     ?.value;
 
@@ -38,57 +49,73 @@ const Dashboard: React.FC = () => {
     let isMounted = true;
 
     const fetchData = async () => {
+      if (hasFetched || !loggedInUser?._id) return;
+
       try {
         setIsLoading(true);
+        // Explicitly type the apiCalls array
+        const apiCalls: Promise<
+          ApiResponse<Order[] | User[] | ICompanyInfo[] | IncomeTransaction[]>
+        >[] = [];
 
-        if (isMounted) {
-          const apiCalls = [];
-
-          // Orders API
-          if (orders.length === 0) {
-            apiCalls.push(dispatch(getAllOrdersAsync()).unwrap());
-          }
-
-          // Users API
-          if (users.length === 0) {
-            apiCalls.push(dispatch(getAllUserAsync()).unwrap());
-          }
-
-          // Company Info API
-          if (companyInfo.length === 0) {
-            apiCalls.push(dispatch(getAllCompanyInfoAsync()).unwrap());
-          }
-
-          // Income Transactions (All)
-          if (incomeTransactions.length === 0) {
-            const formData = { txType: 'all' };
-            apiCalls.push(
-              dispatch(getAllIncomeTransactionAsync(formData)).unwrap(),
-            );
-          }
-
-          // Income Transactions (Income)
-          const incomeFormData = { txType: 'income' };
+        if (orders.length === 0) {
+          apiCalls.push(dispatch(getAllOrdersAsync()).unwrap());
+        }
+        if (users.length === 0) {
+          apiCalls.push(dispatch(getAllUserAsync()).unwrap());
+        }
+        if (companyInfo.length === 0) {
+          apiCalls.push(dispatch(getAllCompanyInfoAsync()).unwrap());
+        }
+        if (incomeTransactions.length === 0) {
           apiCalls.push(
-            dispatch(getAllIncomeTransactionAsync(incomeFormData)).unwrap(),
+            dispatch(getAllIncomeTransactionAsync({ txType: 'all' })).unwrap(),
           );
+          apiCalls.push(
+            dispatch(
+              getAllIncomeTransactionAsync({ txType: 'income' }),
+            ).unwrap(),
+          );
+        }
 
-          const responses = await Promise.all(apiCalls);
-          const incomeResponse = responses[responses.length - 1];
-          const transactions = incomeResponse?.data ?? [];
+        if (apiCalls.length === 0) {
+          setIsLoading(false);
+          return;
+        }
 
+        const responses = await Promise.allSettled(apiCalls);
+        let errorOccurred = false;
+
+        responses.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            errorOccurred = true;
+            console.error(`API call ${index} failed:`, result.reason);
+            setErrorCount((prev) => prev + 1);
+          }
+        });
+
+        const incomeResponse = responses.find(
+          (r, i) =>
+            apiCalls[i] ===
+            dispatch(
+              getAllIncomeTransactionAsync({ txType: 'income' }),
+            ).unwrap(),
+        ) as PromiseSettledResult<ApiResponse<IncomeTransaction[]>> | undefined;
+
+        if (incomeResponse?.status === 'fulfilled') {
+          const transactions = incomeResponse.value?.data ?? [];
           let total = 0,
             staking = 0,
             profitSharing = 0,
             royalty = 0,
             arbBonus = 0;
 
-          transactions.forEach((tx: any) => {
-            total += tx.amount;
-            if (tx.source === 'reward') staking += tx.amount;
-            if (tx.source === 'direct') profitSharing += tx.amount;
-            if (tx.source === 'roi') royalty += tx.amount;
-            if (tx.source === 'royalty') arbBonus += tx.amount;
+          transactions.forEach((tx: IncomeTransaction) => {
+            total += tx.amount || 0;
+            if (tx.source === 'reward') staking += tx.amount || 0;
+            if (tx.source === 'direct') profitSharing += tx.amount || 0;
+            if (tx.source === 'roi') royalty += tx.amount || 0;
+            if (tx.source === 'royalty') arbBonus += tx.amount || 0;
           });
 
           setIncomeData({
@@ -99,49 +126,50 @@ const Dashboard: React.FC = () => {
             arbBonusReward: arbBonus,
           });
         }
+
+        if (errorOccurred && errorCount < 2) {
+          toast.error('Some data couldn’t be loaded. Please try refreshing.');
+        }
       } catch (error: any) {
-        toast.error(error?.message || 'Service error');
+        console.error('Fetch error:', error);
+        if (errorCount < 2) {
+          toast.error('An error occurred while loading data.');
+        }
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+          setHasFetched(true);
+        }
       }
     };
 
-    if (loggedInUser?._id) {
-      fetchData();
-    }
+    fetchData();
 
     return () => {
       isMounted = false;
     };
-  }, [
-    loggedInUser,
-    orders.length,
-    users.length,
-    incomeTransactions.length,
-    dispatch,
-  ]);
+  }, [loggedInUser, dispatch]);
 
   const activeUserCount = users.reduce(
     (acc, user) => (user.accountStatus?.activeStatus === 1 ? acc + 1 : acc),
     0,
   );
-
   const totalIncome = incomeTransactions.reduce(
-    (acc, transaction) =>
-      transaction.txType === 'income' ? acc + transaction.amount : acc,
+    (acc, tx) => (tx.txType === 'income' ? acc + (tx.amount || 0) : acc),
     0,
   );
-
   const totalIncomeTransactionCharge = incomeTransactions.reduce(
-    (acc, transaction) =>
-      transaction.txType === 'income' ? acc + transaction.txCharge : acc,
+    (acc, tx) => (tx.txType === 'income' ? acc + (tx.txCharge || 0) : acc),
+    0,
+  );
+  const totalInvestment = orders.reduce(
+    (acc, order) => (order.status === 1 ? acc + (order.bv || 0) : acc),
     0,
   );
 
-  const totalInvestment = orders.reduce(
-    (acc, order) => (order.status === 1 ? acc + order.bv : acc),
-    0,
-  );
+  if (isLoading) {
+    return <div>Loading Dashboard...</div>;
+  }
 
   return (
     <>

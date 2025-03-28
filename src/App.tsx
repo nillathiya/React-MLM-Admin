@@ -59,7 +59,7 @@ import CustomerList from './pages/Dashboard/CustomerList';
 import Cards from './pages/Dashboard/Cards';
 import RankSettings from './pages/Settings/GeneralSettings/RankSettings';
 import NewAndEvents from './pages/Settings/NewAndEvent';
-import ViewUserGeneration from './pages/Network/viewUserGeneration';
+import ViewUserGeneration from './pages/Network/ViewUserGeneration';
 import { AppDispatch, RootState } from './store/store';
 import { ICompanyInfo } from './types/settings';
 import { getAllCompanyInfoAsync } from './features/settings/settingsSlice';
@@ -83,17 +83,22 @@ function App() {
 
   useEffect(() => {
     const fetchCompanyInfo = async () => {
+      if (companyInfo.length > 0) {
+        setLoading(false);
+        return;
+      }
       try {
+        setLoading(true);
         await dispatch(getAllCompanyInfoAsync()).unwrap();
       } catch (error: any) {
         toast.error(error || 'Server Error');
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (companyInfo.length === 0) {
-      fetchCompanyInfo();
-    }
-  }, [companyInfo.length, dispatch]);
+    fetchCompanyInfo();
+  }, [dispatch]);
 
   // Extract values correctly
   const appName =
@@ -103,25 +108,23 @@ function App() {
     companyInfo.find((data) => data.label === 'companyFavicon')?.value ||
     '/default-favicon.ico';
 
-  console.log(favicon);
   useEffect(() => {
-    if (appName && favicon) {
-      // Set Application Name
-      document.title = appName;
+    if (!appName && !favicon) return;
+    // Set Application Name
+    document.title = appName;
 
-      // Set Favicon
-      let link = document.querySelector(
-        "link[rel~='icon']",
-      ) as HTMLLinkElement | null;
+    // Set Favicon
+    let link = document.querySelector(
+      "link[rel~='icon']",
+    ) as HTMLLinkElement | null;
 
-      if (!link) {
-        link = document.createElement('link') as HTMLLinkElement;
-        link.rel = 'icon';
-        document.head.appendChild(link);
-      }
-
-      link.href = `${API_URL}${favicon}`;
+    if (!link) {
+      link = document.createElement('link') as HTMLLinkElement;
+      link.rel = 'icon';
+      document.head.appendChild(link);
     }
+
+    link.href = `${API_URL}${favicon}`;
   }, [appName, favicon]);
 
   return loading ? (
@@ -285,7 +288,7 @@ function App() {
             </>
           }
         />
-         <Route
+        <Route
           path="/setting/general-setting/:category/:title"
           element={
             <>
