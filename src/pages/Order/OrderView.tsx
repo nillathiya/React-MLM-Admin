@@ -1,142 +1,104 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import './order.css'; // Import CSS file
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { IoEllipseSharp } from 'react-icons/io5';
+import toast from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
+import {
+  getAllOrdersAsync,
+  getOrderByIdAsync,
+} from '../../features/order/orderSlice';
+import { Order } from '../../types';
+import { formatDate } from '../../utils/dateUtils';
 
 const OrderView = () => {
-  const [paymentStatus, setPaymentStatus] = useState('Pending');
-  const [orderStatus, setOrderStatus] = useState('Pending');
+  const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const userId = queryParams.get('id');
 
-  const handleSave = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    alert(`Payment Status: ${paymentStatus}, Order Status: ${orderStatus}`);
-  };
+  const { orders, order } = useSelector((state: RootState) => state.orders);
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
 
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const existingOrder = orders.find(
+      (o) => o.customerId && o.customerId._id === userId,
+    );
+    if (!existingOrder) {
+      dispatch(getAllOrdersAsync())
+        .unwrap()
+        .catch((error: any) => {
+          toast.error(error || 'Server error');
+        });
+    }
+  }, [userId, orders, dispatch]);
+  const userOrders = Array.isArray(orders)
+    ? orders.filter((o) => o?.customerId && o.customerId._id === userId)
+    : [];
+
+  console.log('orders', orders);
+  console.log('userId', userId);
   return (
     <>
       <Breadcrumb pageName="Order Details" />
       <div className="container">
         <div className="order-layout">
           <div className="order-main">
-            <div className="card rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-              <h2 style={{ fontSize: '20px',fontWeight:'700' }}>Order Detail</h2>
-              <table className="table ">
-                <tbody>
-                  <tr>
-                    <th>User</th>
-                    <td>ARB513209</td>
-                  </tr>
-                  <tr>
-                    <th>Amount</th>
-                    <td>100</td>
-                  </tr>
-                  <tr>
-                    <th>Date</th>
-                    <td>2025-02-06 10:25:06</td>
-                  </tr>
-                  <tr>
-                    <th>Shipping Address</th>
-                    <td>
-                      <div className="address-box">Address content here</div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Order ID</th>
-                    <td>1</td>
-                  </tr>
-                  <tr>
-                    <th>Payment Status</th>
-                    <td>
-                      <span className={`badge ${paymentStatus.toLowerCase()}`}>
-                        {paymentStatus}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Order Status</th>
-                    <td>
-                      <span className={`badge ${orderStatus.toLowerCase()}`}>
-                        {orderStatus}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Order BV</th>
-                    <td>100</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="card rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-              <h2 style={{ fontSize: '20px',fontWeight:'700' }}>Order Products</h2>
-              <div className="table-responsive">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>S no.</th>
-                      <th>Product Code</th>
-                      <th>Product Name</th>
-                      <th>Qty</th>
-                      <th>Details</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>P001</td>
-                      <td>Wireless Headphones</td>
-                      <td>2</td>
-                      <td>
-                        <button className="details-btn">View</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div className="order-update">
-            <div className="card rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-              <h2 style={{ fontSize: '20px', marginBottom: '10px',fontWeight:'700' }}>
-                Update Order
-              </h2>
-              <form onSubmit={handleSave}>
-                <div className="form-group">
-                  <label>Payment Status</label>
-                  <select
-                    style={{ padding: '10px' }}
-                    value={paymentStatus}
-                    onChange={(e) => setPaymentStatus(e.target.value)}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                  </select>
+            <h2 style={{ fontSize: '20px' }}>Order Detail</h2>
+            {userOrders.length > 0 ? (
+              userOrders.map((order: Order) => (
+                <div className="card dark:bg-form-strokedark dark:text-white">
+                  <table className="table table-striped">
+                    <tbody>
+                      <React.Fragment key={order._id}>
+                        <tr>
+                          <th>User</th>
+                          <td>{order.customerId?.username || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                          <th>Amount</th>
+                          <td>
+                            {companyCurrency}
+                            {order.amount || 'N/A'}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Payment Status</th>
+                          <td>
+                            {order.status === 0 ? 'Pending' : 'Confirmed'}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Order BV</th>
+                          <td>
+                            {' '}
+                            {companyCurrency}
+                            {order.bv || 0}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Date</th>
+                          <td>{formatDate(order.createdAt)}</td>
+                        </tr>
+                      </React.Fragment>
+                    </tbody>
+                  </table>
                 </div>
-
-                <div className="form-group">
-                  <label>Order Status</label>
-                  <select
-                    style={{ padding: '10px' }}
-                    value={orderStatus}
-                    onChange={(e) => setOrderStatus(e.target.value)}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Dispatched">Dispatched</option>
-                  </select>
-                </div>
-
-                <button
-                  style={{ padding: '10px', backgroundColor: '#e6e6e6' }}
-                  type="submit"
-                >
-                  SAVE
-                </button>
-              </form>
-            </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={2} style={{ textAlign: 'center' }}>
+                  No orders found.
+                </td>
+              </tr>
+            )}
           </div>
         </div>
       </div>

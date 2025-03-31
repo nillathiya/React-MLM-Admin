@@ -11,17 +11,9 @@ interface Routes {
     IMPERSONATE: string;
   };
   COMPANY_INFO: {
-    GET: (
-      title?: string,
-      label?: string,
-      value?: string,
-      type?: string,
-      searchterm?: string,
-      status?: number,
-      limit?: number,
-      page?: number,
-    ) => string;
+    GET_ALL: string;
     UPDATE: (id: string) => string;
+    DELETE: string;
   };
   SUPPORT: {
     GET_ALL: (
@@ -40,6 +32,52 @@ interface Routes {
   };
   WITHDRAWAL: {
     GET_ALL: string;
+    UPDATE_REQUEST: string;
+  };
+  USER: {
+    GET_BY_ID: string;
+    GET_ALL: string;
+    UPDATE_USER: any;
+    UPDATE_PROFILE: string;
+    CHECK_NAME: string;
+    GET_GENERATION_TREE: string;
+    GET_DETAILS_WITH_INVEST_INFO: string;
+    ADD_MEMBER: string;
+  };
+  ORDER: {
+    GET_ALL: string;
+    GET_BY_ID: (orderId: string) => string;
+  };
+  TRANSACTION: {
+    GET_ALL: string;
+    FUND: {
+      GET_ALL: string;
+      DIRECT_TRANSFER: string;
+    };
+    INCOME: {
+      GET_ALL: string;
+    };
+  };
+  SETTINGS: {
+    GET_RANK_SETTINGS: string;
+    GET_USER_SETTINGS: string;
+    GET_ADMIN_SETTINGS: string;
+    UPDATE_USER_SETTING: (id: string) => string;
+    UPDATE_ADMIN_SETTING: (id: string) => string;
+    CREATE: string;
+    UPDATE: (id: string) => string;
+    DELETE: (id: string) => string;
+    DELETE_ROW: string;
+    SAVE_ROW: string;
+  };
+  NEWS_EVENT: {
+    CREATE: string;
+    GET_ALL: string;
+    UPDATE: string;
+  };
+  CONTACT_US: {
+    GET_MESSAGES: string;
+    TOGGLE_STATUS: string;
   };
 }
 
@@ -48,43 +86,14 @@ export const ROUTES: Routes = {
   AUTH: {
     ADMIN_LOGIN: `${API_URL}/api/auth/admin/login`,
     REGISTER: `${API_URL}/api/user/add`,
-    LOGOUT: `${API_URL}/api/auth/logout`,
+    LOGOUT: `${API_URL}/api/auth/admin/logout`,
     CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
     IMPERSONATE: `${API_URL}/api/auth/admin/impersonate`,
   },
   COMPANY_INFO: {
-    GET: (
-      title?: string,
-      label?: string,
-      value?: string,
-      type?: string,
-      searchterm?: string,
-      status?: number,
-      limit?: number,
-      page?: number,
-    ) => {
-      const query = new URLSearchParams();
-
-      if (title !== undefined && title !== null)
-        query.append('title', title.toString());
-      if (label !== undefined && label !== null)
-        query.append('label', label.toString());
-      if (value !== undefined && value !== null)
-        query.append('value', value.toString());
-      if (type !== undefined && type !== null)
-        query.append('type', type.toString());
-      if (searchterm !== undefined && searchterm !== null)
-        query.append('searchterm', searchterm.toString());
-      if (status !== undefined && status !== null)
-        query.append('status', status.toString());
-      if (limit !== undefined && limit !== null)
-        query.append('limit', limit.toString());
-      if (page !== undefined && page !== null)
-        query.append('searchterm', page.toString());
-
-      return `${API_URL}/api/company-info/get?${query.toString()}`;
-    },
+    GET_ALL: `${API_URL}/api/company-info/get`,
     UPDATE: (id: string) => `${API_URL}/api/company-info/update/${id}`,
+    DELETE: `${API_URL}/api/company-info/delete`,
   },
   SUPPORT: {
     GET_ALL: (
@@ -122,5 +131,54 @@ export const ROUTES: Routes = {
   },
   WITHDRAWAL: {
     GET_ALL: `${API_URL}/api/withdrawal/get-all-transactions`,
+    UPDATE_REQUEST: `${API_URL}/api/withdrawal/update-request`,
+  },
+  USER: {
+    GET_BY_ID: `${API_URL}/api/user/info/get`,
+    GET_ALL: `${API_URL}/api/user/get-all`,
+    UPDATE_USER: `${API_URL}/api/user/update/profile`,
+    UPDATE_PROFILE: `${API_URL}/api/user/update/profile`,
+    CHECK_NAME: `${API_URL}/api/user/check-name`,
+    GET_GENERATION_TREE: `${API_URL}/api/user/generation-tree`,
+    GET_DETAILS_WITH_INVEST_INFO: `${API_URL}/api/user/details-with-investment`,
+    ADD_MEMBER: `${API_URL}/api/user/create`,
+  },
+  ORDER: {
+    GET_ALL: `${API_URL}/api/orders/get-all`,
+    GET_BY_ID: (orderId: string) => `${API_URL}/api/orders/get/${orderId}`,
+  },
+  TRANSACTION: {
+    GET_ALL: `${API_URL}/api/transaction/get-all`,
+    FUND: {
+      GET_ALL: `${API_URL}/api/transaction/fund/all`,
+      DIRECT_TRANSFER: `${API_URL}/api/transaction/direct-fund-transfer`,
+    },
+    INCOME: {
+      GET_ALL: `${API_URL}/api/transaction/income/all`,
+    },
+  },
+  SETTINGS: {
+    GET_RANK_SETTINGS: `${API_URL}/api/rank-settings/get`,
+    GET_USER_SETTINGS: `${API_URL}/api/user-settings/get`,
+    GET_ADMIN_SETTINGS: `${API_URL}/api/admin-settings/get`,
+    UPDATE_USER_SETTING: (id: string) =>
+      `${API_URL}/api/user-settings/update/${id}`,
+    UPDATE_ADMIN_SETTING: (id: string) =>
+      `${API_URL}/api/admin-settings/update/${id}`,
+
+    CREATE: `${API_URL}/api/rank-settings/create`,
+    UPDATE: (id: string) => `${API_URL}/api/rank-settings/update/${id}`,
+    DELETE: (id: string) => `${API_URL}/api/rank-settings/delete/${id}`,
+    DELETE_ROW: `${API_URL}/api/rank-settings/delete-row`,
+    SAVE_ROW: `${API_URL}/api/rank-settings/save-row`,
+  },
+  NEWS_EVENT: {
+    CREATE: `${API_URL}/api/news-events/create`,
+    GET_ALL: `${API_URL}/api/news-events/get-all`,
+    UPDATE: `${API_URL}/api/news-events/update`,
+  },
+  CONTACT_US: {
+    GET_MESSAGES: `${API_URL}/api/contact-us/list`,
+    TOGGLE_STATUS: `${API_URL}/api/contact-us/change-status`,
   },
 };

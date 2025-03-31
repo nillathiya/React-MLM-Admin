@@ -106,10 +106,10 @@ table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order,
 table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order,
 table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order {
   position: absolute;
-  right: 12px;
+  right: 2px;
   top: 0;
   bottom: 0;
-  width: 12px;
+  width: 10px;
 }
 table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:before,
 table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:after,
@@ -874,6 +874,7 @@ div.dt-container.dt-empty-footer .dt-scroll-body tbody > tr:last-child > * {
     flex-direction: row;
     align-items: center;
     justify-content: start;
+    font-size: 15px;
   }
 
   .dt-container .dt-search input {
@@ -2025,11 +2026,11 @@ div.dt-container .dt-paging .dt-paging-button.current:hover {
   gap: 10px;
 }
 .dt-length {
-  width: 34% !important;
+  width: 56% !important;
 }
 .dt-input {
   width: 100%;
-  max-width: 150px;
+  max-width: 51px;
 }
 
 label {
@@ -2049,6 +2050,7 @@ label {
 
   .dt-search {
     width: 100%;
+    font-size: 10px;
   }
   .dt-length {
     width: 100% !important;

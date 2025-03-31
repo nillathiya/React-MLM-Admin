@@ -20,3 +20,29 @@ export interface Support {
   approvedDate: string;
   reply: string;
 }
+
+export interface Tickets {
+  _id: string;
+  unreadMessages: {
+    admin: number;
+    user: number;
+  };
+  userId?: {
+    _id: string;
+    username: string;
+    name: string;
+  };
+  title?: string;
+  description?: string;
+  messages?: TicketMessage[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TicketMessage {
+  _id: string;
+  sender: string;
+  text: string;
+  isRead: boolean;
+}

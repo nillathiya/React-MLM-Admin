@@ -1,90 +1,109 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../store/store';
-// import {
-//   selectTotalWithdrawals,
-//   getTotalWithdrawalsAsync,
-//   selectLoading as selectTransactionLoading,
-// } from '../../features/transaction/transactionSlice';
-// import {
-//   selectTotalRewardPay,
-//   selectTotalRewards,
-//   getTotalRewardPayAsync,
-//   getTotalRewardsAsync,
-//   selectLoading as selectTotalRewardPayLoading,
-// } from '../../features/block-rewards/blockRewardsSlice';
+import { AppDispatch, RootState } from '../../store/store';
+import { fetchWithdrawals } from '../../features/withdrawal/withdrawalSlice';
+import { FundTransaction } from '../../types';
 
 interface Card {
   title: string;
   value: string;
   color: string;
   icon: string;
+  status: string;
 }
 
 const DashboardCards: React.FC = () => {
-  // const dispatch = useDispatch<AppDispatch>();
-  // const totalWithdrawals = useSelector(selectTotalWithdrawals);
-  // const totalRewardPay = useSelector(selectTotalRewardPay);
-  // const totalRewards = useSelector(selectTotalRewards);
-  // const transactionLoading = useSelector(selectTransactionLoading);
-  // const totalRewardPayLoading = useSelector(selectTotalRewardPayLoading);
+  const dispatch = useDispatch<AppDispatch>();
+  const [hasFetched, setHasFetched] = useState(false); // Track if we've attempted to fetch
 
-  // useEffect(() => {
-  //   if (totalWithdrawals === null) {
-  //     dispatch(getTotalWithdrawalsAsync());
-  //   }
-  //   if (totalRewardPay === null) {
-  //     dispatch(getTotalRewardPayAsync());
-  //   }
-  //   if (totalRewards === null) {
-  //     dispatch(getTotalRewardsAsync());
-  //   }
-  // }, [dispatch, totalWithdrawals]);
+  const { withdrawals, isLoading } = useSelector(
+    (state: RootState) => state.withdrawal,
+  );
 
-  const formatNumber = (num: number | null) => {
-    return num === null ? 'Loading...' : num.toFixed(10);
-  };
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      // Skip if already fetched, currently loading, or data exists
+      if (hasFetched || isLoading || withdrawals.length > 0) return;
+
+      try {
+        await dispatch(fetchWithdrawals()).unwrap();
+        if (isMounted) setHasFetched(true); // Mark as fetched on success
+      } catch (error: any) {
+        console.error('Failed to fetch withdrawals:', error); // Log for debugging
+        if (isMounted) setHasFetched(true); // Still mark as fetched to prevent retries
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch]); // Stable dependencies
+
+  // Memoize withdrawal counts, default to 0 if no data
+  const withdrawalCounts = React.useMemo(
+    () => ({
+      pending:
+        withdrawals.length > 0
+          ? withdrawals.filter((w: FundTransaction) => w.status === 0).length
+          : 0,
+      approved:
+        withdrawals.length > 0
+          ? withdrawals.filter((w: FundTransaction) => w.status === 1).length
+          : 0,
+      rejected:
+        withdrawals.length > 0
+          ? withdrawals.filter((w: FundTransaction) => w.status === 2).length
+          : 0,
+    }),
+    [withdrawals],
+  );
 
   const cards: Card[] = [
     {
       title: 'Withdrawal',
-      value:"0",
-      // value: transactionLoading ? 'Loading...' : formatNumber(totalWithdrawals || 0),
-      color: 'bg-blue-400',
+      value: withdrawalCounts.approved.toString(),
+      color: 'bg-blue-200',
       icon: '💵',
+      status: 'Approved',
     },
     {
-      title: 'Rewards',
-      value:"0",
-
-      // value: totalRewardPayLoading ? 'Loading...' : formatNumber(totalRewards),
-      color: 'bg-red-400',
-      icon: '🏆',
+      title: 'Withdrawal',
+      value: withdrawalCounts.pending.toString(),
+      color: 'bg-red-300',
+      icon: '💵',
+      status: 'Pending',
     },
     {
-      title: 'Payouts',
-      value:"0",
-
-      // value: totalRewardPayLoading ? 'Loading...' : formatNumber(totalRewardPay || 0),
-      color: 'bg-blue-400',
-      icon: '💰',
+      title: 'Withdrawal',
+      value: withdrawalCounts.rejected.toString(),
+      color: 'bg-blue-200',
+      icon: '💵',
+      status: 'Rejected',
     },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-      {cards.map((card, index) => (
-        <div
-          key={index}
-          className={`${card.color} text-black rounded-md shadow-md p-4 flex flex-col items-center`}
-        >
-          <div className="text-3xl mb-2">{card.icon}</div>
-          <h3 className="text-xl font-bold mb-1">{card.title}</h3>
-          <hr className="w-50 border-black mb-2" />
-          <p className="text-sm">(Coin Wise)</p>
-          <p className="text-lg font-semibold">{card.value}</p>
-        </div>
-      ))}
+      {isLoading && !hasFetched ? (
+        <div className="col-span-3 text-center">Loading withdrawals...</div>
+      ) : (
+        cards.map((card, index) => (
+          <div
+            key={index}
+            className={`${card.color} text-black dark:bg-[#24303f] dark:text-gray-300 rounded-md shadow-md p-4 flex flex-col items-center transition-transform duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105`}
+          >
+            <div className="text-3xl mb-2">{card.icon}</div>
+            <h3 className="text-xl font-bold mb-1">{card.title}</h3>
+            <hr className="w-50 border-black mb-2 dark:border-gray-300" />
+            <p className="text-sm">{card.status}</p>
+            <p className="text-lg font-semibold">{card.value}</p>
+          </div>
+        ))
+      )}
     </div>
   );
 };

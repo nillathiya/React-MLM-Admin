@@ -1,233 +1,171 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-dt';
+import 'datatables.net-select-dt';
 import { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import '../../../src/pages/Withdrawal/withdrawal.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchWithdrawals } from '../../features/withdrawal/withdrawalSlice';
+import {
+  fetchWithdrawals,
+  selectPendingWithdrawals,
+} from '../../features/withdrawal/withdrawalSlice';
 import { AppDispatch, RootState } from '../../store/store';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import SearchInput from '../../common/Search/SearchInput';
-import Pagination from '../../common/Pagination/Pagination';
-import { DEFAULT_CURRENT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '../../constants';
+import { useNavigate } from 'react-router-dom';
+import { DEFAULT_PER_PAGE_ITEMS } from '../../constants';
+import Skeleton from '../../components/ui/Skeleton/Skeleton';
+import toast from 'react-hot-toast';
+import { formatDate } from '../../utils/dateUtils';
+import { ICONS } from '../../constants';
+import Icon from '../../components/Icons/Icon';
 
 const WithdrawalPending: React.FC = () => {
-  const [selectAll, setSelectAll] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const navigate = useNavigate(); // Initialize navigation function
-
-  const handleSelectAll = (e: any) => {
-    const isChecked = e.target.checked;
-    setSelectAll(isChecked);
-  };
-
-  const withdrawals = useSelector((state: RootState) => state.withdrawals.data);
-  console.log('withdrawals', withdrawals);
+  const pendingWithdrawals = useSelector(selectPendingWithdrawals);
+  const navigate = useNavigate();
+  const { withdrawals, isLoading } = useSelector(
+    (state: RootState) => state.withdrawal,
+  );
+  const {companyInfo}=useSelector((state:RootState)=>state.settings)
+  const companyCurrency=companyInfo.find((data)=>data.label==="currency")?.value
   useEffect(() => {
-    dispatch(fetchWithdrawals());
-  }, []);
+    (async () => {
+      try {
+        if (withdrawals.length === 0) {
+          await dispatch(fetchWithdrawals()).unwrap();
+        }
+      } catch (error: any) {
+        toast.error(error?.message || 'Server error');
+      }
+    })();
+  }, [dispatch, withdrawals]);
 
-  // Handle row checkbox selection
-  const handleRowSelect = (id: string) => {
-    if (selectedRows.includes(id)) {
-      setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
-    } else {
-      setSelectedRows([...selectedRows, id]);
-    }
-  };
   const handleClick = (id: string) => {
     navigate(`/view-withdrawal/${id}`);
   };
 
-  const itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
-  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
-  const [searchTerm, setSearchTerm] = useState('');
+  const tableRef = useRef<HTMLTableElement>(null);
 
-  const filteredData = withdrawals.filter((withdrawal: any) => {
-    const searchLower = searchTerm.toLowerCase().trim();
-  
-    // Convert status to text representation
-    const statusText =
-      withdrawal.status === 0
-        ? "pending"
-        : withdrawal.status === 1
-        ? "approved"
-        : "cancelled";
-  
-    // Calculate formatted total amount
-    const totalAmount = (
-      (withdrawal.amount ?? 0) +
-      (withdrawal.txCharge ?? 0) +
-      (withdrawal.wPool ?? 0)
-    ).toFixed(2);
-  
-    // Convert numeric fields to string before using `.includes()`
-    const amountStr = withdrawal.amount?.toFixed(2) || "";
-    const txChargeStr = withdrawal.txCharge?.toFixed(2) || "";
-  
-    // Format date for searching
-    const createdAtStr = new Date(withdrawal.createdAt).toLocaleDateString();
-  
-    return (
-      totalAmount.includes(searchTerm) ||  // Search in displayed total
-      amountStr.includes(searchTerm) ||  // Search in amount
-      txChargeStr.includes(searchTerm) ||  // Search in txCharge
-      statusText.includes(searchLower) || // Search in status text
-      withdrawal.status.toString() === searchTerm || // Exact number match on status
-      withdrawal.uCode?.username?.toLowerCase().includes(searchLower) ||
-      withdrawal.uCode?.name?.toLowerCase().includes(searchLower) ||
-      withdrawal.walletType.toLowerCase().includes(searchLower) ||
-      withdrawal.txType.toLowerCase().includes(searchLower) ||
-      withdrawal.remark.toLowerCase().includes(searchLower) ||
-      createdAtStr.includes(searchTerm) // Search in formatted date
-    );
-  });
+  useEffect(() => {
+    if (!tableRef.current || isLoading || pendingWithdrawals.length === 0)
+      return;
 
+    setTimeout(() => {
+      const $table = $(tableRef.current as HTMLTableElement);
 
-  // Paginate Data
-  const offset = currentPage * itemsPerPage;
-  const currentItems = filteredData.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
+      // Ensure DataTable is initialized only once
+      if (!($table as any).DataTable.isDataTable(tableRef.current)) {
+        ($table as any).DataTable({
+          paging: true,
+          ordering: true,
+          info: true,
+          responsive: true,
+          searching: true,
+          pageLength: DEFAULT_PER_PAGE_ITEMS,
+        });
 
-  // Handle Page Change
-  const handlePageClick = (event: { selected: number }) => {
-    setCurrentPage(event.selected);
+        // Mark DataTable initialization
+        if (tableRef.current) tableRef.current.dataset.dtInstance = 'true';
+      }
+    }, 300);
+  }, [pendingWithdrawals, isLoading]);
+
+  const handleRefresh = async () => {
+    try {
+      await dispatch(fetchWithdrawals()).unwrap();
+    } catch (error: any) {
+      toast.error(error || 'Server error');
+    }
   };
 
-  console.log("withdrawals",withdrawals)
+
   return (
     <div>
       <Breadcrumb pageName="Pending Withdrwals" />
-      <div className="row">
-        {/* <div
-          className="flex-wrap gap-2 mt-3 justify-content-md-end justify-content-center"
-          style={{ display: 'flex' }}
-        >
-          <button className="btn btn-sm approveButton responsive-btn">
-            Approve All
-          </button>
-          <button className="btn btn-sm rejectButton responsive-btn">
-            Reject All
-          </button>
-        </div> */}
-        <div className="mt-3">
-          <SearchInput
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
 
-      <div className="rounded-sm border mt-6 border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-        <div className="max-w-full overflow-x-auto custom-scrollbar">
-          <table className="w-full table-auto">
+      <div className="table-bg">
+        <div className="card-body overflow-x-auto">
+          {/* Refresh button */}
+          <div className="flex justify-end mb-2">
+            <div className="">
+              <button onClick={handleRefresh} className="btn-refresh">
+                <Icon Icon={ICONS.REFRESH} className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            </div>
+          </div>
+          <table ref={tableRef} className="table bordered-table display">
             <thead>
-              <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  S.No
-                </th>
-                <th className=" min-w-[50px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  <input
-                    type="checkbox"
-                    id="selectAll"
-                    checked={selectAll}
-                    onChange={handleSelectAll}
-                  />
-                </th>
-                <th className=" min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Tx user
-                </th>
-                <th className="min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Action
-                </th>
-                <th className="min-w-[130px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Amount
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Tx Charge
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Withdrawal pool
-                </th>
-                <th className="min-w-[200px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Payable Amount
-                </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  TDS
-                </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Status
-                </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white uppercase ">
-                  Date
-                </th>
+              <tr>
+                <th className="table-header">S.No</th>
+                <th className="table-header">Tx user</th>
+                <th className="table-header">Action</th>
+                <th className="table-header">Amount</th>
+                <th className="table-header">Tx Charge</th>
+                <th className="table-header">Withdrawal pool</th>
+                <th className="table-header">Payable Amount</th>
+                <th className="table-header">TDS</th>
+                <th className="table-header">Status</th>
+                <th className="table-header">Date</th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.length > 0 ? (
-                currentItems.map((withdrawal: any, index: number) => (
-                  <tr key={withdrawal._id}>
+              {isLoading ? (
+                Array(5)
+                  .fill(null)
+                  .map((_, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Array(13)
+                        .fill(null)
+                        .map((_, cellIndex) => (
+                          <td key={cellIndex}>
+                            <Skeleton width="100%" height="20px" />
+                          </td>
+                        ))}
+                    </tr>
+                  ))
+              ) : withdrawals.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={13}
+                    className="text-center py-4 text-gray-600 dark:text-gray-300"
+                  >
+                    No orders found
+                  </td>
+                </tr>
+              ) : (
+                pendingWithdrawals.map((withdrawal: any, index: number) => (
+                  <tr key={withdrawal._id} className="">
                     <td>{index + 1}</td>
 
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        <input
-                          type="checkbox"
-                          checked={selectedRows.includes(withdrawal._id)}
-                          onChange={() => handleRowSelect(withdrawal._id)}
-                          className="cursor-pointer"
-                        />
-                      </h5>
+                    <td className="table-cell">
+                      {withdrawal.uCode?.username || 'N/A'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.uCode?.username || 'N/A'}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        <button
-                          onClick={() => handleClick(withdrawal._id)}
-                          className="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
-                        >
-                          View
-                        </button>
-                      </h5>
+                    <td className="table-cell">
+                      <button
+                        onClick={() => handleClick(withdrawal._id)}
+                        className="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+                      >
+                        View
+                      </button>
                     </td>
 
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        $
-                        {(
-                          (withdrawal.amount ?? 0) +
-                          (withdrawal.txCharge ?? 0) +
-                          (withdrawal.wPool ?? 0)
-                        ).toFixed(2)}
-                      </h5>
+                    <td className="table-cell">
+                      {companyCurrency}
+                      {(
+                        (withdrawal.amount ?? 0) +
+                        (withdrawal.txCharge ?? 0) +
+                        (withdrawal.wPool ?? 0)
+                      ).toFixed(2)}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        ${withdrawal.txCharge}
-                      </h5>
+                    <td className="table-cell"> {companyCurrency}{withdrawal.txCharge}</td>
+                    <td className="table-cell">
+                      {withdrawal.wPool ? `${companyCurrency}${withdrawal.wPool}` : 0}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.wPool ? `$${withdrawal.wPool}` : 0}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        ${withdrawal.amount}
-                      </h5>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {withdrawal.tds || '0'}
-                      </h5>
-                    </td>
+                    <td className="table-cell"> {companyCurrency}{withdrawal.amount}</td>
+                    <td className="table-cell">{withdrawal.tds || '0'}</td>
                     <td
-                      className={`
-                      rounded-md font-semibold text-start border-b border-[#eee] py-5 px-4 dark:border-strokedark
+                      className={`table-cell
                         ${
                           withdrawal.status === 0
                             ? ' !text-yellow-700'
@@ -243,25 +181,16 @@ const WithdrawalPending: React.FC = () => {
                         ? 'Approved'
                         : 'Cancelled'}
                     </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <h5 className="font-medium text-black dark:text-white">
-                        {new Date(withdrawal.createdAt).toLocaleDateString()}
-                      </h5>
+                    <td className="table-cell">
+                      {formatDate(withdrawal.createdAt)}
                     </td>
                   </tr>
                 ))
-              ) : (
-                <tr>
-                  <td colSpan={8}>No data available</td>
-                </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
-      {filteredData.length > itemsPerPage && (
-        <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
-      )}
     </div>
   );
 };

@@ -15,14 +15,13 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import AllUsers from './pages/Users/AllUsers';
-import Approved from './pages/Support/Approved';
-import Pending from './pages/Support/pending';
-import GeneralSetting from './pages/Settings/GeneralSetting';
+import Support from './pages/Support/Support';
+import GeneralSetting from './pages/Settings/GeneralSettings';
+import CategorySettings from './pages/Settings/GeneralSettings/CategorySettings';
 import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
 import EditUser from './pages/Users/EditUser';
 import Login from './pages/Login/Login';
 import ChangePassword from './pages/Password/ChangePassword';
-import SupportView from './pages/Support/SupportView';
 import RegistrationSetting from './pages/Settings/RegistrationSetting';
 import InvestmentSetting from './pages/Settings/InvestmentSetting';
 import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
@@ -37,18 +36,18 @@ import BtcAddressWithOTPSetting from './pages/Settings/BtcAddressWithOTPSetting'
 import LoginWithOTPSetting from './pages/Settings/LoginWithOTPSetting';
 import PaymentMethodSetting from './pages/Settings/PaymentMethodSetting';
 import PaymentMethodAcceptSetting from './pages/Settings/PaymentMethodAcceptSetting';
-import CompanyInfoSetting from './pages/Settings/CompanyInfoSetting';
+import CompanyInfoSetting from './pages/Settings/GeneralSettings/CompanyInfoSetting';
 import PaymentMethodAcceptUpiSetting from './pages/Settings/PaymentMethodAcceptUpiSetting';
 import PaymentMethodAcceptBankSetting from './pages/Settings/PaymentMethodAcceptBankSetting';
 import PaymentMethodAcceptUsdtSetting from './pages/Settings/PaymentMethodAcceptUsdtSetting';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectIsLoggedIn } from './features/auth/authSlice';
 import Team from './pages/Network/Team';
 import WithdrawalApproved from './pages/Withdrawal/WithdrawalApproved';
 import WithdrawalCancle from './pages/Withdrawal/WithdrawalCancle';
 import WithdrawalPending from './pages/Withdrawal/WithdrawalPending';
 import Income from './pages/Income/Income';
-import Contact from './pages/Contact/Contact';
+import ContactUs from './pages/Contact-us';
 import Order from './pages/Order/Order';
 import AddFund from './pages/Fund/AddFund';
 import FundTransfer from './pages/Fund/FundTransfer';
@@ -56,8 +55,20 @@ import Member from './pages/Users/Member';
 import Reward from './pages/Users/Reward';
 import OrderView from './pages/Order/OrderView';
 import ViewWithdrawal from './pages/Withdrawal/ViewWithdrawal';
-
+import CustomerList from './pages/Dashboard/CustomerList';
+import Cards from './pages/Dashboard/Cards';
+import RankSettings from './pages/Settings/GeneralSettings/RankSettings';
+import NewAndEvents from './pages/Settings/NewAndEvent';
+import ViewUserGeneration from './pages/Network/ViewUserGeneration';
+import { AppDispatch, RootState } from './store/store';
+import { ICompanyInfo } from './types/settings';
+import { getAllCompanyInfoAsync } from './features/settings/settingsSlice';
+import toast from 'react-hot-toast';
+import { API_URL } from './constants';
+import EditSetting from './pages/Settings/GeneralSettings/EditSetting';
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector(selectIsLoggedIn);
   const { pathname } = useLocation();
@@ -69,6 +80,52 @@ function App() {
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
+
+  useEffect(() => {
+    const fetchCompanyInfo = async () => {
+      if (companyInfo.length > 0) {
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        await dispatch(getAllCompanyInfoAsync()).unwrap();
+      } catch (error: any) {
+        toast.error(error || 'Server Error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanyInfo();
+  }, [dispatch]);
+
+  // Extract values correctly
+  const appName =
+    companyInfo.find((data) => data.label === 'companyName')?.value ||
+    'Default App';
+  const favicon =
+    companyInfo.find((data) => data.label === 'companyFavicon')?.value ||
+    '/default-favicon.ico';
+
+  useEffect(() => {
+    if (!appName && !favicon) return;
+    // Set Application Name
+    document.title = appName;
+
+    // Set Favicon
+    let link = document.querySelector(
+      "link[rel~='icon']",
+    ) as HTMLLinkElement | null;
+
+    if (!link) {
+      link = document.createElement('link') as HTMLLinkElement;
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+
+    link.href = `${API_URL}${favicon}`;
+  }, [appName, favicon]);
 
   return loading ? (
     <Loader loader="ClipLoader" size={50} color="blue" fullPage={true} />
@@ -83,6 +140,24 @@ function App() {
         <Route
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/dashboard/customerList"
+          element={
+            <>
+              <PageTitle title="" />
+              <CustomerList />
+            </>
+          }
+        />
+        <Route
+          path="/dashboard/cards"
+          element={
+            <>
+              <PageTitle title="" />
+              <Cards />
+            </>
+          }
         />
         <Route
           path="/users/all-users"
@@ -111,12 +186,22 @@ function App() {
             </>
           }
         />
+        {/* Network */}
         <Route
           path="/network/team"
           element={
             <>
               <PageTitle title="Netwok" />
               <Team />
+            </>
+          }
+        />
+        <Route
+          path="/network/team/user/:id"
+          element={
+            <>
+              <PageTitle title="Edit User" />
+              <ViewUserGeneration />
             </>
           }
         />
@@ -157,7 +242,7 @@ function App() {
           }
         />
         <Route
-          path="/users/all-users/edituser/:id"
+          path="/users/edituser/:id"
           element={
             <>
               <PageTitle title="Edit User" />
@@ -167,33 +252,15 @@ function App() {
         />
 
         <Route
-          path="/support/approved"
-          element={
-            <>
-              <PageTitle title="Approved" />
-              <Approved />
-            </>
-          }
-        />
-        <Route
-          path="/support/pending"
+          path="/support"
           element={
             <>
               <PageTitle title="Support" />
-              <Pending />
+              <Support />
             </>
           }
         />
-        <Route
-          path="/support/support-view/:id"
-          element={
-            <>
-              <PageTitle title="SupportView" />
-              <SupportView />
-            </>
-          }
-        />
-        {/* setting */}
+        {/* Settings Routes Start*/}
         <Route
           path="/setting/general-setting"
           element={
@@ -204,14 +271,55 @@ function App() {
           }
         />
         <Route
-          path="/setting/general-setting/registration/:id"
+          path="/setting/news-and-events"
           element={
             <>
-              <PageTitle title="Registration settings" />
-              <RegistrationSetting />
+              <PageTitle title="News & Events" />
+              <NewAndEvents />
             </>
           }
         />
+        <Route
+          path="/setting/general-setting/:category"
+          element={
+            <>
+              <PageTitle title="Registration settings" />
+              <CategorySettings />
+            </>
+          }
+        />
+        <Route
+          path="/setting/general-setting/:category/:title"
+          element={
+            <>
+              <PageTitle title="Registration settings" />
+              <EditSetting />
+            </>
+          }
+        />
+
+        <Route
+          path="/setting/general-setting/rank-settings"
+          element={
+            <>
+              <PageTitle title="Rank settings" />
+              <RankSettings />
+            </>
+          }
+        />
+
+        <Route
+          path="/setting/general-setting/companyinfo"
+          element={
+            <>
+              <PageTitle title="Company Info settings" />
+              <CompanyInfoSetting />
+            </>
+          }
+        />
+
+        {/* Settings Routes End*/}
+
         <Route
           path="/setting/general-setting/investment/:id"
           element={
@@ -354,16 +462,6 @@ function App() {
             <>
               <PageTitle title="UPI settings" />
               <PaymentMethodAcceptUsdtSetting />
-            </>
-          }
-        />
-
-        <Route
-          path="/setting/general-setting/companyinfo/:id"
-          element={
-            <>
-              <PageTitle title="Company Info settings" />
-              <CompanyInfoSetting />
             </>
           }
         />
@@ -529,7 +627,7 @@ function App() {
           element={
             <>
               <PageTitle title="Contact" />
-              <Contact />
+              <ContactUs />
             </>
           }
         />

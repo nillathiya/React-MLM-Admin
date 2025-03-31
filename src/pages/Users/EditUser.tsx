@@ -1,152 +1,141 @@
 import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/store';
-import {
-  getByIdAsync,
-  selectedUser,
-  updateUserAsync,
-  selectLoading,
-} from '../../features/user/userSlice';
-import { useSelector } from 'react-redux';
-import toast from 'react-hot-toast';
-import Loader from '../../common/Loader';
 import { ICONS } from '../../constants';
 import Icon from '../../components/Icons/Icon';
+import { AppDispatch, RootState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
+import {
+  getUserByIdAsync,
+  updateUserProfileAsync,
+} from '../../features/user/userSlice';
+import { useForm, Controller } from 'react-hook-form';
+import PhoneInput, { CountryData } from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import Loader from '../../common/Loader';
+
 const EditUser: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { id } = useParams();
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    mobile: '',
-    name: '',
-    password: '',
-    gender: '',
-    dateOfBirth: '',
-    address: '',
-    accountStatus: {
-      blockStatus: '',
-      isActive: '',
-    },
-    emailVerification: {
-      isVerified: '',
-    },
-    adminRegisterStatus: '',
-  });
-  const [password, setPassword] = useState<string | null>(null);
+  const { id: userId } = useParams();
+  const { users, user } = useSelector((state: RootState) => state.user);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const user = useSelector(selectedUser);
-  const loading = useSelector(selectLoading);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isResetPasswordFormSubmitting, setIsResetPasswordFormSubmitting] =
-    useState<boolean>(false);
+  // Mobile:
+  const [mobile, setMobile] = useState<string>('');
+  const [countryCode, setCountryCode] = useState('');
+
+  // console.log('mobile', mobile);
+  // console.log('countryCode', countryCode);
 
   useEffect(() => {
-    if (id) {
-      dispatch(getByIdAsync(id));
+    if (!userId) return;
+
+    const existingOrder = users.find((user) => user._id === userId);
+    if (!existingOrder) {
+      dispatch(getUserByIdAsync(userId))
+        .unwrap()
+        .catch((error: any) => {
+          toast.error(error || 'Server error');
+        });
     }
-  }, [dispatch, id]);
+  }, [userId, users, dispatch]);
 
-  // console.log('editable user', user);
+  const selectedUser = users?.find((user) => user._id === userId) || user;
+  // console.log('selectedUser', selectedUser);
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset, // ✅ Use reset to update form values dynamically
+  } = useForm({
+    defaultValues: {
+      username: '',
+      name: '',
+      email: '',
+      mobile: '',
+      dob: '',
+      gender: '',
+      accountStatus: {
+        blockStatus: 0,
+        activeStatus: 0,
+      },
+    },
+    mode: 'onBlur',
+  });
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        username: user.username,
-        email: user.email,
-        mobile: user.mobile,
-        name: user.name,
-        password: '',
-        gender: '',
-        dateOfBirth: '',
-        address: '',
+    if (selectedUser) {
+      reset({
+        username: selectedUser?.username || '',
+        name: selectedUser?.name || '',
+        email: selectedUser?.email || '',
+        mobile: selectedUser?.mobile
+          ? `+${
+              selectedUser?.address?.countryCode || '91'
+            }${selectedUser?.mobile}`
+          : '',
+        dob: selectedUser?.dob ? selectedUser.dob.split('T')[0] : '',
+        gender: selectedUser?.gender || '',
         accountStatus: {
-          blockStatus: user?.accountStatus?.blockStatus,
-          isActive: user?.accountStatus?.isActive,
+          blockStatus: selectedUser?.accountStatus?.blockStatus || 0,
+          activeStatus: selectedUser?.accountStatus?.activeStatus || 0,
         },
-        emailVerification: {
-          isVerified: user.emailVerification?.isVerified,
-        },
-        adminRegisterStatus: user.adminRegisterStatus,
       });
     }
-  }, [user]);
+  }, [selectedUser, reset]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!id) {
-      toast.error('User ID is required!');
-      return;
-    }
+  const {
+    register: registerResetPassword,
+    handleSubmit: handleSubmitResetPasswordForm,
+    formState: {
+      errors: errorsResetPassword,
+      isSubmitting: isResetPasswordFormSubmitting,
+    },
+  } = useForm();
 
-    const form = new FormData();
-    form.append('name', formData.name);
-    form.append('username', formData.username);
-    form.append('mobile', formData.mobile);
-    form.append('email', formData.email);
-    if (formData.gender) form.append('gender', formData.gender);
-    if (formData.dateOfBirth) form.append('dateOfBirth', formData.dateOfBirth);
-    if (formData.password) form.append('password', formData.password);
-    if (formData.address) form.append('address', formData.address);
-
-    // Append nested fields as strings (JSON format)
-    form.append('accountStatus', JSON.stringify(formData.accountStatus));
-    form.append(
-      'emailVerification',
-      JSON.stringify(formData.emailVerification),
-    );
-    // Append adminRegisterStatus
-    if (formData.adminRegisterStatus) {
-      form.append('adminRegisterStatus', formData.adminRegisterStatus);
-    }
-    setIsSubmitting(true);
-    try {
-      await dispatch(updateUserAsync({ id, formData: form }));
-      toast.success('User updated successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Something went wrong!');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleFormResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!id) {
-      toast.error('User ID is required!');
-      return;
-    }
-    if (password?.trim() === '') {
-      toast.error('Password field cannot be empty!');
-      return;
-    }
-    const setPasswordFormData = {
-      password: password?.trim(),
+  const handleFormSubmit = async (data: any) => {
+    const updatedData = {
+      ...data,
+      ...(mobile &&
+        countryCode && {
+          mobile,
+          address: {
+            ...data.address,
+            countryCode: countryCode,
+          },
+        }),
+      userId,
     };
-    setIsResetPasswordFormSubmitting(true);
+
     try {
-      await dispatch(updateUserAsync({ id, formData: setPasswordFormData }));
-      setPassword(null);
-      console.log('password', password);
-      toast.success('User Password set successfully!');
+      await dispatch(updateUserProfileAsync(updatedData)).unwrap();
+      toast.success('User updated successfully');
     } catch (error: any) {
-      toast.error(error || 'Something went wrong!');
-    } finally {
-      setIsResetPasswordFormSubmitting(false);
+      toast.error(error || 'Server error');
     }
   };
 
-  // console.log('formData', formData);
+  const handlePasswordResetPasswordForm = async (data: any) => {
+    // console.log('Submitting data:', data);
+    const updatedData = {
+      ...data,
+      userId,
+    };
+    try {
+      await dispatch(updateUserProfileAsync(updatedData)).unwrap();
+      toast.success('User Password Updated successfully');
+    } catch (error: any) {
+      toast.error(error || 'Server error');
+    }
+  };
+
   return (
     <>
       <Breadcrumb pageName="Edit Profile" />
       <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-        {loading ? (
-          <>
-            <Loader loader="ClipLoader" size={40} color="blue" />
-          </>
+        {!selectedUser ? (
+          <Loader loader="ClipLoader" size={50} color="blue" />
         ) : (
           <>
             <div className="flex flex-col gap-9">
@@ -157,9 +146,10 @@ const EditUser: React.FC = () => {
                   </h3>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(handleFormSubmit)}>
                   <div className="p-6.5">
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      {/* Username */}
                       <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
                           Username
@@ -167,90 +157,124 @@ const EditUser: React.FC = () => {
                         <input
                           disabled
                           type="text"
-                          value={formData.username}
+                          {...register('username')}
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              username: e.target.value,
-                            })
-                          }
                         />
                       </div>
+                      {/* Name */}
                       <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
                           Name
                         </label>
                         <input
                           type="text"
-                          value={formData.name}
+                          {...register('name')}
                           className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                          onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                          }
                         />
                       </div>
                     </div>
+                    {/* Mobile */}
+                    <div className="mb-4.5 relative overflow-visible ">
+                      <label className="mb-2.5 block text-black dark:text-white w-full">
+                        Mobile
+                      </label>
+                      <Controller
+                        name="mobile"
+                        control={control}
+                        rules={{
+                          // required: "Phone number is required",
+                          minLength: {
+                            value: 10,
+                            message: 'Enter a valid phone number',
+                          },
+                        }}
+                        render={({ field }) => (
+                          <PhoneInput
+                            {...field}
+                            inputProps={{
+                              ref: field.ref,
+                              name: field.name,
+                            }}
+                            country={'in'}
+                            onlyCountries={['us', 'in', 'gb']}
+                            placeholder="Enter phone number"
+                            containerClass="!w-full !relative  !cursor-pointer !transition-all "
+                            inputClass="!w-full !rounded !border-[1.5px] !border-stroke !bg-transparent !py-5 !px-10 !text-black !outline-none !transition !focus:!border-primary !active:!border-primary !disabled:!cursor-default !disabled:!bg-whiter dark:!border-form-strokedark dark:!bg-form-input dark:!text-white dark:!focus:!border-primary "
+                            buttonClass="!absolute !left-0 !top-0"
+                            dropdownClass="!absolute !z-[9999] !max-h-[200px] !overflow-y-auto !border !border-stroke !rounded-md !shadow-lg !bg-white dark:!bg-form-input !text-black dark:!text-white hover:dark:!bg"
+                            specialLabel=""
+                            // enableSearch={true}
+                            onChange={(value: string, data: CountryData) => {
+                              const dialCode = data?.dialCode || '';
+                              const number = value.replace(`${dialCode}`, '');
+
+                              setCountryCode(dialCode);
+                              setMobile(number);
+                            }}
+                          />
+                        )}
+                      />
+                      {errors.mobile && (
+                        <p className="error-message !text-danger-600">
+                          {errors.mobile.message}
+                        </p>
+                      )}
+                    </div>
+                    {/* Email */}
                     <div className="mb-4.5">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Email
                       </label>
                       <input
                         type="email"
-                        value={formData.email}
+                        {...register('email', {
+                          pattern: {
+                            value:
+                              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                            message: 'Invalid email format',
+                          },
+                        })}
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
                       />
+                      {errors.email?.message && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {String(errors.email.message)}
+                        </p>
+                      )}
                     </div>
-                    <div className="mb-4.5">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Mobile
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.mobile}
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        onChange={(e) =>
-                          setFormData({ ...formData, mobile: e.target.value })
-                        }
-                      />
-                    </div>
+
                     {/* user block status */}
                     <div className="mb-4.5">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Change Status
                       </label>
                       <div className="relative z-20 bg-transparent dark:bg-form-input">
-                        <select
-                          value={formData.accountStatus?.blockStatus}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              accountStatus: {
-                                ...formData.accountStatus,
-                                blockStatus: e.target.value,
-                              },
-                            })
-                          }
-                          className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary`}
-                        >
-                          <option
-                            value={'true'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            Enable
-                          </option>
-                          <option
-                            value={'false'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            disable
-                          </option>
-                        </select>
-
-                        <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                        <Controller
+                          name="accountStatus.blockStatus"
+                          control={control}
+                          // rules={{ required: 'Status is required' }}
+                          render={({ field }) => (
+                            <select
+                              {...field}
+                              className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            >
+                              <option value="">Select Status</option>
+                              <option
+                                value="1"
+                                className="text-body dark:text-bodydark"
+                              >
+                                Enable
+                              </option>
+                              <option
+                                value="0"
+                                className="text-body dark:text-bodydark"
+                              >
+                                Disable
+                              </option>
+                            </select>
+                          )}
+                        />
+                        <span className="absolute top-1/2 right-6 z-30 -translate-y-1/2">
                           <svg
                             className="fill-current"
                             width="24"
@@ -270,6 +294,11 @@ const EditUser: React.FC = () => {
                           </svg>
                         </span>
                       </div>
+                      {errors.accountStatus?.blockStatus?.message && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {String(errors.accountStatus.blockStatus.message)}
+                        </p>
+                      )}
                     </div>
                     {/* user active status */}
                     <div className="mb-4.5">
@@ -277,33 +306,31 @@ const EditUser: React.FC = () => {
                         Change Active Status
                       </label>
                       <div className="relative z-20 bg-transparent dark:bg-form-input">
-                        <select
-                          value={formData.accountStatus?.isActive}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              accountStatus: {
-                                ...formData.accountStatus,
-                                isActive: e.target.value,
-                              },
-                            })
-                          }
-                          className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary`}
-                        >
-                          <option
-                            value={'true'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            Enable
-                          </option>
-                          <option
-                            value={'false'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            disable
-                          </option>
-                        </select>
-
+                        <Controller
+                          name="accountStatus.activeStatus"
+                          control={control}
+                          // rules={{ required: 'Active status is required' }}
+                          render={({ field }) => (
+                            <select
+                              {...field}
+                              className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            >
+                              <option value="">Select Status</option>
+                              <option
+                                value="1"
+                                className="text-body dark:text-bodydark"
+                              >
+                                Enable
+                              </option>
+                              <option
+                                value="0"
+                                className="text-body dark:text-bodydark"
+                              >
+                                Disable
+                              </option>
+                            </select>
+                          )}
+                        />
                         <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                           <svg
                             className="fill-current"
@@ -324,111 +351,11 @@ const EditUser: React.FC = () => {
                           </svg>
                         </span>
                       </div>
-                    </div>
-                    {/* admin register status */}
-                    <div className="mb-4.5">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Register Status
-                      </label>
-                      <div className="relative z-20 bg-transparent dark:bg-form-input">
-                        <select
-                          value={formData.adminRegisterStatus}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              adminRegisterStatus: e.target.value,
-                            })
-                          }
-                          className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary`}
-                        >
-                          <option
-                            value={'true'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            Enable
-                          </option>
-                          <option
-                            value={'false'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            disable
-                          </option>
-                        </select>
-
-                        <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                          <svg
-                            className="fill-current"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g opacity="0.8">
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                fill=""
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                    {/* Email verified status */}
-                    <div className="mb-4.5">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Email verify Status
-                      </label>
-                      <div className="relative z-20 bg-transparent dark:bg-form-input">
-                        <select
-                          value={formData.emailVerification.isVerified}
-                          onChange={(e) => {
-                            setFormData({
-                              ...formData,
-                              emailVerification: {
-                                ...formData.emailVerification,
-                                isVerified: e.target.value,
-                              },
-                            });
-                          }}
-                          className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary `}
-                        >
-                          <option
-                            value={'true'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            Enable
-                          </option>
-                          <option
-                            value={'false'}
-                            className="text-body dark:text-bodydark"
-                          >
-                            disable
-                          </option>
-                        </select>
-
-                        <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                          <svg
-                            className="fill-current"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g opacity="0.8">
-                              <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                fill=""
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                      </div>
+                      {errors.accountStatus?.activeStatus?.message && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {String(errors.accountStatus.activeStatus.message)}
+                        </p>
+                      )}
                     </div>
 
                     <button
@@ -446,23 +373,38 @@ const EditUser: React.FC = () => {
             <div className="grid grid-cols-1 gap-9 sm:grid-cols-1">
               <div className="flex flex-col gap-9">
                 <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                  <form action="#" onSubmit={handleFormResetPassword}>
+                  <form
+                    action="#"
+                    onSubmit={handleSubmitResetPasswordForm(
+                      handlePasswordResetPasswordForm,
+                    )}
+                  >
                     <div className="p-6.5">
                       <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                         <div className="w-full relative">
                           <label className="mb-2.5 block text-black dark:text-white">
                             Set New Password
                           </label>
+
                           <input
-                            value={password || ''}
+                            {...registerResetPassword('password', {
+                              required: 'Password is required',
+                              minLength: {
+                                value: 6,
+                                message:
+                                  'Password must be at least 6 characters long',
+                              },
+                            })}
                             type={showPassword ? 'text' : 'password'}
-                            onChange={(e) => setPassword(e.target.value)}
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 pr-12 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                           />
+
+                          {/* Toggle Password Visibility Button */}
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-4 top-[70%] -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                            style={{ border: 'none', width: '6%' }}
                           >
                             {showPassword ? (
                               <Icon Icon={ICONS.EYE} className="w-5 h-5" />
@@ -470,6 +412,13 @@ const EditUser: React.FC = () => {
                               <Icon Icon={ICONS.EYEOFF} className="w-5 h-5" />
                             )}
                           </button>
+
+                          {/* Display Error Message */}
+                          {errorsResetPassword.password?.message && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {String(errorsResetPassword.password.message)}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <button

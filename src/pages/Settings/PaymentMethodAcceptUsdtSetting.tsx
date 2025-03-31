@@ -1,6 +1,6 @@
 import React from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { Package } from '../../types/package';
+import { Package } from '../../types';
 import SwitcherOne from '../../components/Switchers/SwitcherOne';
 
 const PaymentMethodAcceptUsdtSetting: React.FC = () => {

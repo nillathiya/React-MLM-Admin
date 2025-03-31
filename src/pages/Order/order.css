@@ -22,7 +22,7 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 20px;  
   width: 100%;
 }
 
@@ -48,10 +48,10 @@
   /* background-color: #f4f4f4; */
   font-weight: bold;
 }
-
+/* 
 .table-striped tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 
 .badge {
   padding: 5px 10px;

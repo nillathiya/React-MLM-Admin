@@ -33,7 +33,13 @@ const Login = () => {
     console.log('Password:', formData.password);
 
     try {
-      await dispatch(adminLoginAsync(formData)).unwrap();
+      const result = await dispatch(adminLoginAsync(formData)).unwrap();
+      if (result.status === 'success' || result.statusCode === 200) {
+        localStorage.setItem(
+          `adminToken_${result.data.admin._id}`,
+          result.data.token,
+        );
+      }
       toast.success('Admin Login successfully');
       navigate('/dashboard');
     } catch (error: any) {
@@ -59,7 +65,7 @@ const Login = () => {
             <input
               type="text"
               id="email"
-              name="username" // Make sure to use the same name as the state property
+              name="username"
               value={formData.username}
               onChange={setData}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -77,7 +83,7 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              name="password" // Make sure to use the same name as the state property
+              name="password"
               value={formData.password}
               onChange={setData}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -87,7 +93,7 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
           >
             Login
           </button>

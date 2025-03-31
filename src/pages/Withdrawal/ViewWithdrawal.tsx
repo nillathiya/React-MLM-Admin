@@ -1,23 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { fetchWithdrawals } from '../../features/withdrawal/withdrawalSlice';
+import {
+  fetchWithdrawals,
+  updateWithdrawalRequestAsync,
+} from '../../features/withdrawal/withdrawalSlice';
 import { AppDispatch, RootState } from '../../store/store';
+import toast from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
+import { formatDate } from '../../utils/dateUtils';
 
 const ViewWithdrawal: React.FC = () => {
   const [reason, setReason] = useState('');
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const withdrawals = useSelector((state: RootState) => state.withdrawals.data);
-
+  const { withdrawals, isLoading } = useSelector(
+    (state: RootState) => state.withdrawal,
+  );
+  const { id: withdrawalId } = useParams();
+  const [isWithdrawalUpdating, setIsWithdrawalUpdating] = useState<{
+    label: string;
+    value: boolean;
+  }>({
+    label: '',
+    value: false,
+  });
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
   useEffect(() => {
-    dispatch(fetchWithdrawals());
+    const fetchAllWithdrawals = async () => {
+      try {
+        await dispatch(fetchWithdrawals()).unwrap();
+      } catch (error: any) {
+        toast.error(error || 'Server error');
+      }
+    };
+    if (withdrawals.length === 0) {
+      fetchAllWithdrawals();
+    }
   }, [dispatch]);
 
-  const handleAction = (status: number) => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
+  const withdrawal = withdrawals.find(
+    (withdrawal: any) => withdrawal._id === withdrawalId,
+  );
+  // console.log("withdrawal",withdrawal);
+  const handleAction = async (status: number) => {
+    setIsWithdrawalUpdating({
+      label: status === 1 ? 'approved' : 'cancelled',
+      value: true,
+    });
+
+    try {
+      const formData = {
+        id: withdrawalId,
+        status: status,
+        reason: reason,
+      };
+      if (status === 2 && reason.trim() === '') {
+        toast.error('Withdrawal Cancellation Reason is Required');
+        return;
+      }
+      await dispatch(updateWithdrawalRequestAsync(formData)).unwrap();
+      toast.success('Withdrawal updated successfully.');
+    } catch (error: any) {
+      toast.error(error || 'Server error');
+    } finally {
+      setIsWithdrawalUpdating({
+        label: status === 1 ? 'approved' : 'cancelled',
+        value: false,
+      });
+    }
   };
+
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
 
   return (
     <>
@@ -30,7 +84,7 @@ const ViewWithdrawal: React.FC = () => {
               <div className="overflow-x-auto">
                 <table className="w-full border border-gray-200">
                   <tbody>
-                    {loading ? (
+                    {isLoading ? (
                       <tr>
                         <td
                           colSpan={3}
@@ -39,45 +93,74 @@ const ViewWithdrawal: React.FC = () => {
                           Loading...
                         </td>
                       </tr>
-                    ) : withdrawals.length > 0 ? (
-                      withdrawals.map((withdrawal: any, index: number) => (
-                        <React.Fragment key={index}>
-                          {[
-                            ['User', withdrawal.name || 'N/A'],
-                            ['Amount', `$${withdrawal.amount}`],
-                            [
-                              'Account Details',
-                              withdrawal.accountDetails || 'N/A',
-                            ],
-                            ['Date', withdrawal.createdAt],
-                          ].map(([label, value], idx) => (
-                            <tr key={idx} className="border-b">
-                              <th className="text-left px-4 py-2 font-medium w-1/3">
-                                {label}
-                              </th>
-                              <td className="px-4 py-2">:</td>
-                              <td className="px-4 py-2">{value}</td>
-                            </tr>
-                          ))}
+                    ) : withdrawals !== null && withdrawal !== undefined ? (
+                      <React.Fragment>
+                        {[
+                          [
+                            'User',
+                            withdrawal.uCode?.username
+                              ? `${withdrawal.uCode?.username}${
+                                  withdrawal.uCode?.name
+                                    ? ` (${withdrawal.uCode?.name})`
+                                    : ''
+                                }`
+                              : 'N/A',
+                          ],
+                          ['Amount', `${companyCurrency}${withdrawal.amount}`],
+                          [
+                            'Tx Charge',
+                            `${companyCurrency}${withdrawal.txCharge}`,
+                          ],
+                          ['wPool', `${companyCurrency}${withdrawal.wPool}`],
+                          ['Date', formatDate(withdrawal.createdAt)],
+                        ].map(([label, value], idx) => (
+                          <tr key={idx} className="border-b">
+                            <th className="text-left px-4 py-2 font-medium w-1/3">
+                              {label}
+                            </th>
+                            <td className="px-4 py-2">:</td>
+                            <td className="px-4 py-2">{value}</td>
+                          </tr>
+                        ))}
+                        <tr className="border-b">
+                          <th className="text-left px-4 py-2 font-medium">
+                            Status
+                          </th>
+                          <td className="px-4 py-2">:</td>
+                          <td className="px-4 py-2">
+                            {(() => {
+                              let label = 'Cancelled';
+                              let bgColor = 'bg-red-500';
+                              if (withdrawal.status === 0) {
+                                label = 'Pending';
+                                bgColor = 'bg-orange-500';
+                              } else if (withdrawal.status === 1) {
+                                label = 'Approved';
+                                bgColor = 'bg-green-500';
+                              }
+
+                              return (
+                                <span
+                                  className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${bgColor}`}
+                                >
+                                  {label}
+                                </span>
+                              );
+                            })()}
+                          </td>
+                        </tr>
+                        {withdrawal.status === 2 && (
                           <tr>
                             <th className="text-left px-4 py-2 font-medium">
-                              Status
+                              Reason
                             </th>
                             <td className="px-4 py-2">:</td>
                             <td className="px-4 py-2">
-                              <span
-                                className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${
-                                  withdrawal.status === 'Pending'
-                                    ? 'bg-orange-500'
-                                    : 'bg-green-500'
-                                }`}
-                              >
-                                {withdrawal.status}
-                              </span>
+                              {withdrawal.Reason || 'N/A'}
                             </td>
                           </tr>
-                        </React.Fragment>
-                      ))
+                        )}
+                      </React.Fragment>
                     ) : (
                       <tr>
                         <td
@@ -112,19 +195,31 @@ const ViewWithdrawal: React.FC = () => {
               <div className="flex gap-3">
                 <button
                   type="button"
-                  className="w-1/2 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400"
+                  className="w-1/2 bg-green-500 text-white px-1 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 text-center"
                   onClick={() => handleAction(1)}
-                  disabled={loading}
+                  disabled={
+                    isWithdrawalUpdating.label === 'approved' &&
+                    isWithdrawalUpdating.value === true
+                  }
                 >
-                  {loading ? 'Processing...' : 'Approve'}
+                  {isWithdrawalUpdating.label === 'approved' &&
+                  isWithdrawalUpdating.value === true
+                    ? 'Updating...'
+                    : 'Approve'}
                 </button>
                 <button
                   type="button"
-                  className="w-1/2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 disabled:bg-gray-400"
+                  className="w-1/2 bg-red-500 text-white px-1 py-2 rounded-lg hover:bg-red-600 disabled:bg-gray-400 text-center"
                   onClick={() => handleAction(2)}
-                  disabled={loading}
+                  disabled={
+                    isWithdrawalUpdating.label === 'cancelled' &&
+                    isWithdrawalUpdating.value === true
+                  }
                 >
-                  {loading ? 'Processing...' : 'Cancel'}
+                  {isWithdrawalUpdating.label === 'cancelled' &&
+                  isWithdrawalUpdating.value === true
+                    ? 'Updating...'
+                    : 'Cancel'}
                 </button>
               </div>
             </div>

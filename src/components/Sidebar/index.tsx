@@ -2,16 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import ArrowIcon from '../Icons/downArrowIcon';
-import { ICONS, MENU } from '../../constants';
+import { API_URL, ICONS, MENU } from '../../constants';
 import Icon from '../Icons/Icon';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/store';
-import { adminLogoutAsync } from '../../features/auth/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { adminLogoutAsync, clearUser } from '../../features/auth/authSlice';
 // import {
 //   PrepareOutAsync,
 //   TatumPayoutAsync,
 // } from '../../features/payout-reports/payoutReportsSlice';
 import toast from 'react-hot-toast';
+import { getAllCompanyInfoAsync } from '../../features/settings/settingsSlice';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -24,6 +25,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const navigate = useNavigate();
   const { pathname } = location;
 
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
+  const { currentUser: loggedInUser } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -68,7 +73,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   }, [sidebarExpanded]);
 
   const handleLogout = () => {
-    dispatch(adminLogoutAsync());
+    if (loggedInUser) {
+      localStorage.removeItem(`adminToken_${loggedInUser._id}`);
+    }
+    dispatch(clearUser());
     navigate('/');
   };
 
@@ -89,6 +97,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   };
 
+  useEffect(() => {
+    const fetchCompanyInfo = async () => {
+      try {
+        await dispatch(getAllCompanyInfoAsync()).unwrap();
+      } catch (error: any) {
+        toast.error(error || 'Server Error');
+      }
+    };
+    if (companyInfo.length == 0) {
+      fetchCompanyInfo();
+    }
+  }, []);
+
+  const companyLogo = companyInfo.find((data) => data.label === 'companyLogo')
+    ?.value;
+
   return (
     <aside
       ref={sidebar}
@@ -99,12 +123,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-          <div className="text-white flex items-center gap-2 justify-center">
-            <span className="bg-blue-700 p-1 rounded-lg">
-              <Icon Icon={ICONS.LOGO} className="" />
-            </span>
-            <span className="text-2xl font-medium">ADMIN PANEL</span>
-          </div>
+          {companyLogo ? (
+            <img src={`${API_URL}${companyLogo}`} width={130} height={100} />
+          ) : (
+            <div className="text-white flex items-center gap-2 justify-center">
+              <span className="bg-blue-700 p-1 rounded-lg">
+                <Icon Icon={ICONS.LOGO} className="" />
+              </span>
+              <span className="text-2xl font-medium">ADMIN PANEL</span>
+            </div>
+          )}
         </NavLink>
 
         <button

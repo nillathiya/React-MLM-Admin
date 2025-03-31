@@ -1,81 +1,155 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+import { useForm } from 'react-hook-form';
+import { checkUsernameAsync } from '../../features/user/userSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store/store';
+import toast from 'react-hot-toast';
+import { directTransferFundAsync } from '../../features/transaction/transactionSlice';
 const AddFund: React.FC = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const [usernameValid, setUsernameValid] = useState<boolean | null>(null);
+  const [userActiveStatus, setUserActiveStatus] = useState(null);
 
-  const [formData, setFormData] = useState({
-    username: '',
-    reason: '',
-    amount: '',
-  });
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('submitted...');
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setError,
+    clearErrors,
+
+    formState: { errors, isSubmitting },
+  } = useForm({ mode: 'onBlur' });
+
+  const username = watch('username')?.trim();
+
+  // Function to check username validity
+  useEffect(() => {
+    const checkUsername = async () => {
+      if (!username) return;
+      try {
+        const formData = {
+          username,
+        };
+        const response = await dispatch(checkUsernameAsync(formData)).unwrap();
+        console.log(response);
+        if (response.data.valid) {
+          setUsernameValid(true);
+          setUserActiveStatus(response.data.activeStatus);
+          clearErrors('username');
+        } else {
+          setUsernameValid(false);
+          setError('username', {
+            type: 'manual',
+            message: 'Username not found',
+          });
+        }
+      } catch (error) {
+        setUsernameValid(false);
+        setError('username', { type: 'manual', message: 'Username not found' });
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      checkUsername();
+    }, 500); // Debounce API call
+
+    return () => clearTimeout(delayDebounce);
+  }, [username, setError, clearErrors]);
+
+  const handleSubmitAddFund = async (data: any) => {
+    const formData = {
+      ...data,
+      txType: 'direct_fund_transfer',
+      debitCredit: 'CREDIT',
+      walletType: 'fund_wallet',
+    };
+
+    try {
+      await dispatch(directTransferFundAsync(formData)).unwrap();
+      toast.success('Fund added successfully');
+    } catch (error: any) {
+      toast.error(error || 'Server error');
+    }
   };
   return (
-    <div>
+    <div className="">
       <Breadcrumb pageName="Add Fund" />
-      <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <form onSubmit={handleSubmit} className="p-6.5">
-            {/* MAC Address Input */}
-            <div className="mb-4.5">
-              <label className="block mb-2.5 text-black dark:text-white">
-                Username
+
+      <div className="max-w-2xl mx-auto">
+        <div className="rounded-lg border border-stroke bg-white shadow-md dark:border-strokedark dark:bg-boxdark p-8">
+          <h2 className="text-xl font-semibold text-black dark:text-white mb-6">
+            Fund Transfer
+          </h2>
+
+          <form
+            onSubmit={handleSubmit(handleSubmitAddFund)}
+            className="space-y-6"
+          >
+            {/* Username Input */}
+            <div>
+              <label className="block mb-2 text-sm font-medium text-black dark:text-white">
+                Username <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                name="macAddress"
-                value={formData.username}
-                onChange={handleChange}
+                {...register('username', { required: 'Username is required' })}
                 placeholder="Enter Username"
-                className="w-full rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                className="w-full rounded-lg border border-gray-300 bg-transparent py-3 px-4 outline-none focus:ring-2 focus:ring-primary dark:border-form-strokedark dark:bg-form-input dark:focus:ring-primary"
               />
+              {errors.username?.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {String(errors.username.message)}
+                </p>
+              )}
+              {usernameValid && (
+                <p className="text-green-500 text-sm mt-1">
+                  ✅ Username is valid
+                </p>
+              )}
             </div>
 
-            {/* Product Key Input */}
-            <div className="mb-4.5">
-              <label className="block mb-2.5 text-black dark:text-white">
-                Enter Amount
+            {/* Amount Input */}
+            <div>
+              <label className="block mb-2 text-sm font-medium text-black dark:text-white">
+                Enter Amount <span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
-                name="productKey"
-                value={formData.amount}
-                onChange={handleChange}
+                type="number"
+                {...register('amount', {
+                  required: 'Amount is required',
+                  min: { value: 1, message: 'Amount must be at least 1' },
+                })}
                 placeholder="Enter amount"
-                className="w-full rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                className="w-full rounded-lg border border-gray-300 bg-transparent py-3 px-4 outline-none focus:ring-2 focus:ring-primary dark:border-form-strokedark dark:bg-form-input dark:focus:ring-primary"
               />
+              {errors.amount?.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {String(errors.amount.message)}
+                </p>
+              )}
             </div>
-            {/* Notes */}
-            <div className="mb-4.5">
-              <label className="block mb-2.5 text-black dark:text-white">
+
+            {/* Reason Input */}
+            <div>
+              <label className="block mb-2 text-sm font-medium text-black dark:text-white">
                 Enter Reason
               </label>
-
               <input
                 type="text"
-                name="productKey"
-                value={formData.reason}
-                onChange={handleChange}
+                {...register('reason')}
                 placeholder="Enter reason"
-                className="w-full rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                className="w-full rounded-lg border border-gray-300 bg-transparent py-3 px-4 outline-none focus:ring-2 focus:ring-primary dark:border-form-strokedark dark:bg-form-input dark:focus:ring-primary"
               />
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full rounded bg-primary py-3 px-6 text-white ${
-                isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-full rounded-lg bg-primary py-3 px-6 text-white text-center font-medium transition duration-300 ${
+                isSubmitting
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-opacity-90'
               }`}
               disabled={isSubmitting}
             >
