@@ -54,6 +54,10 @@ const ViewWithdrawal: React.FC = () => {
         status: status,
         reason: reason,
       };
+      if (status === 2 && reason.trim() === '') {
+        toast.error('Withdrawal Cancellation Reason is Required');
+        return;
+      }
       await dispatch(updateWithdrawalRequestAsync(formData)).unwrap();
       toast.success('Withdrawal updated successfully.');
     } catch (error: any) {

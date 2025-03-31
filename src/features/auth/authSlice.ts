@@ -119,7 +119,7 @@ const authSlice = createSlice({
       .addCase(adminLoginAsync.fulfilled, (state, action) => {
         console.log('authSlice fulfilled', action.payload);
         state.loading = false;
-        state.currentUser = action.payload.admin;
+        state.currentUser = action.payload.data.admin;
         state.isLoggedIn = true;
       })
       .addCase(adminLoginAsync.rejected, (state, action) => {

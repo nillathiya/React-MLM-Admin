@@ -26,6 +26,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const { pathname } = location;
 
   const { companyInfo } = useSelector((state: RootState) => state.settings);
+  const { currentUser: loggedInUser } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -70,7 +73,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   }, [sidebarExpanded]);
 
   const handleLogout = () => {
-    dispatch(adminLogoutAsync());
+    if (loggedInUser) {
+      localStorage.removeItem(`adminToken_${loggedInUser._id}`);
+    }
     navigate('/');
   };
 

@@ -33,7 +33,13 @@ const Login = () => {
     console.log('Password:', formData.password);
 
     try {
-      await dispatch(adminLoginAsync(formData)).unwrap();
+      const result = await dispatch(adminLoginAsync(formData)).unwrap();
+      if (result.status === 'success' || result.statusCode === 200) {
+        localStorage.setItem(
+          `adminToken_${result.data.admin._id}`,
+          result.data.token,
+        );
+      }
       toast.success('Admin Login successfully');
       navigate('/dashboard');
     } catch (error: any) {
@@ -77,7 +83,7 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              name="password" 
+              name="password"
               value={formData.password}
               onChange={setData}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
