@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
+
   const { companyInfo } = useSelector((state: RootState) => state.settings);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { users } = useSelector((state: RootState) => state.user);
@@ -49,11 +50,14 @@ const Dashboard: React.FC = () => {
     let isMounted = true;
 
     const fetchData = async () => {
-      if (hasFetched || !loggedInUser?._id) return;
+      // Ensure user is logged in and token is available
+      if (hasFetched || !loggedInUser?._id) {
+        setIsLoading(false); // Stop loading if no user/token
+        return;
+      }
 
       try {
         setIsLoading(true);
-        // Explicitly type the apiCalls array
         const apiCalls: Promise<
           ApiResponse<Order[] | User[] | ICompanyInfo[] | IncomeTransaction[]>
         >[] = [];
@@ -148,7 +152,7 @@ const Dashboard: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [loggedInUser, dispatch]);
+  }, [dispatch, loggedInUser?._id, hasFetched]); // Add dependencies
 
   const activeUserCount = users.reduce(
     (acc, user) => (user.accountStatus?.activeStatus === 1 ? acc + 1 : acc),

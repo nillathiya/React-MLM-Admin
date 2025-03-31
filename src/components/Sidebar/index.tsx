@@ -6,7 +6,7 @@ import { API_URL, ICONS, MENU } from '../../constants';
 import Icon from '../Icons/Icon';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { adminLogoutAsync } from '../../features/auth/authSlice';
+import { adminLogoutAsync, clearUser } from '../../features/auth/authSlice';
 // import {
 //   PrepareOutAsync,
 //   TatumPayoutAsync,
@@ -76,6 +76,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     if (loggedInUser) {
       localStorage.removeItem(`adminToken_${loggedInUser._id}`);
     }
+    dispatch(clearUser());
     navigate('/');
   };
 
