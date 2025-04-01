@@ -8,10 +8,10 @@ export const DEFAULT_ITEMS_PER_PAGE = 10;
 export const DEFAULT_CURRENT_PAGE = 0;
 export const DEFAULT_PER_PAGE_ITEMS = 10;
 
-// Income
 export const INCOME_FIELDS = {
-  roi: 'Staking Reward',
-  direct: 'Profile Sharing Reward',
-  reward: 'ARB Bonus Reward',
-  royalty: 'Royalty Income',
+  roi: 'Daily Stake Reward',
+  direct: 'Stake Sponsor Reward',
+  referral: 'Team Performance Reward',
+  reward: 'Reward',
+  royalty: 'Team Development Reward',
 };

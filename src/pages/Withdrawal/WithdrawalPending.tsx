@@ -27,8 +27,9 @@ const WithdrawalPending: React.FC = () => {
   const { withdrawals, isLoading } = useSelector(
     (state: RootState) => state.withdrawal,
   );
-  const {companyInfo}=useSelector((state:RootState)=>state.settings)
-  const companyCurrency=companyInfo.find((data)=>data.label==="currency")?.value
+  const { companyInfo } = useSelector((state: RootState) => state.settings);
+  const companyCurrency = companyInfo.find((data) => data.label === 'currency')
+    ?.value;
   useEffect(() => {
     (async () => {
       try {
@@ -79,7 +80,6 @@ const WithdrawalPending: React.FC = () => {
     }
   };
 
-
   return (
     <div>
       <Breadcrumb pageName="Pending Withdrwals" />
@@ -87,7 +87,7 @@ const WithdrawalPending: React.FC = () => {
       <div className="table-bg">
         <div className="card-body overflow-x-auto">
           {/* Refresh button */}
-          <div className="flex justify-end mb-2">
+          <div className="flex sticky justify-end mb-2">
             <div className="">
               <button onClick={handleRefresh} className="btn-refresh">
                 <Icon Icon={ICONS.REFRESH} className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -124,13 +124,13 @@ const WithdrawalPending: React.FC = () => {
                         ))}
                     </tr>
                   ))
-              ) : withdrawals.length === 0 ? (
+              ) : pendingWithdrawals.length === 0 ? (
                 <tr>
                   <td
                     colSpan={13}
                     className="text-center py-4 text-gray-600 dark:text-gray-300"
                   >
-                    No orders found
+                    No Pending Withdrawal found
                   </td>
                 </tr>
               ) : (
@@ -158,11 +158,21 @@ const WithdrawalPending: React.FC = () => {
                         (withdrawal.wPool ?? 0)
                       ).toFixed(2)}
                     </td>
-                    <td className="table-cell"> {companyCurrency}{withdrawal.txCharge}</td>
                     <td className="table-cell">
-                      {withdrawal.wPool ? `${companyCurrency}${withdrawal.wPool}` : 0}
+                      {' '}
+                      {companyCurrency}
+                      {withdrawal.txCharge}
                     </td>
-                    <td className="table-cell"> {companyCurrency}{withdrawal.amount}</td>
+                    <td className="table-cell">
+                      {withdrawal.wPool
+                        ? `${companyCurrency}${withdrawal.wPool}`
+                        : 0}
+                    </td>
+                    <td className="table-cell">
+                      {' '}
+                      {companyCurrency}
+                      {withdrawal.amount}
+                    </td>
                     <td className="table-cell">{withdrawal.tds || '0'}</td>
                     <td
                       className={`table-cell

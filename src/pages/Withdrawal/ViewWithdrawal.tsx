@@ -106,12 +106,23 @@ const ViewWithdrawal: React.FC = () => {
                                 }`
                               : 'N/A',
                           ],
-                          ['Amount', `${companyCurrency}${withdrawal.amount}`],
+                          [
+                            'Amount',
+                            `${companyCurrency}${
+                              (withdrawal.amount ?? 0) +
+                              (withdrawal.txCharge ?? 0) +
+                              (withdrawal.wPool ?? 0)
+                            }`,
+                          ],
                           [
                             'Tx Charge',
                             `${companyCurrency}${withdrawal.txCharge}`,
                           ],
                           ['wPool', `${companyCurrency}${withdrawal.wPool}`],
+                          [
+                            'Payable Amount',
+                            `${companyCurrency}${withdrawal.amount}`,
+                          ],
                           ['Date', formatDate(withdrawal.createdAt)],
                         ].map(([label, value], idx) => (
                           <tr key={idx} className="border-b">
@@ -156,7 +167,7 @@ const ViewWithdrawal: React.FC = () => {
                             </th>
                             <td className="px-4 py-2">:</td>
                             <td className="px-4 py-2">
-                              {withdrawal.Reason || 'N/A'}
+                              {withdrawal.reason || 'N/A'}
                             </td>
                           </tr>
                         )}

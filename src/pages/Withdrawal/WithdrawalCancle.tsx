@@ -80,7 +80,7 @@ const WithdrawalCancle: React.FC = () => {
   };
   return (
     <div>
-      <Breadcrumb pageName="Pending Withdrwals" />
+      <Breadcrumb pageName="Cancelled Withdrwals" />
       <div className="table-bg">
         <div className="card-body overflow-x-auto">
           {/* Refresh button */}
@@ -120,13 +120,13 @@ const WithdrawalCancle: React.FC = () => {
                         ))}
                     </tr>
                   ))
-              ) : withdrawals.length === 0 ? (
+              ) : cancelledWithdrawals.length === 0 ? (
                 <tr>
                   <td
                     colSpan={13}
                     className="text-center py-4 text-gray-600 dark:text-gray-300"
                   >
-                    No orders found
+                    No Cancelled Withdrawals found
                   </td>
                 </tr>
               ) : (
