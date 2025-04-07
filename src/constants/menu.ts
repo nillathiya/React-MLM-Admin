@@ -137,6 +137,13 @@ export const MENU: {
       },
     ],
   },
+  {
+    id: generateUniqueId(),
+    title: 'Cron Incomes',
+    path: '/Cron',
+    icon: 'CONTACTUs',
+    children: [],
+  },
 
   {
     id: generateUniqueId(),
