@@ -1,5 +1,6 @@
 import { Store } from '@reduxjs/toolkit';
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+// import {store} from "../store/store";
 export const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL as string,
   headers: {
@@ -79,5 +80,3 @@ export const initializeInterceptors = async () => {
   }
 };
 
-// Optional: Call initializeInterceptors immediately (if store is ready)
-initializeInterceptors();

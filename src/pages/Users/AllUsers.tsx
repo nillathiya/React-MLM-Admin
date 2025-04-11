@@ -126,10 +126,10 @@ const AllUsers: React.FC = () => {
   };
 
   const updatedUsers = useMemo(() => {
-    if (orders.length > 0 && users.length > 0) {
+    if (users.length > 0) {
       return users.map((user) => {
         const userId = user._id;
-        const userOrders = orders.filter((or) => or.customerId?._id === userId);
+        const userOrders = orders.filter((or) => or.customerId?._id === userId) || 0;
         const totalInvestment = userOrders.reduce((acc, or) => acc + or.bv, 0);
         return {
           ...user,
@@ -139,6 +139,7 @@ const AllUsers: React.FC = () => {
     }
     return [];
   }, [users, orders]);
+  console.log("updatedUsers",updatedUsers);
 
   const navigate = useNavigate();
 

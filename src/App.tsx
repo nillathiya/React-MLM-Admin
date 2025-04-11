@@ -22,6 +22,7 @@ import DataBaseBackUp from './pages/Settings/DataBaseBackUp';
 import EditUser from './pages/Users/EditUser';
 import Login from './pages/Login/Login';
 import ChangePassword from './pages/Password/ChangePassword';
+import Cron from './pages/Cron';
 import RegistrationSetting from './pages/Settings/RegistrationSetting';
 import InvestmentSetting from './pages/Settings/InvestmentSetting';
 import WithdrawalSetting from './pages/Settings/WithdrawalSetting';
@@ -646,6 +647,15 @@ function App() {
             <>
               <PageTitle title="Contact" />
               <FundTransfer />
+            </>
+          }
+        />
+        <Route 
+          path="/Cron"
+          element={
+            <>
+              <PageTitle title="Cron" />
+              <Cron />
             </>
           }
         />
