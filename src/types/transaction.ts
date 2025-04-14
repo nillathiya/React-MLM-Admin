@@ -1,4 +1,5 @@
 export interface IncomeTransaction {
+  _id:string;
   txUCode?: {
     username: string;
     name: string;
