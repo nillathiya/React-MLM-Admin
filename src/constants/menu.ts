@@ -100,20 +100,7 @@ export const MENU: {
     title: 'Income',
     path: '/income',
     icon: 'INCOME',
-    children: [
-      {
-        id: generateUniqueId(),
-        title: 'Income Report',
-        path: '/income/report',
-        icon: 'FUND',
-      },
-      {
-        id: generateUniqueId(),
-        title: 'Direct Incomes',
-        path: '/income/direct',
-        icon: 'FUND',
-      },
-    ],
+    children: [],
   },
   {
     id: generateUniqueId(),
