@@ -67,6 +67,7 @@ import { getAllCompanyInfoAsync } from './features/settings/settingsSlice';
 import toast from 'react-hot-toast';
 import { API_URL } from './constants';
 import EditSetting from './pages/Settings/GeneralSettings/EditSetting';
+import DirectIncomes from './pages/Income/DirectIncomes';
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const { companyInfo } = useSelector((state: RootState) => state.settings);
@@ -614,12 +615,22 @@ function App() {
             </>
           }
         />
+        {/* Income */}
         <Route
-          path="/income"
+          path="/income/report"
           element={
             <>
               <PageTitle title="Income" />
               <Income />
+            </>
+          }
+        />
+        <Route
+          path="/income/direct"
+          element={
+            <>
+              <PageTitle title="Direct Incomes" />
+              <DirectIncomes />
             </>
           }
         />
@@ -650,7 +661,7 @@ function App() {
             </>
           }
         />
-        <Route 
+        <Route
           path="/Cron"
           element={
             <>
