@@ -10,12 +10,18 @@ const Cron = () => {
   const [loading, setLoading] = useState({
     roi: false,
     reward: false,
+    weekly: false,
+    monthly: false,
+    resetWeekMonth: false,
   });
 
-  const handleRunCron = async (type: 'roi' | 'reward') => {
+  const handleRunCron = async (type: 'roi' | 'reward' | 'weekly' | 'monthly' | 'resetWeekMonth') => {
     const urls: Record<string, string> = {
       roi: `${API_URL}/api/income/roi`,
-      reward: `${API_URL}/api/income/roi`,
+      reward: `${API_URL}/api/income/reward`,
+      weekly: `${API_URL}/api/income/weekly`,
+      monthly: `${API_URL}/api/income/monthly`,
+      resetWeekMonth: `${API_URL}/api/income/resetWeekMonth`,
     };
 
     setLoading((prev) => ({ ...prev, [type]: true }));
@@ -68,6 +74,45 @@ const Cron = () => {
               <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
             )}
             Run Reward Cron
+          </button>
+
+          <button
+            onClick={() => handleRunCron('weekly')}
+            className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
+            disabled={loading.reward}
+          >
+            {loading.reward ? (
+              <span className="animate-spin mr-2">&#9696;</span>
+            ) : (
+              <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
+            )}
+            Run Weekly Distribution
+          </button>
+
+          <button
+            onClick={() => handleRunCron('monthly')}
+            className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
+            disabled={loading.monthly}
+          >
+            {loading.reward ? (
+              <span className="animate-spin mr-2">&#9696;</span>
+            ) : (
+              <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
+            )}
+            Run monthly Distribution
+          </button>
+
+          <button
+            onClick={() => handleRunCron('resetWeekMonth')}
+            className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
+            disabled={loading.resetWeekMonth}
+          >
+            {loading.reward ? (
+              <span className="animate-spin mr-2">&#9696;</span>
+            ) : (
+              <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
+            )}
+            Run resetWeekMonth
           </button>
         </div>
       </div>
