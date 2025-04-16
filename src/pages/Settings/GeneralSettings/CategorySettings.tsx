@@ -89,7 +89,7 @@ const CategorySettings: React.FC = () => {
 
   const settingTitles = React.useMemo(
     () =>
-      Array.from(new Set(settings.map((item) => item.title).filter(Boolean))),
+      Array.from(new Set(settings.map((item) => item.title.trim()).filter(Boolean))),
     [settings]
   );
 
