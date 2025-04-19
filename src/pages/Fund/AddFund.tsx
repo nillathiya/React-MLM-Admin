@@ -88,7 +88,7 @@ const AddFund: React.FC = () => {
           >
             {/* Username Input */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-black dark:text-white">
+              <label className="block !mb-2 text-sm font-medium text-black dark:text-white">
                 Username <span className="text-red-500">*</span>
               </label>
               <input
@@ -111,7 +111,7 @@ const AddFund: React.FC = () => {
 
             {/* Amount Input */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-black dark:text-white">
+              <label className="block !mb-2 text-sm font-medium text-black dark:text-white">
                 Enter Amount <span className="text-red-500">*</span>
               </label>
               <input
@@ -132,7 +132,7 @@ const AddFund: React.FC = () => {
 
             {/* Reason Input */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-black dark:text-white">
+              <label className="block !mb-2 text-sm font-medium text-black dark:text-white">
                 Enter Reason
               </label>
               <input

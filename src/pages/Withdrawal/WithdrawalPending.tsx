@@ -40,7 +40,7 @@ const WithdrawalPending: React.FC = () => {
         toast.error(error?.message || 'Server error');
       }
     })();
-  }, [dispatch, withdrawals]);
+  }, []);
 
   const handleClick = (id: string) => {
     navigate(`/view-withdrawal/${id}`);
@@ -85,15 +85,15 @@ const WithdrawalPending: React.FC = () => {
       <Breadcrumb pageName="Pending Withdrwals" />
 
       <div className="table-bg">
-        <div className="card-body overflow-x-auto">
-          {/* Refresh button */}
-          <div className="flex sticky justify-end mb-2">
-            <div className="">
-              <button onClick={handleRefresh} className="btn-refresh">
-                <Icon Icon={ICONS.REFRESH} className="w-5 h-5 sm:w-6 sm:h-6" />
-              </button>
-            </div>
+        {/* Refresh button */}
+        <div className="flex sticky justify-end mb-2">
+          <div className="">
+            <button onClick={handleRefresh} className="btn-refresh">
+              <Icon Icon={ICONS.REFRESH} className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
           </div>
+        </div>
+        <div className="card-body overflow-x-auto">
           <table ref={tableRef} className="table bordered-table display">
             <thead>
               <tr>

@@ -100,13 +100,86 @@ const SingularArraySetting: React.FC<SingularArraySettingProps> = ({
         value={selectedValues}
         onChange={(selected) => handleSelectChange(setting._id, selected)}
         placeholder="Select options..."
+        className="w-full"
+        classNamePrefix="react-select"
+        menuPortalTarget={document.body}
         styles={{
-          container: (base) => ({
+          control: (base) => ({
             ...base,
-            width: 300,
+            backgroundColor: 'transparent',
+            borderColor: '#e5e7eb',
+            borderRadius: '0.375rem',
+            padding: '0.5rem 1rem',
+            boxShadow: 'none',
+            '&:hover': {
+              borderColor: '#3b82f6',
+            },
+            '&:focus-within': {
+              borderColor: '#3b82f6',
+            },
+            zIndex: 999,
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: '#ffffff',
+            borderRadius: '0.375rem',
+            marginTop: '0.25rem',
+            zIndex: 9999,
+          }),
+          menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999,
+          }),
+          option: (base, { isFocused, isSelected }) => ({
+            ...base,
+            backgroundColor: isSelected
+              ? '#3b82f6'
+              : isFocused
+              ? '#eff6ff'
+              : '#ffffff',
+            color: isSelected ? '#ffffff' : '#1f2937',
+            '&:active': {
+              backgroundColor: '#2563eb',
+            },
+          }),
+          placeholder: (base) => ({
+            ...base,
+            color: '#9ca3af',
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: '#1f2937',
+          }),
+          input: (base) => ({
+            ...base,
+            color: '#1f2937',
+          }),
+          clearIndicator: (base) => ({
+            ...base,
+            color: '#9ca3af',
+            '&:hover': {
+              color: '#2563eb',
+            },
           }),
         }}
-        className="w-full rounded border border-stroke bg-transparent py-2 px-4 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+        theme={(theme) => ({
+          ...theme,
+          colors: {
+            ...theme.colors,
+            primary: '#3b82f6',
+            primary25: '#eff6ff',
+            primary50: '#dbeafe',
+            neutral0: '#ffffff',
+            neutral80: '#1f2937',
+          },
+        })}
+        // styles={{
+        //   container: (base) => ({
+        //     ...base,
+        //     width: 300,
+        //   }),
+        // }}
+        // className="w-full rounded border border-stroke bg-transparent py-2 px-4 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
       />
       <p>Selected Values: {formatSelectedValues(selectedValues)}</p>
     </div>

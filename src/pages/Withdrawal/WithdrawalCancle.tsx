@@ -40,7 +40,7 @@ const WithdrawalCancle: React.FC = () => {
         toast.error(error?.message || 'Server error');
       }
     })();
-  }, [dispatch, withdrawals]);
+  }, []);
 
   const handleClick = (id: string) => {
     navigate(`/view-withdrawal/${id}`);
@@ -82,15 +82,15 @@ const WithdrawalCancle: React.FC = () => {
     <div>
       <Breadcrumb pageName="Cancelled Withdrwals" />
       <div className="table-bg">
-        <div className="card-body overflow-x-auto">
-          {/* Refresh button */}
-          <div className="flex justify-end mb-2">
-            <div className="w-15">
-              <button onClick={handleRefresh} className="btn-refresh">
-                <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
-              </button>
-            </div>
+        {/* Refresh button */}
+        <div className="flex justify-end mb-2">
+          <div className="w-15">
+            <button onClick={handleRefresh} className="btn-refresh">
+              <Icon Icon={ICONS.REFRESH} className="w-7 h-7" />
+            </button>
           </div>
+        </div>
+        <div className="card-body overflow-x-auto">
           <table ref={tableRef} className="table bordered-table display">
             <thead>
               <tr>
