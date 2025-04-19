@@ -18,6 +18,7 @@ import {
   IncomeTransaction,
   ICompanyInfo,
 } from '../../types';
+import Loader from '../../common/Loader';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -172,7 +173,11 @@ const Dashboard: React.FC = () => {
   );
 
   if (isLoading) {
-    return <div>Loading Dashboard...</div>;
+    return (
+      <>
+        <Loader loader="ClipLoader" size={50} color="blue" fullPage={true} />
+      </>
+    );
   }
 
   return (
@@ -241,7 +246,7 @@ const Dashboard: React.FC = () => {
 
         <CardDataStats
           title="Investment"
-          total={totalInvestment || 0}
+          total={Number(totalInvestment.toFixed(2)) || 0}
           isLoading={isLoading}
           bgGradient="bg-gradient-to-r from-yellow-300 to-orange-300 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >
@@ -279,7 +284,7 @@ const Dashboard: React.FC = () => {
 
         <CardDataStats
           title="Total Income"
-          total={totalIncome || 0}
+          total={Number(totalIncome.toFixed(2)) || 0}
           isLoading={isLoading}
           bgGradient="bg-gradient-to-r from-green-300 to-blue-300 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >
@@ -310,7 +315,7 @@ const Dashboard: React.FC = () => {
 
         <CardDataStats
           title="Income Charge"
-          total={totalIncomeTransactionCharge || 0}
+          total={Number(totalIncomeTransactionCharge.toFixed(2)) || 0}
           isLoading={isLoading}
           bgGradient="bg-gradient-to-r from-purple-400 to-pink-400 dark:from-gray-800 dark:to-gray-800 transition-transform duration-300 ease-in-out shadow-md hover:shadow-xl"
         >

@@ -214,13 +214,15 @@ const EditSetting: React.FC = () => {
           break;
         case 'user-settings':
           if (userSettings.length === 0) {
-            await dispatch(getUserSettingsAsync()).unwrap();
+            const result = await dispatch(getUserSettingsAsync()).unwrap();
+            setSettings(result.data);
           }
           setSettings(userSettings);
           break;
         case 'admin-settings':
           if (adminSettings.length === 0) {
-            await dispatch(getAdminSettingsAsync()).unwrap();
+            const result = await dispatch(getAdminSettingsAsync()).unwrap();
+            setSettings(result.data);
           }
           setSettings(adminSettings);
           break;
