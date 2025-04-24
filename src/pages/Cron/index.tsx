@@ -13,15 +13,17 @@ const Cron = () => {
     weekly: false,
     monthly: false,
     resetWeekMonth: false,
+    dailyDirect: false
   });
 
-  const handleRunCron = async (type: 'roi' | 'reward' | 'weekly' | 'monthly' | 'resetWeekMonth') => {
+  const handleRunCron = async (type: 'roi' | 'reward' | 'weekly' | 'monthly' | 'resetWeekMonth' | 'dailyDirect') => {
     const urls: Record<string, string> = {
       roi: `${API_URL}/api/income/roi`,
       reward: `${API_URL}/api/income/reward`,
       weekly: `${API_URL}/api/income/weekly`,
       monthly: `${API_URL}/api/income/monthly`,
       resetWeekMonth: `${API_URL}/api/income/resetWeekMonth`,
+      dailyDirect: `${API_URL}/api/income/dailyDirect`,
     };
 
     setLoading((prev) => ({ ...prev, [type]: true }));
@@ -79,9 +81,9 @@ const Cron = () => {
           <button
             onClick={() => handleRunCron('weekly')}
             className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
-            disabled={loading.reward}
+            disabled={loading.weekly}
           >
-            {loading.reward ? (
+            {loading.weekly ? (
               <span className="animate-spin mr-2">&#9696;</span>
             ) : (
               <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
@@ -94,7 +96,7 @@ const Cron = () => {
             className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
             disabled={loading.monthly}
           >
-            {loading.reward ? (
+            {loading.monthly ? (
               <span className="animate-spin mr-2">&#9696;</span>
             ) : (
               <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
@@ -107,12 +109,25 @@ const Cron = () => {
             className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
             disabled={loading.resetWeekMonth}
           >
-            {loading.reward ? (
+            {loading.resetWeekMonth ? (
               <span className="animate-spin mr-2">&#9696;</span>
             ) : (
               <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
             )}
             Run resetWeekMonth
+          </button>
+
+          <button
+            onClick={() => handleRunCron('dailyDirect')}
+            className="btn bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center"
+            disabled={loading.dailyDirect}
+          >
+            {loading.dailyDirect ? (
+              <span className="animate-spin mr-2">&#9696;</span>
+            ) : (
+              <Icon Icon={ICONS.IOSETTINGS} className="w-5 h-5 mr-2" />
+            )}
+            Run dailyDirect
           </button>
         </div>
       </div>
